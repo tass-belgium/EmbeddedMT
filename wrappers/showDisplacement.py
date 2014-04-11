@@ -49,12 +49,22 @@ class DisplacementCollection:
     
 def usage():
     print("Wrapper for plotting the displacement")
+    print("options:")
+    print("\t-a <arch>      Define architecture: <x64>, armv6")
+    print("\t-m <mode>      Define mode: <debug>, release")
+    print("\t-p             Only plot result")
+    print("\t-h             Print this help")
+    print("\t-o <file>      Define output file")
+    print("\t-s <sequence>  Define path to sequence to use")
+    print("\t-c <alg>       Define algorithm to use: <0>:SURF+BFM, 1:SURF+FLANN, 2:SIFT+BFM, 3:SIFT+FLANN")
+    print("\t-l <logLevel>  Define log level: <debug>, warning or error")
+    print("\t-r             Clean and rebuild")
     
 def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:m:pho:s:c:", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "a:m:pho:s:c:l:r", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -66,6 +76,8 @@ def main():
     skipProcessing = False
     sequence = os.path.abspath('{scriptDir}/../testSequences/cam_ball1_640'.format(scriptDir=scriptDir))
     alg = 0
+    logLevel = 'debug'
+    rebuild = False
     for o, a in opts:
         if o == "-a":
             arch = a
@@ -82,14 +94,24 @@ def main():
             sequence = a
         elif o == "-c":
             alg = a
+        elif o == "-l":
+            logLevel = a
+        elif o == "-r":
+            rebuild = True
         else:
             assert False, "unhandled option"
             usage()
             return 1
+
+    if(rebuild):
+        fname = '{scriptDir}/../build/{arch}/{mode}/proofOfConcept'.format(scriptDir=scriptDir,arch=arch, mode=mode)
+        if(os.path.isfile(fname)):
+           cmd = 'rm -rf {scriptDir}/../build/{arch}/{mode}'.format(scriptDir=scriptDir,arch=arch,mode=mode)
+           os.system(cmd)
     
     # Execute
     if(not skipProcessing):
-        if(executeApplication(arch, mode, sequence, alg, output) != RetCodes.RESULT_OK):
+        if(executeApplication(arch, mode, sequence, alg, output, logLevel) != RetCodes.RESULT_OK):
             print("An error occurred during building")
             return 1
     
@@ -100,14 +122,14 @@ def main():
         
     return 0
 
-def executeApplication(arch, mode, sequence, alg, output):
+def executeApplication(arch, mode, sequence, alg, output, logLevel):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     fname = '{scriptDir}/../build/{arch}/{mode}/proofOfConcept'.format(scriptDir=scriptDir,arch=arch, mode=mode)
     
     if(not os.path.isfile(fname)):
         # build application
-        cmd = 'scons --directory {scriptDir}/.. --jobs 10 arch={arch} mode={mode}'.format(scriptDir=scriptDir, arch=arch, mode=mode)
+        cmd = 'scons --directory {scriptDir}/.. --jobs 10 arch={arch} mode={mode} logLevel={logLevel}'.format(scriptDir=scriptDir, arch=arch, mode=mode, logLevel=logLevel)
         ret = os.system(cmd)
         if(ret != 0):
             print('Building returned error (code: {errorcode}). Exiting'.format(errorcode=ret))

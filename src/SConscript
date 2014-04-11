@@ -6,7 +6,8 @@ folders = [
     'displacement/SConscript',
     'draw/SConscript',
     'imProc/SConscript',
-    'match/SConscript'
+    'match/SConscript',
+    'log/SConscript'
 ]
 
 SConscript(folders)

@@ -4,6 +4,7 @@
 #include <time.h>
 #include <dirent.h>
 
+#include "log/logging.hpp"
 #include "cm/global.hpp"
 #include "imProc/imageProcBase.hpp"
 #include "descriptor/sift.hpp"
@@ -15,7 +16,7 @@
 
 #include "application/findTheBall.hpp"
 
-std::string getMethodPname(uint8_t matchAlgorithm);
+const char_t* getMethodPname(uint8_t matchAlgorithm);
 GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::DescriptorInterface** descriptor,
 		const Match::MatcherInterface** matcher);
 GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data);
@@ -37,7 +38,7 @@ int main(int argc, char** argv) {
 	if (argc > 1) {
 		imageSequenceFolder = argv[1];
 	} else {
-		std::cerr << "Image sequence folder not defined" << std::endl;
+		LOG_ERROR("Image sequence folder not defined");
 		return -1;
 	}
 	if (argc > 2) {
@@ -46,32 +47,32 @@ int main(int argc, char** argv) {
 	if(argc > 3) {
 		outputFile = argv[3];
 	}
-	std::cout << "Using " << getMethodPname(matchAlgorithm) << std::endl;
+	LOG_INFO("Using %s", getMethodPname(matchAlgorithm));
 
 	if(getExecutors(matchAlgorithm, &descriptor, &matcher) != GBL::RESULT_SUCCESS) {
-		std::cerr << "Could not get valid descriptor and matcher. Define a valid algorithm to be used." << std::endl;
+		LOG_ERROR("Could not get valid descriptor and matcher. Define a valid algorithm to be used.");
 		return -1;
 	}
 
 	GBL::ImageSequence_t imageSequence;
 	if(setFiles(imageSequenceFolder, imageSequence) != GBL::RESULT_SUCCESS) {
-		std::cerr << "Could not retrieve content of " << imageSequenceFolder << std::endl;
+		LOG_ERROR("Could not retrieve content of %s", imageSequenceFolder)
 	}
 	// Sort files
 	std::sort(imageSequence.images.begin(), imageSequence.images.end());
 
 	// Print files
 	for(uint32_t i = 0; i < imageSequence.images.size(); i++) {
-		std::cout << imageSequence.images[i] << std::endl;
+		LOG_INFO("Added %s to imageSequence.images", imageSequence.images[i].c_str());
 	}
 
 	clock_t tStart = clock();
 	std::vector<GBL::Displacement_t> displacements = findTheBall(imageSequence, imProc, *drawer, *descriptor, *matcher, *displacement);
 	float_t totalTimeElapsed = (float_t) (clock() - tStart)/ CLOCKS_PER_SEC;
-	std::cout << "Total time taken: " << totalTimeElapsed << " s" << std::endl;
+	LOG_ERROR("Total time taken: %f s", totalTimeElapsed);
 
 	if(writeResults(outputFile, displacements) != GBL::RESULT_SUCCESS) {
-		std::cerr << "Could not write results to file " << outputFile << std::endl;
+		LOG_WARNING("Could not write results to file %s", outputFile);
 	}
 	return 0;
 }
@@ -89,8 +90,8 @@ GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacem
 	return GBL::RESULT_SUCCESS;
 }
 
-std::string getMethodPname(uint8_t matchAlgorithm) {
-	std::string algoName = "Unknown";
+const char_t* getMethodPname(uint8_t matchAlgorithm) {
+	const char_t* algoName = "Unknown";
 	switch (matchAlgorithm) {
 	case 0:
 		algoName = "SURF+brute force";
@@ -128,7 +129,7 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 		*matcher = new Match::FlannBasedMatcher();
 		break;
 	default:
-		std::cout << "Unknown matching algorithm" << std::endl;
+		LOG_ERROR("Unknown matching algorithm");
 		return GBL::RESULT_FAILURE;
 	}
 	return GBL::RESULT_SUCCESS;
@@ -136,13 +137,13 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 
 GBL::CmRetCode_t setFiles (const char* const dir, GBL::ImageSequence_t& imageSequence) {
 	snprintf(imageSequence.backgroundImage, (size_t) GBL::maxFilenameLength, "%s/background.jpg", dir);
-	std::cout << imageSequence.backgroundImage << std::endl;
+	LOG_INFO("Used background image: %s", imageSequence.backgroundImage);
 
     DIR *dp;
     struct dirent *dirp;
     dp  = opendir(dir);
     if(dp == nullptr) {
-        std::cout << "Error opening " << dir << std::endl;
+        LOG_ERROR("Error opening %s", dir);
         return GBL::RESULT_FAILURE;
     }
 

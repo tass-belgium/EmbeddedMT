@@ -10,12 +10,12 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include "log/logging.hpp"
 #include "findTheBall.hpp"
 
 const bool drawResults = false;
 const bool denoise = false;
 const bool sharpen = false;
-const bool verbose = false;
 const bool subtractBackground = true;
 
 float_t timeElapsedOnBackground = 0;
@@ -28,16 +28,18 @@ GBL::CmRetCode_t match(const Descriptor::DescriptorInterface& descriptor,
 		GBL::Image_t& img2, GBL::KeyPointCollection_t& keypoints1,
 		GBL::KeyPointCollection_t& keypoints2, GBL::MatchCollection_t& matches);
 
-std::vector<GBL::Displacement_t> findTheBall(GBL::ImageSequence_t& imageSequence, const ImageProc::ImageProc* imProc,
+std::vector<GBL::Displacement_t> findTheBall(
+		GBL::ImageSequence_t& imageSequence, const ImageProc::ImageProc* imProc,
 		const Draw::DrawInterface& drawer,
 		const Descriptor::DescriptorInterface& descriptor,
 		const Match::MatcherInterface& matcher,
 		const Displacement::DisplacementInterface& displacement) {
+	LOG_ENTER("void");
 	std::vector<GBL::Displacement_t> displacements(imageSequence.images.size());
 	GBL::Image_t img1;
 	GBL::Image_t img2;
 
-	if(imageSequence.images.size() == 0) {
+	if (imageSequence.images.size() == 0) {
 		return displacements;
 	}
 
@@ -49,15 +51,18 @@ std::vector<GBL::Displacement_t> findTheBall(GBL::ImageSequence_t& imageSequence
 	}
 
 	/* Get very first image */
-	if (getImage(img1, imageSequence.images[0].c_str(), imProc) != GBL::RESULT_SUCCESS) {
-		std::cerr << "Could not get image " << imageSequence.images[0] << std::endl;
+	if (getImage(img1, imageSequence.images[0].c_str(), imProc)
+			!= GBL::RESULT_SUCCESS) {
+		LOG_ERROR("Could not get image %s", imageSequence.images[0].c_str());
 		return displacements;
 	}
 
-	for (uint32_t i = 0; i < imageSequence.images.size()-1; i++) {
-		uint32_t img2Index = i+1;
-		if (getImage(img2, imageSequence.images[img2Index].c_str(), imProc) != GBL::RESULT_SUCCESS) {
-			std::cerr << "Could not get image " << imageSequence.images[img2Index] << std::endl;
+	for (uint32_t i = 0; i < imageSequence.images.size() - 1; i++) {
+		uint32_t img2Index = i + 1;
+		if (getImage(img2, imageSequence.images[img2Index].c_str(), imProc)
+				!= GBL::RESULT_SUCCESS) {
+			LOG_ERROR("Could not get image %s",
+					imageSequence.images[img2Index].c_str());
 			return std::vector<GBL::Displacement_t>(0);
 		}
 
@@ -65,21 +70,22 @@ std::vector<GBL::Displacement_t> findTheBall(GBL::ImageSequence_t& imageSequence
 		GBL::KeyPointCollection_t keypoints2;
 		GBL::MatchCollection_t matches;
 
+		LOG_INFO("Matching %s and %s", imageSequence.images[i].c_str(), imageSequence.images[i+1].c_str());
 		if (match(descriptor, matcher, img1, img2, keypoints1, keypoints2,
 				matches) != GBL::RESULT_SUCCESS) {
-			std::cerr << "Could not match images " << imageSequence.images[i] << " and " << imageSequence.images[i+1] << std::endl;
+			LOG_ERROR("Could not match images %s and %s",
+					imageSequence.images[i].c_str(),
+					imageSequence.images[i + 1].c_str());
 			displacements[i].x = 0;
 			displacements[i].y = 0;
 			continue;
 		}
-		if (verbose) {
-			for (uint32_t i = 0; i < matches.size(); i++) {
-				std::cout << "[" << keypoints1[matches[i].queryIdx].pt.x << ','
-						<< keypoints1[matches[i].queryIdx].pt.y << "] with ["
-						<< keypoints2[matches[i].trainIdx].pt.x << ","
-						<< keypoints2[matches[i].trainIdx].pt.y << "]"
-						<< std::endl;
-			}
+		for (uint32_t j = 0; j < matches.size(); j++) {
+			LOG_DEBUG("[%f,%f] with [%f,%f]",
+					keypoints1[matches[j].queryIdx].pt.x,
+					keypoints1[matches[j].queryIdx].pt.y,
+					keypoints2[matches[j].trainIdx].pt.x,
+					keypoints2[matches[j].trainIdx].pt.y);
 		}
 		if (drawResults) {
 			drawer.draw(img1, img2, matches, keypoints1, keypoints2);
@@ -89,24 +95,26 @@ std::vector<GBL::Displacement_t> findTheBall(GBL::ImageSequence_t& imageSequence
 		/* Calculate displacement */
 		float_t x = 0;
 		float_t y = 0;
-		if(displacement.calculateDisplacement(matches, keypoints1, keypoints2, displacements[i]) != GBL::RESULT_SUCCESS) {
-			std::cerr << "Could not find displacement for images " << imageSequence.images[i] << " and " << imageSequence.images[i+1] << std::endl;
+		if (displacement.calculateDisplacement(matches, keypoints1, keypoints2,
+				displacements[i]) != GBL::RESULT_SUCCESS) {
+			LOG_ERROR("Could not find displacement for images %s and %s",
+					imageSequence.images[i].c_str(),
+					imageSequence.images[i + 1].c_str());
 			displacements[i].x = 0;
 			displacements[i].y = 0;
 			continue;
 		}
-		if (verbose) {
-			std::cout << "x displacement: " << x << std::endl;
-			std::cout << "y displacement: " << y << std::endl;
-			std::cout << i << std::endl;
-		}
+		LOG_INFO("x displacement: %d", x);
+		LOG_INFO("y displacement: %d", y);
 		img1 = img2;
 	}
+	LOG_EXIT("Displacements = %p, size = %d", &displacements, displacements.size());
 	return displacements;
 }
 
 GBL::CmRetCode_t getImage(GBL::Image_t& img, const char* const imagePath,
 		const ImageProc::ImageProc* imProc) {
+	LOG_ENTER("imagePath = %s, output image = %p", imagePath, &img);
 	img = cv::imread(imagePath, CV_LOAD_IMAGE_GRAYSCALE);
 
 	if (!img.data) {
@@ -118,56 +126,57 @@ GBL::CmRetCode_t getImage(GBL::Image_t& img, const char* const imagePath,
 		imProc->fastSubtract(img, background, img);
 	}
 
-	// Denoise image
+// Denoise image
 	if (denoise) {
 		imProc->denoise(img, img);
 	}
 
-	// Sharpen image
+// Sharpen image
 	if (sharpen) {
 		const double_t sigmaX = 3;
 		const double_t beta = -0.5;
 		imProc->sharpen(img, img, sigmaX, beta);
 	}
-	return GBL::RESULT_SUCCESS;
+	GBL::CmRetCode_t result = GBL::RESULT_SUCCESS;
+	LOG_EXIT("Result = %d", result);
+	return result;
 }
 
 GBL::CmRetCode_t match(const Descriptor::DescriptorInterface& descriptor,
 		const Match::MatcherInterface& matcher, GBL::Image_t& img1,
 		GBL::Image_t& img2, GBL::KeyPointCollection_t& keypoints1,
-		GBL::KeyPointCollection_t& keypoints2, GBL::MatchCollection_t& matches) {
+		GBL::KeyPointCollection_t& keypoints2,
+		GBL::MatchCollection_t& matches) {
+	LOG_ENTER("img1 = %p, img2 = %p, keypoints 1 = %p, keypoints 2 = %p, matches = %p", &img1, &img2, &keypoints1, &keypoints2, &matches);
 
 	GBL::Descriptor_t descriptor1;
 	GBL::Descriptor_t descriptor2;
 
 	uint8_t scaleLevels = 1;
 
-	// Describe
+	LOG_INFO("Describing image 1");
 	descriptor.describe(img1, scaleLevels, keypoints1, descriptor1);
-	if (verbose) {
-		std::cout << "Nb of keypoints in image 1: " << keypoints1.size()
-				<< std::endl;
-	}
+	LOG_INFO("Nb of keypoints in image 1: %d", keypoints1.size());
 	if (keypoints1.size() == 0) {
+		LOG_EXIT("GBL::RESULT_FAILURE");
 		return GBL::RESULT_FAILURE;
 	}
 
+	LOG_INFO("Describing image 2");
 	descriptor.describe(img2, scaleLevels, keypoints2, descriptor2);
-	if (verbose) {
-		std::cout << "Nb of keypoints in image 2: " << keypoints2.size()
-				<< std::endl;
-	}
+	LOG_INFO("Nb of keypoints in image 2: %d", keypoints2.size());
 	if (keypoints2.size() == 0) {
+		LOG_EXIT("GBL::RESULT_FAILURE");
 		return GBL::RESULT_FAILURE;
 	}
 
-	// Match
+	LOG_INFO("Matching");
 	matcher.match(descriptor1, descriptor2, matches);
-	if (verbose) {
-		std::cout << "Nb of found matches: " << matches.size() << std::endl;
-	}
+	LOG_INFO("Nb of found matches: %d", matches.size());
 	if (matches.size() == 0) {
+		LOG_EXIT("GBL::RESULT_FAILURE");
 		return GBL::RESULT_FAILURE;
 	}
+	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }

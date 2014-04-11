@@ -1,0 +1,11 @@
+Import('env')
+
+libs = [
+]
+
+libs_path = [
+    env['LIBS_DIR']
+]
+
+target = env.Program('testLogging.cpp', LIBS=libs, LIBPATH=libs_path)
+bin = env.Alias("testLogging", target)

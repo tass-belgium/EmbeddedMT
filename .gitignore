@@ -35,3 +35,4 @@ toolchains/*/
 *.exe
 *.out
 *.app
+/build

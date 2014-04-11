@@ -13,6 +13,13 @@ map_arch_to_toolchain = {
     'armv6' : 'arm-bcm2708-linux-gnueabi-'
 }
 
+map_logLevel_to_define = {
+    'debug' : 'LOG_LEVEL_DEBUG',
+    'warning' : 'LOG_LEVEL_WARNING',
+    'error' : 'LOG_LEVEL_ERROR',
+    'none' : 'LOG_LEVEL_NONE'
+}
+
 opts.Add(EnumVariable('arch', 'Set target architecture', 'x64',
                     allowed_values=('x64', 'armv6'),
                     map={},
@@ -20,6 +27,11 @@ opts.Add(EnumVariable('arch', 'Set target architecture', 'x64',
 
 opts.Add(EnumVariable('mode', 'Set build mode', 'debug',
                     allowed_values=('debug', 'release'),
+                    map={},
+                    ignorecase=2))
+
+opts.Add(EnumVariable('logLevel', 'Set log mode', 'debug',
+                    allowed_values=('debug', 'warning', 'error','none'),
                     map={},
                     ignorecase=2))
 
@@ -49,6 +61,9 @@ env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
 env['CPPPATH'].append('{opencv_dir}/include'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_dir))
+
+env['CPPDEFINES'] = []
+env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
 
 if env['mode'] == 'release':
     env['CPPFLAGS'].append('-Ofast')
