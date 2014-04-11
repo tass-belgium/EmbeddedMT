@@ -52,6 +52,7 @@ def usage():
     
 def main():
     """ Entry function """
+    scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
         opts, args = getopt.getopt(sys.argv[1:], "a:m:pho:s:c:", ["help", "output="])
     except getopt.GetoptError as err:
@@ -63,7 +64,7 @@ def main():
     mode = 'debug'
     output = "displacement.result"
     skipProcessing = False
-    sequence = os.path.abspath('{scriptDir}/../testSequences/cam_ball1_640')
+    sequence = os.path.abspath('{scriptDir}/../testSequences/cam_ball1_640'.format(scriptDir=scriptDir))
     alg = 0
     for o, a in opts:
         if o == "-a":
@@ -93,7 +94,7 @@ def main():
             return 1
     
     # Process results
-    if(processResults(output) != RetCodes.RESULT_OK):
+    if(processResults(output, 'b') != RetCodes.RESULT_OK):
         print("An error occurred during processing")
         return 1
         
@@ -119,7 +120,7 @@ def executeApplication(arch, mode, sequence, alg, output):
             return RetCodes.RESULT_FAILURE
     return RetCodes.RESULT_OK
 
-def processResults(output):
+def processResults(output, color):
     displacements = DisplacementCollection()
     with open(output, newline='') as csvfile:
         csvreader = csv.reader(csvfile, delimiter='\t')
@@ -138,12 +139,14 @@ def processResults(output):
         for i in range(len(xnew)):
             xpos.append(abs(xnew[i]))
         
-        plt.plot(displacements.x, displacements.y,'bx', xnew, f2(xpos), 'b-')
-        plt.show()
+        plt.plot(displacements.x, displacements.y,'{color}x'.format(color=color), xnew, f2(xpos), '{color}-'.format(color=color))
     except:       
         print("Could not interpolate points")
-        plt.plot(displacements.x, displacements.y,'bx')
-        plt.show()
+        plt.plot(displacements.x, displacements.y,'{color}x'.format(color=color))
+    plt.xlabel("Displacement in x direction (pixels)")
+    plt.ylabel("Displacement in y direction (pixels)")
+    plt.title("Displacement")
+    plt.show()
     return RetCodes.RESULT_OK
 
 if __name__ == "__main__":
