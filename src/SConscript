@@ -1,0 +1,40 @@
+Import('env')
+
+folders = [
+    'application/SConscript',
+    'descriptor/SConscript',
+    'displacement/SConscript',
+    'draw/SConscript',
+    'imProc/SConscript',
+    'match/SConscript'
+]
+
+SConscript(folders)
+
+libs = [
+    # Modules
+    'findTheBall',
+    'surf',
+    'sift',
+    'displacementBase',
+    'draw',
+    'imProc',
+    'bestEffortMatcher',
+    'flannBasedMatcher',
+    # openCV libraries
+    'opencv_core',
+    'opencv_features2d',
+    'opencv_highgui',
+    'opencv_imgproc',
+    'opencv_photo',
+    'opencv_flann',
+    'opencv_nonfree'
+]
+
+libs_path = [
+    env['openCV_LIBS_DIR'],
+    env['LIBS_DIR']
+]
+
+target = env.Program('proofOfConcept.cpp', LIBS=libs, LIBPATH=libs_path)
+bin = env.Alias("demo", target)
