@@ -1,16 +1,26 @@
 opts = Variables()
 
 x64_compiler_path = Dir('/usr/bin').abspath
-armv6_compiler_path = Dir('toolchains/arm-bcm2708-linux-gnueabi/bin').abspath
+armv6_compiler_path = Dir('toolchains/arm-bcm2708hardfp-linux-gnueabi/bin').abspath
+
+map_target_to_arch = {
+    'native' : 'x64',
+    'rpi' : 'armv6zk'
+}
+
+map_arch_to_static_lib = {
+    'x64' : False,
+    'armv6zk' : True
+}
 
 map_arch_to_toolchain_path = {
     'x64' : x64_compiler_path,
-    'armv6' : armv6_compiler_path
+    'armv6zk' : armv6_compiler_path
 }
 
 map_arch_to_toolchain = {
     'x64' : '',
-    'armv6' : 'arm-bcm2708-linux-gnueabi-'
+    'armv6zk' : 'arm-bcm2708hardfp-linux-gnueabi-'
 }
 
 map_logLevel_to_define = {
@@ -20,8 +30,8 @@ map_logLevel_to_define = {
     'none' : 'LOG_LEVEL_NONE'
 }
 
-opts.Add(EnumVariable('arch', 'Set target architecture', 'x64',
-                    allowed_values=('x64', 'armv6'),
+opts.Add(EnumVariable('target', 'Set target', 'native',
+                    allowed_values=('native', 'rpi'),
                     map={},
                     ignorecase=2))
 
@@ -38,14 +48,15 @@ opts.Add(EnumVariable('logLevel', 'Set log mode', 'debug',
 env=Environment(variables=opts)
 Export('env')
 
-arch=env['arch']
+target=env['target']
+arch=map_target_to_arch[target]
 
 rootDir = Dir('.').abspath
-buildDir = Dir('build/{arch}/{mode}'.format(arch=arch, mode=env['mode'])).abspath
+buildDir = Dir('build/{target}/{mode}'.format(target=target, mode=env['mode'])).abspath
 sourceDir = Dir('src').abspath
 VariantDir(buildDir, sourceDir)
 
-opencv_dir = Dir('3rdparty/opencv/{arch}'.format(arch=arch)).abspath
+opencv_dir = Dir('3rdparty/opencv'.format(arch=arch)).abspath
 
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=map_arch_to_toolchain[arch])
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=map_arch_to_toolchain[arch])
@@ -56,6 +67,7 @@ env['NM'] = '{toolchainpath}/{toolchain}nm'.format(toolchainpath=map_arch_to_too
 env['STRIP'] = '{toolchainpath}/{toolchain}strip'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=map_arch_to_toolchain[arch])
 env['CPPPATH'] = []
 env['CPPFLAGS'] = []
+env['LDFLAGS'] = []
 
 env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
 env['CPPPATH'].append('{opencv_dir}/include'.format(opencv_dir=opencv_dir))
@@ -65,16 +77,32 @@ env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_di
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
 
+env['LINKFLAGS'].append('-pthread')
+env['USE_STATIC_LIBS'] = map_arch_to_static_lib[arch]
+
 if env['mode'] == 'release':
     env['CPPFLAGS'].append('-Ofast')
 else:
-    env['CPPFLAGS'].append('-O0')
+    env['CPPFLAGS'].append(['-g', '-O0'])
+    
+if(target == 'rpi'):
+    env['CPPFLAGS'].append(['-mfpu=vfp', '-march=armv6zk', '-mtune=arm1176jzf-s'])
 
 env['LIBS_DIR'] = '{buildDir}/libs'.format(buildDir = buildDir)
-env['openCV_LIBS_DIR'] = '{opencv_dir}/lib'.format(opencv_dir=opencv_dir)
+env['STD_LIBS'] = [
+    'rt',
+    'm',
+    'dl',
+    'stdc++'
+]
+env['openCV_LIBS_DIRS'] = [
+    '{opencv_dir}/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir),
+    '{opencv_dir}/3rdparty/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir)
+]
 
-print("Building in {buildDir}".format(buildDir=buildDir))
+print("Target: {target}".format(target=target))
 print("Target architecture: {arch}".format(arch=arch))
+print("Building in {buildDir}".format(buildDir=buildDir))
 if(arch == 'x64'):
     print("Compiler toolchain: native")
 else:

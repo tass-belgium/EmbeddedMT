@@ -23,17 +23,25 @@ libs = [
     'bestEffortMatcher',
     'flannBasedMatcher',
     # openCV libraries
-    'opencv_core',
     'opencv_features2d',
     'opencv_highgui',
-    'opencv_imgproc',
     'opencv_photo',
     'opencv_flann',
-    'opencv_nonfree'
+    'opencv_nonfree',
+    'opencv_imgproc',
+    'opencv_core',
+    # Std libraries
+    env['STD_LIBS']
 ]
 
+if env['USE_STATIC_LIBS'] == True:
+    libs.append([
+        'liblibjpeg',
+        'zlib'
+    ])
+
 libs_path = [
-    env['openCV_LIBS_DIR'],
+    env['openCV_LIBS_DIRS'],
     env['LIBS_DIR']
 ]
 

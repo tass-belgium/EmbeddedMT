@@ -16,12 +16,12 @@
 
 #include "application/findTheBall.hpp"
 
-const char_t* getMethodPname(uint8_t matchAlgorithm);
-GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::DescriptorInterface** descriptor,
+static const char_t* getMethodPname(uint8_t matchAlgorithm);
+static GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::DescriptorInterface** descriptor,
 		const Match::MatcherInterface** matcher);
-GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data);
-GBL::CmRetCode_t setFiles (const char* const dir, GBL::ImageSequence_t& imageSequence);
-bool isImage(struct dirent* dirp);
+static GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data);
+static GBL::CmRetCode_t setFiles (const char* const dir, GBL::ImageSequence_t& imageSequence);
+static bool isImage(struct dirent* dirp);
 
 int main(int argc, char** argv) {
 	uint32_t matchAlgorithm = 0;

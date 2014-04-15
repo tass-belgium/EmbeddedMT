@@ -1,6 +1,6 @@
 # Project specific
 build/*
-3rdparty/*/
+3rdparty/opencv/*/
 testSequences/*/
 toolchains/*/
 *.result
