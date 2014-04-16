@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 
 	GBL::ImageSequence_t imageSequence;
 	if(setFiles(imageSequenceFolder, imageSequence) != GBL::RESULT_SUCCESS) {
-		LOG_ERROR("Could not retrieve content of %s", imageSequenceFolder)
+		LOG_ERROR("Could not retrieve content of %s", imageSequenceFolder);
 	}
 	// Sort files
 	std::sort(imageSequence.images.begin(), imageSequence.images.end());
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 	clock_t tStart = clock();
 	std::vector<GBL::Displacement_t> displacements = findTheBall(imageSequence, imProc, *drawer, *descriptor, *matcher, *displacement);
 	float_t totalTimeElapsed = (float_t) (clock() - tStart)/ CLOCKS_PER_SEC;
-	LOG_ERROR("Total time taken: %f s", totalTimeElapsed);
+	LOG(stdout,"TIME","Total time taken: %f s", totalTimeElapsed);
 
 	if(writeResults(outputFile, displacements) != GBL::RESULT_SUCCESS) {
 		LOG_WARNING("Could not write results to file %s", outputFile);

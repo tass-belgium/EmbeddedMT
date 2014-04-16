@@ -24,6 +24,7 @@ map_arch_to_toolchain = {
 }
 
 map_logLevel_to_define = {
+    'profile' : 'LOG_LEVEL_PROFILE',
     'debug' : 'LOG_LEVEL_DEBUG',
     'warning' : 'LOG_LEVEL_WARNING',
     'error' : 'LOG_LEVEL_ERROR',
@@ -41,7 +42,7 @@ opts.Add(EnumVariable('mode', 'Set build mode', 'debug',
                     ignorecase=2))
 
 opts.Add(EnumVariable('logLevel', 'Set log mode', 'debug',
-                    allowed_values=('debug', 'warning', 'error','none'),
+                    allowed_values=('debug', 'warning', 'error','none', 'profile'),
                     map={},
                     ignorecase=2))
 
@@ -85,11 +86,11 @@ if env['mode'] == 'release':
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
 
-env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith', '-fopenmp'])
+env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
     
 if(target == 'rpi'):
-    env['CPPFLAGS'].append(['-mfpu=vfp', '-march=armv6zk', '-mtune=arm1176jzf-s'])
+    env['CPPFLAGS'].append(['-mfpu=vfp', '-mfloat-abi=hard', '-march=armv6zk', '-mtune=arm1176jzf-s'])
     # Suppress mangling va thing
     env['CPPFLAGS'].append('-Wno-psabi')
 

@@ -10,8 +10,11 @@
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
 
+#include "log/logging.hpp"
+
 namespace Descriptor {
 GBL::CmRetCode_t Surf::describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
+	LOG_ENTER("image = %p", &image);
 	const uint32_t hessianThreshold = 100;
 	const uint32_t nOctaves = 4;
 	const uint32_t nOctaveLayers=1;
@@ -26,6 +29,7 @@ GBL::CmRetCode_t Surf::describe(const GBL::Image_t image, GBL::KeyPointCollectio
 	// computing descriptors
 	cv::SurfDescriptorExtractor extractor;
 	extractor.compute(image, keypoints, descriptor);
+	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }
 }

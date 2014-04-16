@@ -83,7 +83,7 @@ std::vector<GBL::Displacement_t> findTheBall(
 				matches) != GBL::RESULT_SUCCESS) {
 			LOG_ERROR("Could not match images %s and %s",
 					imageSequence.images[i].c_str(),
-					imageSequence.images[i + 1].c_str());
+					imageSequence.images[img2Index].c_str());
 			displacements[i].x = 0;
 			displacements[i].y = 0;
 			continue;
@@ -105,7 +105,7 @@ std::vector<GBL::Displacement_t> findTheBall(
 				displacements[i]) != GBL::RESULT_SUCCESS) {
 			LOG_ERROR("Could not find displacement for images %s and %s",
 					imageSequence.images[i].c_str(),
-					imageSequence.images[i + 1].c_str());
+					imageSequence.images[img2Index].c_str());
 			displacements[i].x = 0;
 			displacements[i].y = 0;
 			continue;

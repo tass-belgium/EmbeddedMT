@@ -10,8 +10,11 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
 
+#include "log/logging.hpp"
+
 namespace Match {
 GBL::CmRetCode_t FlannBasedMatcher::match(const GBL::Descriptor_t& descriptors1, const GBL::Descriptor_t& descriptors2, GBL::MatchCollection_t& good_matches) const {
+	LOG_ENTER("descriptor 1 = %p, descriptor 2 = %p, good_matches = %p", &descriptors1, &descriptors2, &good_matches);
 	cv::FlannBasedMatcher matcher;
 	std::vector<cv::DMatch> matches;
 	matcher.match(descriptors1, descriptors2, matches);
@@ -36,6 +39,7 @@ GBL::CmRetCode_t FlannBasedMatcher::match(const GBL::Descriptor_t& descriptors1,
 			good_matches.push_back(matches[i]);
 		}
 	}
+	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }
 }
