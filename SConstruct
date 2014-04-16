@@ -77,16 +77,21 @@ env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_di
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
 
-env['LINKFLAGS'].append('-pthread')
+env['LINKFLAGS'].append(['-pthread'])
 env['USE_STATIC_LIBS'] = map_arch_to_static_lib[arch]
 
 if env['mode'] == 'release':
     env['CPPFLAGS'].append('-Ofast')
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
+
+env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith', '-fopenmp'])
+#env['CPPFLAGS'].append(['-Wcast-qual'])
     
 if(target == 'rpi'):
     env['CPPFLAGS'].append(['-mfpu=vfp', '-march=armv6zk', '-mtune=arm1176jzf-s'])
+    # Suppress mangling va thing
+    env['CPPFLAGS'].append('-Wno-psabi')
 
 env['LIBS_DIR'] = '{buildDir}/libs'.format(buildDir = buildDir)
 env['STD_LIBS'] = [

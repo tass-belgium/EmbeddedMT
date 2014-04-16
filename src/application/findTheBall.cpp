@@ -25,8 +25,9 @@ GBL::CmRetCode_t getImage(GBL::Image_t& img, const char* const imagePath,
 		const ImageProc::ImageProc* imProc);
 GBL::CmRetCode_t match(const Descriptor::DescriptorInterface& descriptor,
 		const Match::MatcherInterface& matcher, GBL::Image_t& img1,
-		GBL::Image_t& img2, GBL::KeyPointCollection_t& keypoints1,
-		GBL::KeyPointCollection_t& keypoints2, GBL::MatchCollection_t& matches);
+		GBL::Image_t& img2, const GBL::KeyPointCollection_t& keypoints1, const GBL::Descriptor_t& descriptor1,
+		GBL::KeyPointCollection_t& keypoints2, GBL::Descriptor_t& descriptor2,
+		GBL::MatchCollection_t& matches);
 
 std::vector<GBL::Displacement_t> findTheBall(
 		GBL::ImageSequence_t& imageSequence, const ImageProc::ImageProc* imProc,
@@ -43,19 +44,26 @@ std::vector<GBL::Displacement_t> findTheBall(
 		return displacements;
 	}
 
-	/* Get background image */
+	// Get background image
 	if (subtractBackground) {
+		LOG_INFO("Retrieving background image %s", imageSequence.backgroundImage);
 		background = cv::imread(imageSequence.backgroundImage,
 				CV_LOAD_IMAGE_GRAYSCALE);
 		//		imProc->denoise(background, background);
 	}
 
-	/* Get very first image */
+	// Get very first image
+	LOG_INFO("Writing image %s to %p", imageSequence.images[0].c_str(), &img1);
 	if (getImage(img1, imageSequence.images[0].c_str(), imProc)
 			!= GBL::RESULT_SUCCESS) {
 		LOG_ERROR("Could not get image %s", imageSequence.images[0].c_str());
 		return displacements;
 	}
+	// Describe first image
+	GBL::KeyPointCollection_t keypoints1;
+	GBL::Descriptor_t descriptor1;
+	LOG_INFO("Describing img1 = %p", &img1);
+	descriptor.describe(img1, keypoints1, descriptor1);
 
 	for (uint32_t i = 0; i < imageSequence.images.size() - 1; i++) {
 		uint32_t img2Index = i + 1;
@@ -63,15 +71,15 @@ std::vector<GBL::Displacement_t> findTheBall(
 				!= GBL::RESULT_SUCCESS) {
 			LOG_ERROR("Could not get image %s",
 					imageSequence.images[img2Index].c_str());
-			return std::vector<GBL::Displacement_t>(0);
+			break;
 		}
 
-		GBL::KeyPointCollection_t keypoints1;
 		GBL::KeyPointCollection_t keypoints2;
+		GBL::Descriptor_t descriptor2;
 		GBL::MatchCollection_t matches;
 
 		LOG_INFO("Matching %s and %s", imageSequence.images[i].c_str(), imageSequence.images[i+1].c_str());
-		if (match(descriptor, matcher, img1, img2, keypoints1, keypoints2,
+		if (match(descriptor, matcher, img1, img2, keypoints1, descriptor1, keypoints2, descriptor2,
 				matches) != GBL::RESULT_SUCCESS) {
 			LOG_ERROR("Could not match images %s and %s",
 					imageSequence.images[i].c_str(),
@@ -93,8 +101,6 @@ std::vector<GBL::Displacement_t> findTheBall(
 		}
 
 		/* Calculate displacement */
-		float_t x = 0;
-		float_t y = 0;
 		if (displacement.calculateDisplacement(matches, keypoints1, keypoints2,
 				displacements[i]) != GBL::RESULT_SUCCESS) {
 			LOG_ERROR("Could not find displacement for images %s and %s",
@@ -104,11 +110,15 @@ std::vector<GBL::Displacement_t> findTheBall(
 			displacements[i].y = 0;
 			continue;
 		}
-		LOG_INFO("x displacement: %d", x);
-		LOG_INFO("y displacement: %d", y);
+		LOG_INFO("x displacement: %d", displacements[i].x);
+		LOG_INFO("y displacement: %d", displacements[i].y);
+
+		// Assign image 2 to image 1
 		img1 = img2;
+		keypoints1 = keypoints2;
+		descriptor1 = descriptor2;
 	}
-	LOG_EXIT("Displacements = %p, size = %d", &displacements, displacements.size());
+	LOG_EXIT("Displacements = %p, size = %d", &displacements, (uint32_t) displacements.size());
 	return displacements;
 }
 
@@ -144,27 +154,25 @@ GBL::CmRetCode_t getImage(GBL::Image_t& img, const char* const imagePath,
 
 GBL::CmRetCode_t match(const Descriptor::DescriptorInterface& descriptor,
 		const Match::MatcherInterface& matcher, GBL::Image_t& img1,
-		GBL::Image_t& img2, GBL::KeyPointCollection_t& keypoints1,
-		GBL::KeyPointCollection_t& keypoints2,
+		GBL::Image_t& img2, const GBL::KeyPointCollection_t& keypoints1, const GBL::Descriptor_t& descriptor1,
+		GBL::KeyPointCollection_t& keypoints2, GBL::Descriptor_t& descriptor2,
 		GBL::MatchCollection_t& matches) {
 	LOG_ENTER("img1 = %p, img2 = %p, keypoints 1 = %p, keypoints 2 = %p, matches = %p", &img1, &img2, &keypoints1, &keypoints2, &matches);
 
-	GBL::Descriptor_t descriptor1;
-	GBL::Descriptor_t descriptor2;
+//	GBL::Descriptor_t descriptor1;
+//	GBL::Descriptor_t descriptor2;
 
-	uint8_t scaleLevels = 1;
-
-	LOG_INFO("Describing image 1");
-	descriptor.describe(img1, scaleLevels, keypoints1, descriptor1);
-	LOG_INFO("Nb of keypoints in image 1: %d", keypoints1.size());
+//	LOG_INFO("Describing image 1");
+//	descriptor.describe(img1, keypoints1, descriptor1);
+	LOG_INFO("Nb of keypoints in image 1: %d", (uint32_t) keypoints1.size());
 	if (keypoints1.size() == 0) {
 		LOG_EXIT("GBL::RESULT_FAILURE");
 		return GBL::RESULT_FAILURE;
 	}
 
 	LOG_INFO("Describing image 2");
-	descriptor.describe(img2, scaleLevels, keypoints2, descriptor2);
-	LOG_INFO("Nb of keypoints in image 2: %d", keypoints2.size());
+	descriptor.describe(img2, keypoints2, descriptor2);
+	LOG_INFO("Nb of keypoints in image 2: %d", (uint32_t) keypoints2.size());
 	if (keypoints2.size() == 0) {
 		LOG_EXIT("GBL::RESULT_FAILURE");
 		return GBL::RESULT_FAILURE;
@@ -172,7 +180,7 @@ GBL::CmRetCode_t match(const Descriptor::DescriptorInterface& descriptor,
 
 	LOG_INFO("Matching");
 	matcher.match(descriptor1, descriptor2, matches);
-	LOG_INFO("Nb of found matches: %d", matches.size());
+	LOG_INFO("Nb of found matches: %d", (uint32_t) matches.size());
 	if (matches.size() == 0) {
 		LOG_EXIT("GBL::RESULT_FAILURE");
 		return GBL::RESULT_FAILURE;

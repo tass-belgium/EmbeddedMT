@@ -13,7 +13,8 @@
 namespace Match {
 class MatcherInterface {
 public:
-	virtual GBL::CmRetCode_t match(GBL::Descriptor_t& descriptors1, GBL::Descriptor_t& descriptors2, GBL::MatchCollection_t& good_matches) const = 0;
+	virtual ~MatcherInterface() {};
+	virtual GBL::CmRetCode_t match(const GBL::Descriptor_t& descriptors1, const GBL::Descriptor_t& descriptors2, GBL::MatchCollection_t& good_matches) const = 0;
 };
 }
 

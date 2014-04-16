@@ -29,7 +29,7 @@ GBL::CmRetCode_t ImageProcBase::subtract(const GBL::Image_t firstImage, const GB
 	cv::Mat isBackground;
 	int8_t threshold = 20;
 	isBackground = firstImage - secondImage;
-	for(uint32_t i = 0; i < isBackground.rows*isBackground.cols; i++) {
+	for(int32_t i = 0; i < isBackground.rows*isBackground.cols; i++) {
 		if(std::abs(isBackground.data[i]) < threshold) {
 			isBackground.data[i] = 0;
 		} else {

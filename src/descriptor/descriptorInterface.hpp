@@ -13,7 +13,8 @@
 namespace Descriptor {
 class DescriptorInterface {
 public:
-		virtual GBL::CmRetCode_t describe(const GBL::Image_t image, uint8_t scaleLevels, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const = 0;
+	virtual ~DescriptorInterface() {};
+	virtual GBL::CmRetCode_t describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const = 0;
 };
 }
 

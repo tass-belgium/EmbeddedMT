@@ -11,11 +11,11 @@
 #include "opencv2/nonfree/nonfree.hpp"
 
 namespace Descriptor {
-GBL::CmRetCode_t Surf::describe(const GBL::Image_t image, uint8_t scaleLevels, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
+GBL::CmRetCode_t Surf::describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
 	const uint32_t hessianThreshold = 100;
 	const uint32_t nOctaves = 4;
 	const uint32_t nOctaveLayers=1;
-	const bool_t extended=false;
+	const bool_t extended=true;
 	const bool_t upright=false;
 
 	// detecting keypoints

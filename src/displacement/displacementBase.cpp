@@ -7,7 +7,7 @@
 #include "displacementBase.hpp"
 
 namespace Displacement {
-GBL::CmRetCode_t DisplacementBase::calculateDisplacement(GBL::MatchCollection_t matches, GBL::KeyPointCollection_t& keypoints1, GBL::KeyPointCollection_t& keypoints2, GBL::Displacement_t& displacement) const {
+GBL::CmRetCode_t DisplacementBase::calculateDisplacement(const GBL::MatchCollection_t matches, const GBL::KeyPointCollection_t& keypoints1, const GBL::KeyPointCollection_t& keypoints2, GBL::Displacement_t& displacement) const {
 	float_t x = 0;
 	float_t y = 0;
 	for(uint32_t i = 0; i < matches.size(); i++) {
