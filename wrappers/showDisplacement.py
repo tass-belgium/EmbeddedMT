@@ -59,12 +59,13 @@ def usage():
     print("\t-c <alg>       Define algorithm to use: <0>:SURF+BFM, 1:SURF+FLANN, 2:SIFT+BFM, 3:SIFT+FLANN")
     print("\t-l <logLevel>  Define log level: <debug>, warning or error")
     print("\t-r             Clean and rebuild")
+    print("\t-i             Do not interpolate result")
     
 def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:r", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ri", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -78,6 +79,7 @@ def main():
     alg = 0
     logLevel = 'debug'
     rebuild = False
+    interpolate = True
     for o, a in opts:
         if o == "-t":
             target = a
@@ -98,6 +100,8 @@ def main():
             logLevel = a
         elif o == "-r":
             rebuild = True
+        elif o == "-i":
+            interpolate = False
         else:
             assert False, "unhandled option"
             usage()
@@ -116,7 +120,7 @@ def main():
             return 1
     
     # Process results
-    if(processResults(output, 'b') != RetCodes.RESULT_OK):
+    if(processResults(output, 'b', interpolate) != RetCodes.RESULT_OK):
         print("An error occurred during processing")
         return 1
         
@@ -143,7 +147,7 @@ def executeApplication(target, mode, sequence, alg, output, logLevel):
             return RetCodes.RESULT_FAILURE
     return RetCodes.RESULT_OK
 
-def processResults(output, color):
+def processResults(output, color, interpolate):
     displacements = DisplacementCollection()
     with open(output, newline='') as csvfile:
         csvreader = csv.reader(csvfile, delimiter='\t')
@@ -151,18 +155,21 @@ def processResults(output, color):
             displacements.push_back(int(row[0]), int(row[1]))
             
     try:
-        x_abs = displacements.getXAbs()
-        f2 = interp1d(x_abs, displacements.y, kind='cubic')
-        
-        # Define more points
-        xnew = np.linspace(min(displacements.x), max(displacements.x), 500)
-        
-        # f2() needs positive data at its input
-        xpos = []
-        for i in range(len(xnew)):
-            xpos.append(abs(xnew[i]))
-        
-        plt.plot(displacements.x, displacements.y,'{color}x'.format(color=color), xnew, f2(xpos), '{color}-'.format(color=color))
+        if(interpolate):
+            x_abs = displacements.getXAbs()
+            f2 = interp1d(x_abs, displacements.y, kind='cubic')
+            
+            # Define more points
+            xnew = np.linspace(min(displacements.x), max(displacements.x), 500)
+            
+            # f2() needs positive data at its input
+            xpos = []
+            for i in range(len(xnew)):
+                xpos.append(abs(xnew[i]))
+            
+            plt.plot(displacements.x, displacements.y,'{color}x'.format(color=color), xnew, f2(xpos), '{color}-'.format(color=color))
+        else:
+            plt.plot(displacements.x, displacements.y,'{color}x'.format(color=color))
     except:       
         print("Could not interpolate points")
         plt.plot(displacements.x, displacements.y,'{color}x'.format(color=color))

@@ -157,13 +157,8 @@ GBL::CmRetCode_t match(const Descriptor::DescriptorInterface& descriptor,
 		GBL::Image_t& img2, const GBL::KeyPointCollection_t& keypoints1, const GBL::Descriptor_t& descriptor1,
 		GBL::KeyPointCollection_t& keypoints2, GBL::Descriptor_t& descriptor2,
 		GBL::MatchCollection_t& matches) {
-	LOG_ENTER("img1 = %p, img2 = %p, keypoints 1 = %p, keypoints 2 = %p, matches = %p", &img1, &img2, &keypoints1, &keypoints2, &matches);
+	LOG_ENTER("img2 = %p, keypoints 1 = %p, keypoints 2 = %p, matches = %p", &img2, &keypoints1, &keypoints2, &matches);
 
-//	GBL::Descriptor_t descriptor1;
-//	GBL::Descriptor_t descriptor2;
-
-//	LOG_INFO("Describing image 1");
-//	descriptor.describe(img1, keypoints1, descriptor1);
 	LOG_INFO("Nb of keypoints in image 1: %d", (uint32_t) keypoints1.size());
 	if (keypoints1.size() == 0) {
 		LOG_EXIT("GBL::RESULT_FAILURE");

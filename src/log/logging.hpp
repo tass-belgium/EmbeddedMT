@@ -72,10 +72,10 @@
 		} while (false);
 #	define LOG_DEBUG(args...) LOG_INFO(args)
 #else
-#	define LOG_INFO
-#	define LOG_DEBUG
-#	define LOG_ENTER
-#	define LOG_EXIT
+#	define LOG_INFO(args...)
+#	define LOG_DEBUG(args...)
+#	define LOG_ENTER(args...)
+#	define LOG_EXIT(args...)
 #endif
 
 #if LOG_SEVERITY >= LEVEL_WARNING
@@ -83,7 +83,7 @@
 	LOG(stderr, "WARNING", args) \
 	} while (false);
 #else
-#define LOG_WARNING
+#define LOG_WARNING(args...)
 #endif
 
 #if LOG_SEVERITY >= LEVEL_ERROR
@@ -91,7 +91,7 @@
 	LOG(stderr, "ERROR", args) \
 	} while (false);
 #else
-#define LOG_ERROR
+#define LOG_ERROR(args...)
 #endif
 
 
