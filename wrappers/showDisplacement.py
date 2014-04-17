@@ -7,6 +7,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import interp1d
+import time
 
 class RetCodes(Enum):
     """ Enumeration of return codes """
@@ -141,10 +142,17 @@ def executeApplication(target, mode, sequence, alg, output, logLevel):
 
     # Execute application
     cmd = '{fname} {sequence} {alg} {output}'.format(fname=fname, sequence=sequence, alg=alg, output=output)
+
+    # Time execution
+    start_time = time.time()
     ret = os.system(cmd)
     if(ret != 0):
             print('Processing returned error (code: {errorcode}). Exiting'.format(errorcode=ret))
             return RetCodes.RESULT_FAILURE
+    else:
+        end_time = time.time()
+        print("Elapsed time measured by Python was %g seconds" % (end_time - start_time))
+
     return RetCodes.RESULT_OK
 
 def processResults(output, color, interpolate):

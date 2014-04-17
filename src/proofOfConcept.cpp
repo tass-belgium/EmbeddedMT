@@ -1,8 +1,9 @@
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <time.h>
 #include <dirent.h>
+#include <ctime>
+#include <sys/time.h>
 
 #include "log/logging.hpp"
 #include "cm/global.hpp"
@@ -22,6 +23,7 @@ static GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::
 static GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data);
 static GBL::CmRetCode_t setFiles (const char* const dir, GBL::ImageSequence_t& imageSequence);
 static bool isImage(struct dirent* dirp);
+static int64_t GetTimeMs64();
 
 int main(int argc, char** argv) {
 	uint32_t matchAlgorithm = 0;
@@ -67,13 +69,23 @@ int main(int argc, char** argv) {
 	}
 
 	clock_t tStart = clock();
+	int64_t startTime = GetTimeMs64();
 	std::vector<GBL::Displacement_t> displacements = findTheBall(imageSequence, imProc, *drawer, *descriptor, *matcher, *displacement);
+	int64_t endTime = GetTimeMs64();
 	float_t totalTimeElapsed = (float_t) (clock() - tStart)/ CLOCKS_PER_SEC;
-	LOG(stdout,"TIME","Total time taken: %f s", totalTimeElapsed);
+	LOG(stdout,"TIME","CPU time of processing stage: %f s", totalTimeElapsed);
+	LOG(stdout,"TIME","Execution time of processing stage: %f s", (float_t) (endTime-startTime)/1000.0f);
 
 	if(writeResults(outputFile, displacements) != GBL::RESULT_SUCCESS) {
 		LOG_WARNING("Could not write results to file %s", outputFile);
 	}
+
+	delete imProc;
+	delete descriptor;
+	delete matcher;
+	delete displacement;
+	delete drawer;
+
 	return 0;
 }
 
@@ -181,4 +193,39 @@ bool isImage(struct dirent* dirp) {
 		return true;
 	}
 	return false;
+}
+
+int64_t GetTimeMs64()
+{
+#ifdef WIN32
+ /* Windows */
+ FILETIME ft;
+ LARGE_INTEGER li;
+
+ /* Get the amount of 100 nano seconds intervals elapsed since January 1, 1601 (UTC) and copy it
+  * to a LARGE_INTEGER structure. */
+ GetSystemTimeAsFileTime(&ft);
+ li.LowPart = ft.dwLowDateTime;
+ li.HighPart = ft.dwHighDateTime;
+
+ uint64 ret = li.QuadPart;
+ ret -= 116444736000000000LL; /* Convert from file time to UNIX epoch time. */
+ ret /= 10000; /* From 100 nano seconds (10^-7) to 1 millisecond (10^-3) intervals */
+
+ return ret;
+#else
+ /* Linux */
+ struct timeval tv;
+
+ gettimeofday(&tv, NULL);
+
+ uint64_t ret = tv.tv_usec;
+ /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
+ ret /= 1000;
+
+ /* Adds the seconds (10^0) after converting them to milliseconds (10^-3) */
+ ret += (tv.tv_sec * 1000);
+
+ return ret;
+#endif
 }

@@ -8,6 +8,8 @@
 #ifndef LOGGING_HPP_
 #define LOGGING_HPP_
 
+#include <stdio.h>
+
 #define LEVEL_NONE 0
 #define LEVEL_ERROR 1
 #define LEVEL_WARNING 2
@@ -33,8 +35,6 @@
 #		endif
 #	endif
 #endif
-
-#include <stdio.h>
 
 #define LOG(outputChannel, logSeverity, message...) do { \
 	fprintf(outputChannel, "[%s]\t%s - %s | %s:%d | %s | ", logSeverity, __DATE__, __TIME__, __FILE__, __LINE__, __func__); \
