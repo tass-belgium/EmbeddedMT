@@ -74,7 +74,7 @@ def main():
     mode = 'release'
     output = "{target}.result".format(target=target)
     skipProcessing = False
-    sequence = '/root/testSequence/cam_ball1_640'
+    sequence = '/root/testSequence/tennisball_video1_DVD.dvd'
     alg = 0
     ip = '10.20.5.103'
     user = 'root'

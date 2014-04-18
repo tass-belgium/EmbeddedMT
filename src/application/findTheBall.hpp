@@ -14,7 +14,8 @@
 #include "match/matchInterface.hpp"
 #include "draw/drawInterface.hpp"
 #include "displacement/displacementInterface.hpp"
+#include "inputMethod/inputMethodInterface.hpp"
 
-std::vector<GBL::Displacement_t> findTheBall(GBL::ImageSequence_t& imageSequence, const ImageProc::ImageProc* imProc, const Draw::DrawInterface& drawer, const Descriptor::DescriptorInterface& descriptor, const Match::MatcherInterface& matcher, const Displacement::DisplacementInterface& displacement);
+std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer, const Descriptor::DescriptorInterface& descriptor, const Match::MatcherInterface& matcher, const Displacement::DisplacementInterface& displacement, InputMethod::InputMethodInterface& inputMethod);
 
 #endif /* FINDTHEBALL_HPP_ */

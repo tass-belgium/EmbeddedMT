@@ -76,7 +76,7 @@ def main():
     mode = 'debug'
     output = "displacement.result"
     skipProcessing = False
-    sequence = os.path.abspath('{scriptDir}/../testSequences/cam_ball1_640'.format(scriptDir=scriptDir))
+    sequence = os.path.abspath('{scriptDir}/../testSequences/tennisball_video1/tennisball_video1_DVD.dvd'.format(scriptDir=scriptDir))
     alg = 0
     logLevel = 'debug'
     rebuild = False

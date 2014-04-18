@@ -25,6 +25,8 @@ typedef cv::Mat Image_t;
 typedef const cv::InputArray InputImage_t;
 typedef cv::OutputArray OutputImage_t;
 
+typedef cv::Mat Frame_t;
+
 typedef cv::KeyPoint KeyPoint_t;
 typedef std::vector<KeyPoint_t> KeyPointCollection_t;
 
@@ -49,11 +51,6 @@ typedef struct displacement {
 } Displacement_t;
 
 const uint16_t maxFilenameLength = 256;
-
-typedef struct imageSequence {
-	char backgroundImage[maxFilenameLength];
-	std::vector<std::string> images;
-} ImageSequence_t;
 
 }
 

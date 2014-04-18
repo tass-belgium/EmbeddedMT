@@ -7,13 +7,15 @@ folders = [
     'draw/SConscript',
     'imProc/SConscript',
     'match/SConscript',
-    'log/SConscript'
+    'log/SConscript',
+    'inputMethod/SConscript'
 ]
 
 SConscript(folders)
 
 libs = [
     # Modules
+    'inputMethod',
     'findTheBall',
     'surf',
     'sift',
