@@ -8,3 +8,9 @@ lib_files = [
 lib = env.Library('inputMethod', lib_files)
 installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
 env.Alias('buildLibs', installed_lib)
+
+folders = [
+    'test/SConscript'
+]
+
+SConscript(folders)

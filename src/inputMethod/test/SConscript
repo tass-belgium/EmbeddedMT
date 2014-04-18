@@ -1,0 +1,17 @@
+Import('env')
+
+libs = [
+    'inputMethod',
+    # openCV libraries
+    'opencv_highgui',
+    'opencv_imgproc',
+    'opencv_core',
+]
+
+libs_path = [
+    env['LIBS_DIR'],
+    env['openCV_LIBS_DIRS'],
+]
+
+target = env.Program('testInputVideo.cpp', LIBS=libs, LIBPATH=libs_path)
+bin = env.Alias("testInputMethods", target)

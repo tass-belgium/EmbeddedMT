@@ -15,6 +15,7 @@
 #include "displacement/displacementBase.hpp"
 #include "inputMethod/inputImageSequence.hpp"
 #include "inputMethod/inputVideo.hpp"
+#include "outputMethod/outputImageSequence.hpp"
 
 #include "application/findTheBall.hpp"
 
@@ -33,6 +34,7 @@ int main(int argc, char** argv) {
 	Draw::DrawInterface* drawer = new Draw::Draw();
 	const Displacement::DisplacementInterface* displacement = new Displacement::DisplacementBase();
 	InputMethod::InputMethodInterface* inputMethod = nullptr;
+	OutputMethod::OutputImageSequence* outputMethod = new OutputMethod::OutputImageSequence();
 
 	const Descriptor::DescriptorInterface* descriptor = nullptr;
 	const Match::MatcherInterface* matcher = nullptr;
@@ -61,13 +63,23 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
+	if(outputMethod->open(outputFile) != GBL::RESULT_SUCCESS) {
+		LOG_ERROR("Could not open %s", outputFile);
+		return -1;
+	}
+
 	clock_t tStart = clock();
 	int64_t startTime = GetTimeMs64();
-	std::vector<GBL::Displacement_t> displacements = findTheBall(imageSequenceFolder, imProc, *drawer, *descriptor, *matcher, *displacement, *inputMethod);
+	std::vector<GBL::Displacement_t> displacements = findTheBall(imageSequenceFolder, imProc, *drawer, *descriptor, *matcher, *displacement, *inputMethod, *outputMethod);
 	int64_t endTime = GetTimeMs64();
 	float_t totalTimeElapsed = (float_t) (clock() - tStart) / CLOCKS_PER_SEC;
 	LOG(stdout, "TIME", "CPU time of processing stage: %f s", totalTimeElapsed);
 	LOG(stdout, "TIME", "Execution time of processing stage: %f s", (float_t ) (endTime - startTime) / 1000.0f);
+
+
+	if(outputMethod->close() != GBL::RESULT_SUCCESS) {
+		LOG_WARNING("Could not close %s", outputFile);
+	}
 
 	if (writeResults(outputFile, displacements) != GBL::RESULT_SUCCESS) {
 		LOG_WARNING("Could not write results to file %s", outputFile);

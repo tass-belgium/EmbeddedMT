@@ -35,7 +35,8 @@ GBL::CmRetCode_t InputVideo::getFrame(uint16_t index, GBL::Frame_t& frame) {
 	LOG_ENTER("Index = %d, target frame = %p", index, &frame);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	if(index < size()) {
-		_videoFile.set(CV_CAP_PROP_POS_FRAMES,index);
+		_videoFile.set(CV_CAP_PROP_POS_FRAMES, (double) index);
+		LOG_INFO("Frame position: %f", _videoFile.get(CV_CAP_PROP_POS_FRAMES));
 		_videoFile.read(frame);
 		cv::cvtColor(frame, frame, CV_BGR2GRAY);
 		result = GBL::RESULT_SUCCESS;

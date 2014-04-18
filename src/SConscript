@@ -8,7 +8,8 @@ folders = [
     'imProc/SConscript',
     'match/SConscript',
     'log/SConscript',
-    'inputMethod/SConscript'
+    'inputMethod/SConscript',
+    'outputMethod/SConscript'
 ]
 
 SConscript(folders)
@@ -16,6 +17,7 @@ SConscript(folders)
 libs = [
     # Modules
     'inputMethod',
+    'outputMethod',
     'findTheBall',
     'surf',
     'sift',

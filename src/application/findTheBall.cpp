@@ -19,7 +19,7 @@
 #include "log/logging.hpp"
 #include "findTheBall.hpp"
 
-const bool drawResults = false;
+const bool drawResults = true;
 const bool denoise = false;
 const bool sharpen = false;
 const bool subtractBackground = true;
@@ -34,7 +34,7 @@ typedef struct DescriptorContainer {
 
 std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer,
 		const Descriptor::DescriptorInterface& descriptor, const Match::MatcherInterface& matcher, const Displacement::DisplacementInterface& displacement,
-		InputMethod::InputMethodInterface& inputMethod) {
+		InputMethod::InputMethodInterface& inputMethod, OutputMethod::OutputMethodInterface& outputMethod) {
 	LOG_ENTER("videoFile = %s", videoFile);
 
 	if (inputMethod.start(videoFile) != GBL::RESULT_SUCCESS) {
@@ -54,7 +54,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 
 	const uint32_t nbFrames = inputMethod.size() - 1; // We need to subtract the background from it
 	DescriptorContainer_t descriptors[nbFrames];
-#pragma omp parallel for shared(descriptors) schedule(static)
+//#pragma omp parallel for shared(descriptors) schedule(static)
 	for (uint32_t i = 0; i < nbFrames; i++) {
 		GBL::Frame_t frame;
 
@@ -96,24 +96,20 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 	}
 
 	if (drawResults) {
-		cv::VideoCapture viewer(videoFile); // open the default camera
-		if (!viewer.isOpened()) {  // check if we succeeded
-			LOG_ERROR("Could not open %s", videoFile);
-			return std::vector < GBL::Displacement_t > (0);
-		}
-
 		GBL::Frame_t frame1;
-		viewer.read(frame1);
-		drawer.openFile("correspondences.mpeg", frame1.rows, frame1.cols);
-
-		for (uint32_t j = 0; j < nbFrames - 1; j++) {
-			LOG_INFO("Generating frame %d", j);
+		if (inputMethod.getFrame(0, frame1) != GBL::RESULT_SUCCESS) {
+			LOG_ERROR("Could not get frame %d", 0);
+		}
+		for (uint32_t j = 0; j < nbFrames-1; j++) {
+			LOG_INFO("Generating frame %d", j+1);
 			GBL::Frame_t frame2;
-			if (viewer.read(frame2) == false) {
-				LOG_ERROR("Could not get frame %d", j);
+			if (inputMethod.getFrame(j+1, frame2) != GBL::RESULT_SUCCESS) {
+				LOG_ERROR("Could not get frame %d", j+1);
 				continue;
 			}
-			drawer.drawFrame(frame1, frame2, allMatches[j], descriptors[j].keypoints, descriptors[j + 1].keypoints);
+			GBL::Frame_t outputFrame;
+			drawer.draw(frame1, frame2, allMatches[j], descriptors[j].keypoints, descriptors[j + 1].keypoints, outputFrame);
+			outputMethod.write(outputFrame);
 			frame1 = frame2;
 		}
 		drawer.closeFile();

@@ -17,14 +17,11 @@
 
 namespace Draw {
 GBL::CmRetCode_t Draw::draw(const GBL::Image_t& img1, const GBL::Image_t& img2, std::vector<GBL::Match_t> good_matches, std::vector<GBL::KeyPoint_t> keypoints1,
-		std::vector<GBL::KeyPoint_t> keypoints2) const {
+		std::vector<GBL::KeyPoint_t> keypoints2, GBL::Image_t& outputFrame) const {
 	//-- Draw only "good" matches
 	GBL::Image_t img_matches;
-	cv::drawMatches(img1, keypoints1, img2, keypoints2, good_matches, img_matches, cv::Scalar::all(-1), cv::Scalar::all(-1), cv::vector<char>(),
+	cv::drawMatches(img1, keypoints1, img2, keypoints2, good_matches, outputFrame, cv::Scalar::all(-1), cv::Scalar::all(-1), cv::vector<char>(),
 			cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
-
-	//-- Show detected matches
-	cv::imshow("Good Matches", img_matches);
 	return GBL::RESULT_SUCCESS;
 }
 
@@ -47,21 +44,21 @@ GBL::CmRetCode_t Draw::closeFile(void) {
 	return GBL::RESULT_SUCCESS;
 }
 
-GBL::CmRetCode_t Draw::drawFrame(const GBL::Image_t& img1, const GBL::Image_t& img2, std::vector<GBL::Match_t> good_matches,
-		std::vector<GBL::KeyPoint_t> keypoints1, std::vector<GBL::KeyPoint_t> keypoints2) {
-	//-- Draw only "good" matches
-	GBL::Image_t img_matches;
-	cv::drawMatches(img1, keypoints1, img2, keypoints2, good_matches, img_matches, cv::Scalar::all(-1), cv::Scalar::all(-1), cv::vector<char>(),
-			cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
-
-//	cv::imshow("Tmp", img_matches);
-//	cv::waitKey(0);
-
-	if(_videoFile.isOpened()) {
-		_videoFile.write(img_matches);
-	} else {
-		LOG_ERROR("Video file is not open");
-	}
-	return GBL::RESULT_SUCCESS;
-}
+//GBL::CmRetCode_t Draw::drawFrame(const GBL::Image_t& img1, const GBL::Image_t& img2, std::vector<GBL::Match_t> good_matches,
+//		std::vector<GBL::KeyPoint_t> keypoints1, std::vector<GBL::KeyPoint_t> keypoints2) {
+//	//-- Draw only "good" matches
+//	GBL::Image_t img_matches;
+//	cv::drawMatches(img1, keypoints1, img2, keypoints2, good_matches, img_matches, cv::Scalar::all(-1), cv::Scalar::all(-1), cv::vector<char>(),
+//			cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+//
+////	cv::imshow("Tmp", img_matches);
+////	cv::waitKey(0);
+//
+//	if(_videoFile.isOpened()) {
+//		_videoFile.write(img_matches);
+//	} else {
+//		LOG_ERROR("Video file is not open");
+//	}
+//	return GBL::RESULT_SUCCESS;
+//}
 }
