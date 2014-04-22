@@ -22,6 +22,8 @@ public:
 private:
 	cv::VideoCapture _videoFile;
 	uint32_t _nbFrames;
+	GBL::Image_t* _frames;
+	uint32_t _imageIndex;
 };
 }
 

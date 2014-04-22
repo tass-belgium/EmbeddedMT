@@ -4,6 +4,7 @@ build/*
 testSequences/*/
 toolchains/*/
 *.result
+*/output/*
 
 # Scons
 .sconsign.dblite

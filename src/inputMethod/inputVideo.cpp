@@ -19,10 +19,21 @@ GBL::CmRetCode_t InputVideo::start(const char* inputFile) {
 	_videoFile.open(inputFile);
 	if (_videoFile.isOpened()) {  // check if we succeeded
 		_nbFrames = (uint32_t) _videoFile.get(CV_CAP_PROP_FRAME_COUNT);
+		LOG_INFO("Reading video");
+		_frames = new GBL::Image_t[_nbFrames];
 		result = GBL::RESULT_SUCCESS;
+		for(uint32_t i = 0; i < _nbFrames; i++) {
+			if(_videoFile.read(_frames[i]) != true) {
+				LOG_ERROR("Could not read frame %d", i);
+				result = GBL::RESULT_FAILURE;
+			} else {
+				cv::cvtColor(_frames[i], _frames[i], CV_BGR2GRAY);
+			}		
+		}
 	} else {
 		LOG_ERROR("Could not open %s", inputFile);
 	}
+	_imageIndex = 0;	
 	LOG_EXIT("Result = %d", result);
 	return result;
 }
@@ -35,10 +46,10 @@ GBL::CmRetCode_t InputVideo::getFrame(uint16_t index, GBL::Frame_t& frame) {
 	LOG_ENTER("Index = %d, target frame = %p", index, &frame);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	if(index < size()) {
-		_videoFile.set(CV_CAP_PROP_POS_FRAMES, (double) index);
+		frame = _frames[index];
+/*		_videoFile.set(CV_CAP_PROP_POS_FRAMES, (double) index);
 		LOG_INFO("Frame position: %f", _videoFile.get(CV_CAP_PROP_POS_FRAMES));
-		_videoFile.read(frame);
-		cv::cvtColor(frame, frame, CV_BGR2GRAY);
+		_videoFile.read(frame);*/
 		result = GBL::RESULT_SUCCESS;
 	}
 	LOG_EXIT("result = %d", result);
@@ -48,9 +59,10 @@ GBL::CmRetCode_t InputVideo::getFrame(uint16_t index, GBL::Frame_t& frame) {
 GBL::CmRetCode_t InputVideo::getNextFrame(GBL::Frame_t& nextFrame) {
 	LOG_ENTER("Getting next frame, videofile = %p", &_videoFile);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
-	if(_videoFile.read(nextFrame) == true) {
+	if(_imageIndex < size()) {
+		nextFrame = _frames[_imageIndex];
+		_imageIndex++;
 		result = GBL::RESULT_SUCCESS;
-		cv::cvtColor(nextFrame, nextFrame, CV_BGR2GRAY);
 	} else {
 		LOG_ERROR("Could not read next frame");
 	}
