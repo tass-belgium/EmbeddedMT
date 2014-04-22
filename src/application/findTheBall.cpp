@@ -21,7 +21,6 @@
 
 #include "outputMethod/outputImageSequence.hpp"
 
-const bool drawResults_b = true;
 const bool denoise = false;
 const bool sharpen = false;
 const bool subtractBackground = true;
@@ -62,7 +61,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 
 	const uint32_t nbFrames = inputMethod.size() - 1; // We need to subtract the background from it
 	DescriptorContainer_t descriptors[nbFrames];
-//#pragma omp parallel for shared(descriptors) schedule(static)
+#pragma omp parallel for shared(descriptors) schedule(static)
 	for (uint32_t i = 0; i < nbFrames; i++) {
 		GBL::Frame_t inputFrame;
 
@@ -100,7 +99,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 		}
 	}
 
-	if (drawResults_b) {
+	if (GBL::drawResults_b) {
 		drawResults(outputMethod, inputMethod, drawer, *imProc, descriptors, allMatches, nbFrames);	
 	}
 	if (inputMethod.stop() != GBL::RESULT_SUCCESS) {
@@ -134,7 +133,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  drawResults
- *  Description:  
+ *  Description: Draws correspondences between two consecutive frames to output folder 
  * =====================================================================================
  */
 GBL::CmRetCode_t drawResults (OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, GBL::MatchCollection_t* allMatches, uint32_t nbFrames) {

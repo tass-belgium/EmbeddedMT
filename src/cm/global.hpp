@@ -15,6 +15,8 @@
 
 #define nullptr 0
 
+#include "log/logging.hpp"
+
 typedef char char_t;
 typedef float float_t;
 typedef bool bool_t;
@@ -51,6 +53,11 @@ typedef struct displacement {
 } Displacement_t;
 
 const uint16_t maxFilenameLength = 256;
+#if LOG_SEVERITY >= LEVEL_DEBUG
+const bool drawResults_b = true;
+#else
+const bool drawResults_b = false;
+#endif
 
 }
 
