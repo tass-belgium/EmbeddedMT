@@ -7,3 +7,9 @@ lib_files = [
 lib = env.Library('imProc', lib_files)
 installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
 env.Alias('buildLibs', installed_lib)
+
+files = [
+	'test/SConscript'
+]
+
+SConscript(files)

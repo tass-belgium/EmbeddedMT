@@ -60,6 +60,10 @@ GBL::CmRetCode_t ImageProcBase::fastSubtractAndMask(const GBL::Image_t& firstIma
 	getMask(outputImage, mask, threshold);	
 	// Rework to be within the range of 0 - 255 again
 	outputImage = (outputImage+255)/2;
+
+	cv::imshow("tmp", outputImage.mul(mask));
+	cv::waitKey(0);
+
 	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }
@@ -67,40 +71,43 @@ GBL::CmRetCode_t ImageProcBase::fastSubtractAndMask(const GBL::Image_t& firstIma
 GBL::CmRetCode_t ImageProcBase::getMask(const GBL::Image_t& image, GBL::Image_t& mask, uint32_t threshold) const {
 	LOG_ENTER("Image = %p, mask = %p, threshold = %d", &image, &mask, threshold);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
+	// Empty mask
+	for(int32_t i = 0; i < mask.rows*mask.cols; i++) {
+		mask.data[i] = 0;
+	}
+
 	// Calculate integral image
 	GBL::Image_t absImage = abs(image);
 	GBL::Image_t integralImage;
-	cv::integral(absImage, integralImage);
+	cv::integral(absImage, integralImage, CV_32S);
+
 	uint16_t regionHeight = image.rows/4;
 	uint16_t regionWidth = image.cols/4;
 	LOG_INFO("Total pixels of the image: %d", image.rows*image.cols);
 	LOG_INFO("Region width = %d, region height = %d", regionWidth, regionHeight);
 	for(uint8_t i = 0; i < 4; i++) {
-		LOG_INFO("Region height %d: %d (%d) x %d (%d)", i,convert2dRowTo1d(i*regionHeight, image.cols), i * regionHeight, convert2dRowTo1d((i+1)*regionHeight-1, image.cols), (i+1)* regionHeight-1);
+		LOG_INFO("Region height %d: %d x %d", i,i * regionHeight,(i+1)* regionHeight-1);
 		for(uint8_t j = 0; j < 4; j++) {
 			LOG_INFO("Region width %d: %d x %d", j, j * regionWidth, (j+1) * regionWidth-1);
-			uint32_t sumOfPixelsInRegion = integralImage.data[convert2dRowTo1d(i+1*regionHeight-1,image.cols) + (j+1) * regionWidth - 1] -
-				integralImage.data[convert2dRowTo1d(i*regionHeight,image.cols) + j * regionWidth];
+			int32_t sumOfPixelsInRegion = 
+				integralImage.at<int32_t>((i+1)*regionHeight, (j+1) * regionWidth) -
+				integralImage.at<int32_t>((i+1)*regionHeight, j * regionWidth) -
+				integralImage.at<int32_t>(i*regionHeight,(j+1) * regionWidth) +
+				integralImage.at<int32_t>(i*regionHeight,j * regionWidth);
 
-			LOG_INFO("Sum of pixels in region: %d", abs(sumOfPixelsInRegion));
-			if((uint32_t) abs(sumOfPixelsInRegion) > threshold) {
+			LOG_INFO("Sum of pixels in region %d x %d: %d",i,j, abs(sumOfPixelsInRegion));
+			if((uint32_t) sumOfPixelsInRegion > threshold) {
 				LOG_INFO("Region %d x %d is above threshold", i,j);
 				// Fill region
-				uint32_t pixelCount = 0;
 				for(int32_t k = i * regionHeight; k < (i+1) * regionHeight; k++) {
 					int32_t row = convert2dRowTo1d(k, image.cols);
 					for(int32_t l = j * regionWidth; l < (j+1) * regionWidth; l++) {
 						mask.data[row + l] = (uint8_t) 1;
-						pixelCount++;
 					}
 				}
-				LOG_INFO("PixelCount = %d", pixelCount);
 			}
 		}
-	}
-	
-	cv::imshow("masked image", 255*mask);
-	cv::waitKey(0);
+	}	
 	LOG_EXIT("result = %d", result);
 	return result;
 }

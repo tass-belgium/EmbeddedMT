@@ -80,7 +80,8 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 		}
 		GBL::Image_t frame;
 		if(subtractBackground) {
-			imProc->fastSubtract(inputFrame, background, frame);
+			GBL::Image_t mask(inputFrame.rows, inputFrame.cols, CV_8UC1);
+			imProc->fastSubtractAndMask(inputFrame, background, frame, mask,50000);
 		} else {
 			frame = inputFrame;
 		}

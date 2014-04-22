@@ -94,6 +94,9 @@ env['CPPPATH'].append('{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpart
 env['CPPPATH'].append('{opencv_dir}/include'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_dir))
+env['CPPPATH'].append('{check_dir}/src'.format(check_dir=check_dir))
+env['CPPPATH'].append('{check_dir}'.format(check_dir=check_dir))
+
 
 # Fix for 3rd party modules that actually want to by installed in the system dirs
 env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)])
@@ -137,6 +140,9 @@ env['STD_LIBS'] = [
 env['openCV_LIBS_DIRS'] = [
     '{opencv_dir}/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir),
     '{opencv_dir}/3rdparty/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir)
+]
+env['CHECK_LIB_DIR'] = [
+	'{checkdir}/src/.libs'.format(checkdir=check_dir)
 ]
 
 print("Target: {target}".format(target=target))

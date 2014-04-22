@@ -1,0 +1,25 @@
+Import('env')
+
+libs = [
+    'imProc',
+    # openCV libraries',
+	'opencv_photo',
+    'opencv_highgui',
+    'opencv_imgproc',
+    'opencv_core',
+	'check'
+]
+
+libs_path = [
+    env['LIBS_DIR'],
+    env['openCV_LIBS_DIRS'],
+	env['CHECK_LIB_DIR']
+]
+
+files = [
+	'testImProc.cpp',
+	'testMaskSuite.cpp'
+]
+
+target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
+bin = env.Alias("testImProc", target)

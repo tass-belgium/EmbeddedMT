@@ -33,4 +33,23 @@ GBL::CmRetCode_t Surf::describe(const GBL::Image_t& image, GBL::KeyPointCollecti
 	return GBL::RESULT_SUCCESS;
 }
 
+GBL::CmRetCode_t Surf::describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor, const GBL::Image_t& mask) const {
+	LOG_ENTER("image = %p", &image);
+	const uint32_t hessianThreshold = 100;
+	const uint32_t nOctaves = 20;
+	const uint32_t nOctaveLayers=3;
+	const bool_t extended=true;
+	const bool_t upright=false;
+
+	// detecting keypoints
+	cv::SurfFeatureDetector detector(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+
+	detector.detect(image, keypoints, mask);
+
+	// computing descriptors
+	cv::SurfDescriptorExtractor extractor;
+	extractor.compute(image, keypoints, descriptor);
+	LOG_EXIT("GBL::RESULT_SUCCESS");
+	return GBL::RESULT_SUCCESS;
+}
 }
