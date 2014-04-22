@@ -18,6 +18,8 @@ public:
 	virtual GBL::CmRetCode_t sharpen(const GBL::InputImage_t inputImage, GBL::OutputImage_t outputImage, double_t sigmaX, double_t beta) const = 0;
 	virtual GBL::CmRetCode_t subtract(const GBL::Image_t firstImage, const GBL::Image_t secondImage, GBL::Image_t outputImage) const = 0;
 	virtual GBL::CmRetCode_t fastSubtract(const GBL::Image_t& firstImage, const GBL::Image_t& secondImage, GBL::Image_t& outputImage) const = 0;
+	virtual GBL::CmRetCode_t getMask(const GBL::Image_t& image, GBL::Image_t& mask, uint32_t threshold) const = 0;
+	virtual GBL::CmRetCode_t fastSubtractAndMask(const GBL::Image_t& firstImage, const GBL::Image_t& secondImage, GBL::Image_t& outputImage, GBL::Image_t& mask, uint32_t threshold) const = 0;
 };
 }
 
