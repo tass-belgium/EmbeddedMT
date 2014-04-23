@@ -74,7 +74,11 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 			continue;
 		}
 		GBL::Image_t frame;
-		imProc->fastSubtract(inputFrame, background, frame);
+		if(subtractBackground) {
+			imProc->fastSubtract(inputFrame, background, frame);
+		} else {
+			frame = inputFrame;
+		}
 		descriptors[i].valid = true;
 		// Describe frame
 		LOG_INFO("Describing image %d, type = %d, rows = %d, cols = %d, dims = %d", i, frame.type(), frame.rows, frame.cols, frame.dims);

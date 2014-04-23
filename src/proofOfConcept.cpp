@@ -9,6 +9,9 @@
 #include "imProc/imageProcBase.hpp"
 #include "descriptor/sift.hpp"
 #include "descriptor/surf.hpp"
+#include "descriptor/orb.hpp"
+#include "descriptor/brisk.hpp"
+#include "descriptor/freak.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
 #include "draw/draw.hpp"
@@ -113,6 +116,15 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 		case 3:
 			algoName = "SIFT+FLANN";
 			break;
+		case 4:
+			algoName = "ORB+brute force";
+			break;
+		case 5:
+			algoName = "BRISK+brute force";
+			break;
+		case 6:
+			algoName = "SURF+FREAK+brute force";
+			break;
 	}
 	return algoName;
 }
@@ -134,6 +146,18 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 		case 3:
 			*descriptor = new Descriptor::Sift();
 			*matcher = new Match::FlannBasedMatcher();
+			break;
+		case 4:
+			*descriptor = new Descriptor::Orb();
+			*matcher = new Match::BfMatcher();
+			break;
+		case 5:
+			*descriptor = new Descriptor::Brisk();
+			*matcher = new Match::BfMatcher();
+			break;
+		case 6:
+			*descriptor = new Descriptor::Freak();
+			*matcher = new Match::BfMatcher();
 			break;
 		default:
 			LOG_ERROR("Unknown matching algorithm")
