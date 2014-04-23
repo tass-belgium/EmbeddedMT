@@ -35,9 +35,14 @@ typedef struct DescriptorContainer {
 	GBL::KeyPointCollection_t keypoints;
 } DescriptorContainer_t;
 
-static GBL::CmRetCode_t drawResults (OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, GBL::MatchCollection_t* allMatches, uint32_t nbFrames); 
+typedef struct MatchesContainer {
+	bool valid;
+	GBL::MatchCollection_t matches;
+} MatchesContainer_t;
+
+static GBL::CmRetCode_t drawResults (OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, MatchesContainer_t* allMatches, uint32_t nbFrames); 
 static void fastSubtractHandler(const ImageProc::ImageProc& imProc, const GBL::Image_t& image1, const GBL::Image_t& image2, GBL::Image_t& outputImage); 
-static GBL::CmRetCode_t drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, GBL::MatchCollection_t* allMatches, uint32_t nbFrames, const char* outputFile, drawResultProc_f procFunction); 
+static GBL::CmRetCode_t drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, MatchesContainer_t* allMatches, uint32_t nbFrames, const char* outputFile, drawResultProc_f procFunction); 
 
 std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer,
 		const Descriptor::DescriptorInterface& descriptor, const Match::MatcherInterface& matcher, const Displacement::DisplacementInterface& displacement,
@@ -59,7 +64,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 		}
 	}
 
-	const uint32_t nbFrames = inputMethod.size() - 1; // We need to subtract the background from it
+	const uint32_t nbFrames = inputMethod.size() - 1; // Subtract the background from the sequence
 	DescriptorContainer_t descriptors[nbFrames];
 #pragma omp parallel for shared(descriptors) schedule(static)
 	for (uint32_t i = 0; i < nbFrames; i++) {
@@ -83,23 +88,31 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 		// Describe frame
 		LOG_INFO("Describing image %d, type = %d, rows = %d, cols = %d, dims = %d", i, frame.type(), frame.rows, frame.cols, frame.dims);
 		descriptor.describe(frame, descriptors[i].keypoints, descriptors[i].descriptor);
-		LOG_INFO("Number of found key points = %d, descriptor = %dx%d", (uint32_t ) descriptors[i].keypoints.size(), descriptors[i].descriptor.rows,
-				descriptors[i].descriptor.cols);
-		if (descriptors[i].keypoints.size() == 0) {
+		LOG_INFO("Number of found key points = %d, descriptor length = %d", (uint32_t ) descriptors[i].descriptor.rows, descriptors[i].descriptor.cols);
+		if (descriptors[i].descriptor.rows == 0) {
 			LOG_WARNING("Did not find any keypoints in frame %d", i);
 			descriptors[i].valid = false;
 		}
 		LOG_INFO("Descriptor type = %d", CV_MAT_TYPE(descriptors[i].descriptor.type()));
 	}
 
-	GBL::MatchCollection_t allMatches[nbFrames - 1];
+	MatchesContainer_t allMatches[nbFrames - 1];
 #pragma omp parallel for shared(descriptors, allMatches) schedule(static)
 	for (uint32_t i = 0; i < nbFrames - 1; i++) {
 		// Match images
-		LOG_INFO("Matching image %d with image %d", i, i + 1);
 		if (descriptors[i].valid == true && descriptors[i + 1].valid == true) {
-			matcher.match(descriptors[i].descriptor, descriptors[i + 1].descriptor, allMatches[i]);
-			LOG_INFO("Found matches for image %d and image %d: %d", i, i + 1, (uint32_t ) allMatches[i].size());
+			LOG_INFO("Matching image %d with image %d", i, i + 1);
+			matcher.match(descriptors[i].descriptor, descriptors[i + 1].descriptor, allMatches[i].matches);
+			LOG_INFO("Found matches for image %d and image %d: %d", i, i + 1, (uint32_t ) allMatches[i].matches.size());
+			if(allMatches[i].matches.size() == 0) {
+				LOG_WARNING("Did not find any matches between frame %d and frame %d", i, i+1);
+				allMatches[i].valid = false;
+			} else {
+				allMatches[i].valid = true;
+			}
+		} else {
+			LOG_INFO("Not matching image %d and %d since one or both are flagged invalid.", i, i+1);
+			allMatches[i].valid = false;
 		}
 	}
 
@@ -113,9 +126,9 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 	// Get displacements
 	std::vector<GBL::Displacement_t> displacements(nbFrames - 1);
 	for (uint32_t i = 0; i < nbFrames - 1; i++) {
-		LOG_INFO("Calculating displacement between image %d and image %d", i, i + 1);
-		if (descriptors[i].valid == true && descriptors[i + 1].valid == true) {
-			if (displacement.calculateDisplacement(allMatches[i], descriptors[i].keypoints, descriptors[i + 1].keypoints, displacements[i])
+		if (allMatches[i].valid == true) {
+			LOG_INFO("Calculating displacement between image %d and image %d", i, i + 1);
+			if (displacement.calculateDisplacement(allMatches[i].matches, descriptors[i].keypoints, descriptors[i + 1].keypoints, displacements[i])
 					!= GBL::RESULT_SUCCESS) {
 				LOG_ERROR("Could not find displacement for frame %d and %d", i, i + 1);
 				displacements[i].x = 0;
@@ -123,6 +136,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 				continue;
 			}
 		} else {
+			LOG_INFO("Not calculating displacement between frame %d and %d since one or both are not valid", i, i+1);
 			displacements[i].x = 0;
 			displacements[i].y = 0;
 			continue;
@@ -140,7 +154,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
  *  Description: Draws correspondences between two consecutive frames to output folder 
  * =====================================================================================
  */
-GBL::CmRetCode_t drawResults (OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, GBL::MatchCollection_t* allMatches, uint32_t nbFrames) {
+GBL::CmRetCode_t drawResults (OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, MatchesContainer_t* allMatches, uint32_t nbFrames) {
 	LOG_ENTER("void");
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	const char* outputFile = "correspondenceframe";
@@ -161,7 +175,7 @@ void fastSubtractHandler(const ImageProc::ImageProc& imProc, const GBL::Image_t&
 	imProc.fastSubtract(image1, image2, outputImage);
 }
 
-GBL::CmRetCode_t drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, GBL::MatchCollection_t* allMatches, uint32_t nbFrames, const char* outputFile, drawResultProc_f procFunction) {
+GBL::CmRetCode_t drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, DescriptorContainer_t* descriptors, MatchesContainer_t* allMatches, uint32_t nbFrames, const char* outputFile, drawResultProc_f procFunction) {
 	LOG_ENTER("Drawing %s files", outputFile);
 	if(outputMethod.open(outputFile) != GBL::RESULT_SUCCESS) {
 		LOG_ERROR("Could not open %s", outputFile);
@@ -191,7 +205,7 @@ GBL::CmRetCode_t drawHelper(OutputMethod::OutputMethodInterface& outputMethod, I
 			frame2 = preFrame2;
 		}
 		GBL::Image_t outputFrame;
-		drawer.draw(frame1, frame2, allMatches[j], descriptors[j].keypoints, descriptors[j + 1].keypoints, outputFrame);
+		drawer.draw(frame1, frame2, allMatches[j].matches, descriptors[j].keypoints, descriptors[j + 1].keypoints, outputFrame);
 		outputMethod.write(outputFrame);
 		frame1 = frame2;
 	}

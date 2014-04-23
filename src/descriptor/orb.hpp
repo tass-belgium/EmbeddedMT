@@ -14,7 +14,7 @@ namespace Descriptor {
 class Orb : public DescriptorInterface {
 public:
 	Orb(void);
-	virtual GBL::CmRetCode_t describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
+	virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
 private:
 	const int32_t _nfeatures;
        	const float_t _scaleFactor;

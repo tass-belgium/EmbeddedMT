@@ -14,7 +14,7 @@ namespace Descriptor {
 class Brisk : public DescriptorInterface {
 public:
 	Brisk(void);
-	virtual GBL::CmRetCode_t describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
+	virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
 private:
 	const int32_t _threshold;
        	const int32_t _octaves;

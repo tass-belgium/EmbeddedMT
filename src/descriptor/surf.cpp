@@ -13,7 +13,7 @@
 #include "log/logging.hpp"
 
 namespace Descriptor {
-GBL::CmRetCode_t Surf::describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
+GBL::CmRetCode_t Surf::describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
 	LOG_ENTER("image = %p", &image);
 	const uint32_t hessianThreshold = 100;
 	const uint32_t nOctaves = 20;
@@ -32,4 +32,5 @@ GBL::CmRetCode_t Surf::describe(const GBL::Image_t image, GBL::KeyPointCollectio
 	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }
+
 }

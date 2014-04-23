@@ -142,7 +142,7 @@ def executeApplication(target, mode, sequence, alg, output, logLevel, user, ip, 
     ret = os.system(cmd)
  
     # Execute application
-    cmd = "ssh -l {user} {ip} 'bash -c \"./proofOfConcept {args} 0 {output}\"'".format(user=user, ip=ip, args=args, output=output)
+    cmd = "ssh -l {user} {ip} 'bash -c \"./proofOfConcept {args} {alg} {output}\"'".format(user=user, ip=ip, args=args, output=output, alg=alg)
     ret = os.system(cmd)
     if(ret != 0):
         print('Processing returned error (code: {errorcode}). Exiting'.format(errorcode=ret))

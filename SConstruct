@@ -63,7 +63,8 @@ buildDir = Dir('build/{target}/{mode}'.format(target=target, mode=env['mode'])).
 sourceDir = Dir('src').abspath
 VariantDir(buildDir, sourceDir)
 
-opencv_dir = Dir('3rdparty/opencv'.format(arch=arch)).abspath
+opencv_dir = Dir('3rdparty/opencv').abspath
+opensurf_dir = Dir('3rdparty/openSURF').abspath
 
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
@@ -80,6 +81,7 @@ env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
 env['CPPPATH'].append('{opencv_dir}/include'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_dir))
+env['CPPPATH'].append('{openSurf_dir}'.format(openSurf_dir=opensurf_dir))
 
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
@@ -92,7 +94,7 @@ if env['mode'] == 'release':
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
 
-env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
+env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith', '-std=c++11'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
 
 if map_toolchain_to_openmp_support[toolchain] == True:
@@ -126,4 +128,9 @@ else:
 print("Compiler: {compiler}".format(compiler=env['CC']))
 print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
-SConscript("{buildDir}/SConscript".format(buildDir=buildDir))
+SConscript_files = [
+	"{buildDir}/SConscript".format(buildDir=buildDir),
+	'3rdparty/SConscript'
+]
+
+SConscript(SConscript_files)

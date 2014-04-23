@@ -12,6 +12,7 @@
 #include "descriptor/orb.hpp"
 #include "descriptor/brisk.hpp"
 #include "descriptor/freak.hpp"
+#include "descriptor/openSurf.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
 #include "draw/draw.hpp"
@@ -125,6 +126,12 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 		case 6:
 			algoName = "SURF+FREAK+brute force";
 			break;
+		case 7:
+			algoName = "openSURF+brute force";
+			break;
+		default:
+			algoName = "unkown";
+			break;
 	}
 	return algoName;
 }
@@ -157,6 +164,10 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 			break;
 		case 6:
 			*descriptor = new Descriptor::Freak();
+			*matcher = new Match::BfMatcher();
+			break;
+		case 7:
+			*descriptor = new Descriptor::OpenSurf();
 			*matcher = new Match::BfMatcher();
 			break;
 		default:

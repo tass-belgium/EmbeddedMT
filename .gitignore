@@ -15,6 +15,9 @@ toolchains/*/
 .pydevproject
 .settings/
 
+# Vim files
+*.swp
+
 # Compiled Object files
 *.slo
 *.lo

@@ -1,0 +1,15 @@
+Import('env')
+
+files = [
+	'fasthessian.cpp',
+	'integral.cpp',
+	'ipoint.cpp',
+	'surf.cpp',
+	'utils.cpp'
+]
+
+env['CPPFLAGS'].append(['-DLINUX'])
+
+lib = env.Library('openSURF', files)
+installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
+env.Alias('build3rdparty', installed_lib)

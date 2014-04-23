@@ -5,7 +5,8 @@ lib_files = [
     'surf.cpp',
 	'orb.cpp',
 	'brisk.cpp',
-	'freak.cpp'
+	'freak.cpp',
+    'openSurf.cpp'
 ]
 
 lib = env.Library('descriptor', lib_files)

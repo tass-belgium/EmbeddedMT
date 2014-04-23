@@ -13,7 +13,7 @@
 #include "log/logging.hpp"
 
 namespace Descriptor {
-GBL::CmRetCode_t Freak::describe(const GBL::Image_t image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
+GBL::CmRetCode_t Freak::describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
 	LOG_ENTER("image = %p", &image);
 
 	const uint32_t hessianThreshold = 100;

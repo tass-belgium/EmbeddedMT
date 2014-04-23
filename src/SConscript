@@ -25,6 +25,7 @@ libs = [
     'imProc',
     'bestEffortMatcher',
     'flannBasedMatcher',
+	'openSURF',
  
     # openCV libraries
     'opencv_features2d',
