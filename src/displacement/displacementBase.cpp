@@ -5,7 +5,6 @@
  *      Author: cv
  */
 
-#include <utility>
 #include "displacementBase.hpp"
 
 #include "log/logging.hpp"
@@ -28,15 +27,4 @@ GBL::CmRetCode_t DisplacementBase::calculateDisplacement(const GBL::MatchCollect
 	return GBL::RESULT_SUCCESS;
 }
 
-GBL::CmRetCode_t DisplacementBase::calculateDisplacement(const IpPairVec& matches, GBL::Displacement_t& displacement) const {
-	float_t x = 0;
-	float_t y = 0;
-	for(uint32_t i = 0; i < matches.size(); i++) {
-		x += std::get<1>(matches[i]).x - std::get<0>(matches[i]).x;
-		y += std::get<1>(matches[i]).y - std::get<0>(matches[i]).y;
-	}
-	displacement.x = (int32_t) x/(float_t) matches.size();
-	displacement.y = (int32_t) y/(float_t) matches.size();
-	return GBL::RESULT_SUCCESS;
-}
 }

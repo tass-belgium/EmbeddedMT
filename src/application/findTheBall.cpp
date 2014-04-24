@@ -84,6 +84,12 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 		} else {
 			frame = inputFrame;
 		}
+		if(denoise) {
+			imProc->denoise(frame, frame);
+		}
+		if(sharpen) {
+			imProc->sharpen(frame, frame, 0.5, -3);
+		}
 		descriptors[i].valid = true;
 		// Describe frame
 		LOG_INFO("Describing image %d, type = %d, rows = %d, cols = %d, dims = %d", i, frame.type(), frame.rows, frame.cols, frame.dims);
@@ -99,20 +105,21 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 	MatchesContainer_t allMatches[nbFrames - 1];
 #pragma omp parallel for shared(descriptors, allMatches) schedule(static)
 	for (uint32_t i = 0; i < nbFrames - 1; i++) {
+		uint32_t nextImageIndex = i + 1;
+		allMatches[i].valid = false;
 		// Match images
-		if (descriptors[i].valid == true && descriptors[i + 1].valid == true) {
-			LOG_INFO("Matching image %d with image %d", i, i + 1);
-			matcher.match(descriptors[i].descriptor, descriptors[i + 1].descriptor, allMatches[i].matches);
-			LOG_INFO("Found matches for image %d and image %d: %d", i, i + 1, (uint32_t ) allMatches[i].matches.size());
+		if (descriptors[i].valid == true && descriptors[nextImageIndex].valid == true) {
+			LOG_INFO("Matching image %d with image %d", i, nextImageIndex);
+			matcher.match(descriptors[i].descriptor, descriptors[nextImageIndex].descriptor, allMatches[i].matches);
+			LOG_INFO("Nb of found matches for image %d and image %d: %d", i, nextImageIndex, (uint32_t ) allMatches[i].matches.size());
 			if(allMatches[i].matches.size() == 0) {
-				LOG_WARNING("Did not find any matches between frame %d and frame %d", i, i+1);
-				allMatches[i].valid = false;
+				LOG_WARNING("Did not find any matches between frame %d and frame %d", i, nextImageIndex);
 			} else {
 				allMatches[i].valid = true;
 			}
 		} else {
-			LOG_INFO("Not matching image %d and %d since one or both are flagged invalid.", i, i+1);
-			allMatches[i].valid = false;
+			LOG_INFO("Not matching image %d and %d since one or both are flagged invalid.", i, nextImageIndex);
+			nextImageIndex++;
 		}
 	}
 

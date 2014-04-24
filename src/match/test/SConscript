@@ -1,0 +1,27 @@
+Import('env')
+
+libs = [
+    'matcher',
+    # openCV libraries',
+	'opencv_photo',
+    'opencv_highgui',
+    'opencv_imgproc',
+    'opencv_core',
+	'check',
+	env['STD_LIBS']
+]
+
+libs_path = [
+    env['LIBS_DIR'],
+    env['openCV_LIBS_DIRS'],
+]
+
+files = [
+	'testMatchers.cpp',
+	'testOpenSurfMatcher.cpp'
+]
+
+target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
+bin = env.Alias("testMatchers", installed_bin)
+bin = env.Alias("unittest", installed_bin)
