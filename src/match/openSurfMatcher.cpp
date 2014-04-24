@@ -15,12 +15,13 @@
 
 namespace Match {
 float_t OpenSurfMatcher::subtract(const GBL::Descriptor_t& descriptor1, const uint32_t row1, const GBL::Descriptor_t& descriptor2, const uint32_t row2) const {
+	LOG_ENTER("descriptor 1 row = %d, descriptor 2 row = %d", row1, row2);
 	// TODO Can we vectorize this?
 	float_t result = 0;
 	for(int32_t i = 0; i < descriptor1.cols; i++) {
 		result += (descriptor1.at<float_t>(row1, i) - descriptor2.at<float_t>(row2,i)) * (descriptor1.at<float_t>(row1, i) - descriptor2.at<float_t>(row2,i));
 	}
-	sqrt(result);
+	LOG_EXIT("Squared result = %f", result);
 	return result;
 }
 
@@ -51,8 +52,9 @@ GBL::CmRetCode_t OpenSurfMatcher::match(const GBL::Descriptor_t& descriptors1, c
 		}
 
 		// Check best and second best matches ratio (Lowe)
-		if(d1/d2 < 0.65) {
+		if(d1/d2 < _threshold * _threshold) {
 			// We have a match!
+			LOG_INFO("We have a match: %d with %d, ratio = %f", i, tmpMatch.trainIdx, d1/d2);
 			tmpMatch.queryIdx = i;
 			// Unclear what imgIdx is: set it to 0
 			tmpMatch.imgIdx = 0;

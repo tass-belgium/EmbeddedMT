@@ -7,6 +7,8 @@ libs = [
     'opencv_highgui',
     'opencv_imgproc',
     'opencv_core',
+	# opencv libraries
+	'openSURF',
 	'check',
 	env['STD_LIBS']
 ]
@@ -21,7 +23,12 @@ files = [
 	'testOpenSurfMatcher.cpp'
 ]
 
-target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
-installed_bin = env.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
-bin = env.Alias("testMatchers", installed_bin)
-bin = env.Alias("unittest", installed_bin)
+env_matchers = env.Clone()
+
+# Add c++ 11 support for compiling the original openSurf matcher
+env_matchers['CPPFLAGS'].append(['-std=c++11'])
+
+target = env_matchers.Program(files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env_matchers.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
+bin = env_matchers.Alias("testMatchers", installed_bin)
+bin = env_matchers.Alias("unittest", installed_bin)
