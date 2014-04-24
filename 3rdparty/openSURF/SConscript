@@ -1,6 +1,6 @@
 Import('env')
 
-files = [
+source_files = [
 	'fasthessian.cpp',
 	'integral.cpp',
 	'ipoint.cpp',
@@ -8,8 +8,23 @@ files = [
 	'utils.cpp'
 ]
 
+header_files = [
+	'fasthessian.h',
+	'integral.h',
+	'ipoint.h',
+	'kmeans.h',
+	'responselayer.h',
+	'surf.h',
+	'surflib.h',
+	'utils.h'
+]
+
 env['CPPFLAGS'].append(['-DLINUX'])
 
-lib = env.Library('openSURF', files)
+# Install lib
+lib = env.Library('openSURF', source_files)
 installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
 env.Alias('build3rdparty', installed_lib)
+
+# Install header files
+env.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)

@@ -23,8 +23,9 @@ libs = [
     'displacementBase',
     'draw',
     'imProc',
-    'bestEffortMatcher',
-    'flannBasedMatcher',
+    'matcher',
+
+	# 3rd party
 	'openSURF',
  
     # openCV libraries
@@ -52,4 +53,5 @@ libs_path = [
 ]
 
 target = env.Program('proofOfConcept.cpp', LIBS=libs, LIBPATH=libs_path)
-bin = env.Alias("demo", target)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
+bin = env.Alias("demo", installed_bin)

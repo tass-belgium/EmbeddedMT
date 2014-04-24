@@ -59,12 +59,18 @@ arch=map_target_to_arch[target]
 toolchain=map_arch_to_toolchain[arch]
 
 rootDir = Dir('.').abspath
-buildDir = Dir('build/{target}/{mode}'.format(target=target, mode=env['mode'])).abspath
+buildDir = Dir('build/{target}/{mode}/src'.format(target=target, mode=env['mode'])).abspath
 sourceDir = Dir('src').abspath
-VariantDir(buildDir, sourceDir)
+thirdpartyDir = Dir('3rdparty').abspath
+thirdpartyBuildDir = '{buildDir}/3rdparty'.format(buildDir = buildDir)
+VariantDir('{buildDir}'.format(buildDir=buildDir), sourceDir)
+VariantDir('{thirdpartyDir}'.format(thirdpartyDir=thirdpartyBuildDir), thirdpartyDir)
 
 opencv_dir = Dir('3rdparty/opencv').abspath
-opensurf_dir = Dir('3rdparty/openSURF').abspath
+
+env['THIRD_PARTY_DIR'] = '{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)
+env['LIBS_DIR'] = '{buildDir}/../libs'.format(buildDir = buildDir)
+env['BIN_DIR'] = '{buildDir}/../bin'.format(buildDir = buildDir)
 
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
@@ -75,13 +81,19 @@ env['NM'] = '{toolchainpath}/{toolchain}nm'.format(toolchainpath=map_arch_to_too
 env['STRIP'] = '{toolchainpath}/{toolchain}strip'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['CPPPATH'] = []
 env['CPPFLAGS'] = []
+env['CXXFLAGS'] = []
 env['LDFLAGS'] = []
+env['CFLAGS'] = []
 
 env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
+env['CPPPATH'].append('{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir))
 env['CPPPATH'].append('{opencv_dir}/include'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv'.format(opencv_dir=opencv_dir))
 env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_dir))
-env['CPPPATH'].append('{openSurf_dir}'.format(openSurf_dir=opensurf_dir))
+
+# Fix for 3rd party modules that actually want to by installed in the system dirs
+env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)])
+
 
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
@@ -94,10 +106,10 @@ if env['mode'] == 'release':
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
 
-env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith', '-std=c++11'])
+env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
 
-if map_toolchain_to_openmp_support[toolchain] == True:
+if map_toolchain_to_openmp_support[toolchain] == True and env['mode'] != 'debug':
     env['CPPFLAGS'].append(['-fopenmp']);
     env['LINKFLAGS'].append(['-fopenmp']);
     
@@ -106,13 +118,14 @@ if(target == 'rpi'):
     # Suppress mangling va thing
     env['CPPFLAGS'].append('-Wno-psabi')
 
-env['LIBS_DIR'] = '{buildDir}/libs'.format(buildDir = buildDir)
+
 env['STD_LIBS'] = [
     'rt',
     'm',
     'dl',
     'stdc++'
 ]
+
 env['openCV_LIBS_DIRS'] = [
     '{opencv_dir}/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir),
     '{opencv_dir}/3rdparty/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir)
@@ -130,7 +143,7 @@ print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
 SConscript_files = [
 	"{buildDir}/SConscript".format(buildDir=buildDir),
-	'3rdparty/SConscript'
+	'{buildDir}/3rdparty/SConscript'.format(buildDir=buildDir)
 ]
 
 SConscript(SConscript_files)

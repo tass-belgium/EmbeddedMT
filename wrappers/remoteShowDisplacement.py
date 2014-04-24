@@ -106,7 +106,7 @@ def main():
             return 1
 
     if(rebuild):
-        fname = '{scriptDir}/../build/{target}/{mode}/proofOfConcept'.format(scriptDir=scriptDir,target=target, mode=mode)
+        fname = '{scriptDir}/../build/{target}/{mode}/bin/proofOfConcept'.format(scriptDir=scriptDir,target=target, mode=mode)
         if(os.path.isfile(fname)):
            cmd = 'rm -rf {scriptDir}/../build/{target}/{mode}'.format(scriptDir=scriptDir,target=target,mode=mode)
            os.system(cmd)
@@ -127,7 +127,7 @@ def main():
 def executeApplication(target, mode, sequence, alg, output, logLevel, user, ip, args):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
-    fname = '{scriptDir}/../build/{target}/{mode}/proofOfConcept'.format(scriptDir=scriptDir,target=target, mode=mode)
+    fname = '{scriptDir}/../build/{target}/{mode}/bin/proofOfConcept'.format(scriptDir=scriptDir,target=target, mode=mode)
     
     # build application
     cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel, buildTarget='demo')

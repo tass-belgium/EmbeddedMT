@@ -8,4 +8,6 @@ libs_path = [
 ]
 
 target = env.Program('testLogging.cpp', LIBS=libs, LIBPATH=libs_path)
-bin = env.Alias("testLogging", target)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
+bin = env.Alias("testLogging", installed_bin)
+bin = env.Alias("unittest", installed_bin)
