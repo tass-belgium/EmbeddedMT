@@ -19,12 +19,13 @@ header_files = [
 	'utils.h'
 ]
 
-env['CPPFLAGS'].append(['-DLINUX'])
+env_opensurf = env.Clone()
+env_opensurf['CPPFLAGS'].append(['-DLINUX'])
 
 # Install lib
-lib = env.Library('openSURF', source_files)
-installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
-env.Alias('build3rdparty', installed_lib)
+lib = env_opensurf.Library('openSURF', source_files)
+installed_lib = env_opensurf.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
+env_opensurf.Alias('build3rdparty', installed_lib)
 
 # Install header files
-env.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)
+env_opensurf.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)

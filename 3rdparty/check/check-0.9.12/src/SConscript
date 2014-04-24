@@ -25,17 +25,19 @@ header_files = [
 	'../check_stdint.h'
 ]
 
-env['CPPPATH'].append('..')
+
+env_check = env.Clone()
+env_check['CPPPATH'].append('..')
 absDir = Dir('.').abspath
-env['CFLAGS'].append('-isystem{dir}'.format(dir=absDir))
-env['CPPDEFINES'].append('HAVE_CONFIG_H')
+env_check['CFLAGS'].append('-isystem{dir}'.format(dir=absDir))
+env_check['CPPDEFINES'].append('HAVE_CONFIG_H')
+
 
 # Build and install lib
-lib = env.Library('check', source_files)
-installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
-env.Alias('buildcheck', installed_lib)
-env.Alias('build3rdparty', installed_lib)
-
+lib = env_check.Library('check', source_files)
+installed_lib = env_check.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
+env_check.Alias('buildcheck', installed_lib)
+env_check.Alias('build3rdparty', installed_lib)
 
 # Install header files
-env.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)
+env_check.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)
