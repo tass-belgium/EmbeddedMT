@@ -15,6 +15,7 @@
 #include "descriptor/openSurf.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
+#include "match/openSurfMatcher.hpp"
 #include "draw/draw.hpp"
 #include "displacement/displacementBase.hpp"
 #include "inputMethod/inputImageSequence.hpp"
@@ -129,6 +130,9 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 		case 7:
 			algoName = "openSURF+brute force";
 			break;
+		case 8:
+			algoName = "openSURF";
+			break;
 		default:
 			algoName = "unkown";
 			break;
@@ -169,6 +173,10 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 		case 7:
 			*descriptor = new Descriptor::OpenSurf();
 			*matcher = new Match::BfMatcher();
+			break;
+		case 8:
+			*descriptor = new Descriptor::OpenSurf();
+			*matcher = new Match::OpenSurfMatcher();
 			break;
 		default:
 			LOG_ERROR("Unknown matching algorithm")

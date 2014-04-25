@@ -2,13 +2,13 @@ Import('env')
 
 libs = [
     'matcher',
+	'openSURF',
     # openCV libraries',
-	'opencv_photo',
+	'opencv_features2d',
     'opencv_highgui',
     'opencv_imgproc',
     'opencv_core',
 	# opencv libraries
-	'openSURF',
 	'check',
 	env['STD_LIBS']
 ]

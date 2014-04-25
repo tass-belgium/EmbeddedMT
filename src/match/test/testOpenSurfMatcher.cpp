@@ -1,6 +1,7 @@
 /*
  * =====================================================================================
  *
+ *
  *       Filename:  testMaskSuite.cpp
  *
  *    Description:  Test mask suite
@@ -185,7 +186,6 @@ START_TEST (test_open_surf_matcher_simple)
 	foundMatches.clear();
 	LOG_EXIT("End of test_open_surf_matcher_simple");
 }
-
 END_TEST
 
 Suite * testOpenSurfMatcher_suite (void)
