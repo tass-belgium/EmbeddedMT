@@ -128,10 +128,13 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 			algoName = "SURF+FREAK+brute force";
 			break;
 		case 7:
-			algoName = "openSURF+brute force";
+			algoName = "Simple Blobl + openSURF+brute force";
 			break;
 		case 8:
 			algoName = "openSURF";
+			break;
+		case 9:
+			algoName = "Simple Blob + BRIEF";
 			break;
 		default:
 			algoName = "unkown";
@@ -178,9 +181,12 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 			*descriptor = new Descriptor::OpenSurf();
 			*matcher = new Match::OpenSurfMatcher();
 			break;
+		case 9:
+			*descriptor = new Descriptor::OpenSurf();
+			*matcher = new Match::BfMatcher();
+			break;
 		default:
-			LOG_ERROR("Unknown matching algorithm")
-			;
+			LOG_ERROR("Unknown matching algorithm");
 			return GBL::RESULT_FAILURE;
 	}
 	return GBL::RESULT_SUCCESS;

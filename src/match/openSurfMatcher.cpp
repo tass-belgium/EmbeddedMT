@@ -25,8 +25,8 @@ inline float_t OpenSurfMatcher::subtractFloat(const GBL::Descriptor_t& descripto
 	// TODO Can we vectorize this?
 	float_t result = 0;
 
-	const float* row_ptr1 = descriptor1.ptr<float>(row1);
-	const float* row_ptr2 = descriptor2.ptr<float>(row2);
+	const float_t* row_ptr1 = descriptor1.ptr<float_t>(row1);
+	const float_t* row_ptr2 = descriptor2.ptr<float_t>(row2);
 	for(int32_t i = 0; i < descriptor1.cols; i++) {
 		// Slow but safe method to do this: 
 		// 			result += (descriptor1.at<float_t>(row1, i) - descriptor2.at<float_t>(row2,i)) * (descriptor1.at<float_t>(row1, i) - descriptor2.at<float_t>(row2,i));

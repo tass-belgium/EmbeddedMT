@@ -72,9 +72,6 @@ inline void surfDet(IplImage *img,  /* image to find Ipoints in */
   cvReleaseImage(&int_img);
 }
 
-
-
-
 //! Library function describes interest points in vector
 inline void surfDes(IplImage *img,  /* image to find Ipoints in */
                     std::vector<Ipoint> &ipts, /* reference to vector of Ipoints */

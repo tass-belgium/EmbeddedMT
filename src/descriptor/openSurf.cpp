@@ -9,6 +9,9 @@
 #include "surflib.h"
 #include "log/logging.hpp"
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/nonfree/nonfree.hpp"
+
 namespace Descriptor {
 
 OpenSurf::OpenSurf() : _nOctaves(20), _nOctaveLayers(3), _upright(false), _initSample(2), _threshold(0.0004f) {
@@ -18,7 +21,8 @@ OpenSurf::OpenSurf() : _nOctaves(20), _nOctaveLayers(3), _upright(false), _initS
 GBL::CmRetCode_t OpenSurf::describeOpenSurf(IplImage* image, IpVec& ipts) const {
 	LOG_ENTER("image = %p", &image);
 
-	surfDetDes(image, ipts, _upright, _nOctaves, _nOctaveLayers, _initSample, _threshold);
+//	surfDetDes(image, ipts, _upright, _nOctaves, _nOctaveLayers, _initSample, _threshold);
+	surfDes(image, ipts, _upright);
 
 	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
@@ -29,6 +33,27 @@ GBL::CmRetCode_t OpenSurf::describe(const GBL::Image_t& image, GBL::KeyPointColl
 	LOG_ENTER("image = %p", &image);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	IpVec ipts;
+
+//	cv::SurfFeatureDetector detector(100, 20, 3);
+	cv::SimpleBlobDetector::Params params;
+	params.filterByColor = false;
+	params.filterByArea = true;
+	params.filterByCircularity = false;
+	params.filterByInertia = false;
+	params.filterByConvexity = false;
+	
+	cv::SimpleBlobDetector detector(params);
+	detector.detect(image, keypoints);
+
+	// Convert keypoints to ipvec
+	for(uint32_t i = 0; i < keypoints.size(); i++) {
+		Ipoint ipoint;
+		ipoint.x = keypoints[i].pt.x;
+		ipoint.y = keypoints[i].pt.y;
+		ipoint.scale = keypoints[i].size; 
+		ipoint.orientation = keypoints[i].angle;
+		ipts.push_back(ipoint);
+	}
 
 	IplImage tmp_image = image;
 	describeOpenSurf(&tmp_image, ipts);

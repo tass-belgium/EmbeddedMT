@@ -205,6 +205,7 @@ GBL::CmRetCode_t drawHelper(OutputMethod::OutputMethodInterface& outputMethod, I
 			LOG_ERROR("Could not get frame %d", j+1);
 			continue;
 		}
+
 		GBL::Image_t frame2;
 		if(procFunction != nullptr) {
 			procFunction(imProc, preFrame2, background, frame2);

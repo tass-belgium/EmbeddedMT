@@ -23,8 +23,19 @@ GBL::CmRetCode_t Freak::describe(const GBL::Image_t& image, GBL::KeyPointCollect
 	const bool_t upright=false;
 
 	// detecting keypoints
-	cv::SurfFeatureDetector detector(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+//	cv::SurfFeatureDetector detector(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
+//	detector.detect(image, keypoints);
+
+	cv::SimpleBlobDetector::Params params;
+	params.filterByColor = false;
+	params.filterByArea = true;
+	params.filterByCircularity = false;
+	params.filterByInertia = false;
+	params.filterByConvexity = false;
+	
+	cv::SimpleBlobDetector detector(params);
 	detector.detect(image, keypoints);
+
 	LOG_INFO("Number of keypoints found: %d", (uint32_t)  keypoints.size());
 
 	// computing descriptors
