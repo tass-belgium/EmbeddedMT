@@ -61,12 +61,13 @@ def usage():
     print("\t-l <logLevel>  Define log level: <debug>, warning or error")
     print("\t-r             Clean and rebuild")
     print("\t-i             Do not interpolate result")
+    print("\t-a             Enable profiling")
     
 def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ri", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ria", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -76,11 +77,12 @@ def main():
     mode = 'debug'
     output = "displacement.result"
     skipProcessing = False
-    sequence = os.path.abspath('{scriptDir}/../testSequences/tennisball_video1/tennisball_video1_DVD.dvd'.format(scriptDir=scriptDir))
+    sequence = os.path.abspath('{scriptDir}/../testSequences/tennisball_video2/tennisball_video2_DVD.dvd'.format(scriptDir=scriptDir))
     alg = 0
     logLevel = 'debug'
     rebuild = False
     interpolate = True
+    profile = 'no'
     for o, a in opts:
         if o == "-t":
             target = a
@@ -103,6 +105,8 @@ def main():
             rebuild = True
         elif o == "-i":
             interpolate = False
+        elif o == "-a":
+            profile = 'yes'
         else:
             assert False, "unhandled option"
             usage()
@@ -116,7 +120,7 @@ def main():
     
     # Execute
     if(not skipProcessing):
-        if(executeApplication(target, mode, sequence, alg, output, logLevel) != RetCodes.RESULT_OK):
+        if(executeApplication(target, mode, sequence, alg, output, logLevel, profile) != RetCodes.RESULT_OK):
             print("An error occurred during building")
             return 1
     
@@ -127,13 +131,13 @@ def main():
         
     return 0
 
-def executeApplication(target, mode, sequence, alg, output, logLevel):
+def executeApplication(target, mode, sequence, alg, output, logLevel, profile):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     fname = '{scriptDir}/../build/{target}/{mode}/bin/proofOfConcept'.format(scriptDir=scriptDir,target=target, mode=mode)
     
     # build application
-    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel, buildTarget='demo')
+    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} profile={profile} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel,profile=profile, buildTarget='demo')
     print(cmd)
     ret = os.system(cmd)
     if(ret != 0):

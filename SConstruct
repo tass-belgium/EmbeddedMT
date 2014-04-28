@@ -29,7 +29,6 @@ map_toolchain_to_openmp_support = {
 }
 
 map_logLevel_to_define = {
-    'profile' : 'LOG_LEVEL_PROFILE',
     'debug' : 'LOG_LEVEL_DEBUG',
     'warning' : 'LOG_LEVEL_WARNING',
     'error' : 'LOG_LEVEL_ERROR',
@@ -47,9 +46,14 @@ opts.Add(EnumVariable('mode', 'Set build mode', 'debug',
                     ignorecase=2))
 
 opts.Add(EnumVariable('logLevel', 'Set log mode', 'debug',
-                    allowed_values=('debug', 'warning', 'error','none', 'profile'),
+                    allowed_values=('debug', 'warning', 'error','none'),
                     map={},
                     ignorecase=2))
+
+opts.Add(EnumVariable('profile', 'Set profile flag', 'no',
+					allowed_values=('yes', 'no'),
+					map = {},
+					ignorecase=2))
 
 env=Environment(variables=opts)
 Export('env')
@@ -106,6 +110,11 @@ if env['mode'] == 'release':
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
 
+if env['profile'] == 'yes':
+	env['CFLAGS'].append('-pg')
+	env['CPPFLAGS'].append('-pg')
+	env['LINKFLAGS'].append('-pg')
+
 env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
 
@@ -117,7 +126,6 @@ if(target == 'rpi'):
     env['CPPFLAGS'].append(['-mfpu=vfp', '-mfloat-abi=hard', '-march=armv6zk', '-mtune=arm1176jzf-s'])
     # Suppress mangling va thing
     env['CPPFLAGS'].append('-Wno-psabi')
-
 
 env['STD_LIBS'] = [
     'rt',

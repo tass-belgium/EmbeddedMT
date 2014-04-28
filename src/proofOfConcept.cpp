@@ -13,6 +13,7 @@
 #include "descriptor/brisk.hpp"
 #include "descriptor/freak.hpp"
 #include "descriptor/openSurf.hpp"
+#include "descriptor/brief.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
 #include "match/openSurfMatcher.hpp"
@@ -182,7 +183,7 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 			*matcher = new Match::OpenSurfMatcher();
 			break;
 		case 9:
-			*descriptor = new Descriptor::OpenSurf();
+			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;
 		default:
