@@ -61,8 +61,8 @@ GBL::CmRetCode_t ImageProcBase::fastSubtractAndMask(const GBL::Image_t& firstIma
 	// Rework to be within the range of 0 - 255 again
 	outputImage = (outputImage+255)/2;
 
-	cv::imshow("tmp", outputImage.mul(mask));
-	cv::waitKey(0);
+//	cv::imshow("tmp", outputImage.mul(mask));
+//	cv::waitKey(0);
 
 	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
