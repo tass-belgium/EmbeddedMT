@@ -1,10 +1,9 @@
 Import('env')
 
 lib_files = [
-    'findTheBall.cpp',
-	'findTheBallPipeLine.cpp'
+	'utils.cpp'
 ]
 
-lib = env.Library('findTheBall', lib_files)
+lib = env.Library('utils', lib_files)
 installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
 env.Alias('buildLibs', installed_lib)

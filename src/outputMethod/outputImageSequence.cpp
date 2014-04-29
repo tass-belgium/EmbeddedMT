@@ -56,6 +56,10 @@ GBL::CmRetCode_t OutputImageSequence::write(const GBL::Frame_t frame) {
 	return result;
 }
 
+GBL::CmRetCode_t OutputImageSequence::write(const GBL::Displacement_t& displacement) {
+	return GBL::RESULT_FAILURE;
+}
+
 GBL::CmRetCode_t OutputImageSequence::close() {
 	return GBL::RESULT_SUCCESS;
 }

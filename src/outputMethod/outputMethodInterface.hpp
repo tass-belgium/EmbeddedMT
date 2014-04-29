@@ -15,11 +15,10 @@ class OutputMethodInterface {
 public:
 	virtual ~OutputMethodInterface() {};
 	virtual GBL::CmRetCode_t open(const char* filename) = 0;
+	virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement) = 0;
 	virtual GBL::CmRetCode_t write(const GBL::Frame_t) = 0;
 	virtual GBL::CmRetCode_t close() = 0;
 };
 }
-
-
 
 #endif /* OUTPUTMETHODINTERFACE_HPP_ */

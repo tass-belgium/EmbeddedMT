@@ -1,7 +1,8 @@
 Import('env')
 
 lib_files = [
-    'outputImageSequence.cpp'
+    'outputImageSequence.cpp',
+	'socketInterface.cpp'
 ]
 
 lib = env.Library('outputMethod', lib_files)

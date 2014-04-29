@@ -48,16 +48,28 @@ typedef struct point {
 } Point_t;
 
 typedef struct displacement {
+	int32_t sequenceNo;
 	int32_t x;
 	int32_t y;
 } Displacement_t;
 
 const uint16_t maxFilenameLength = 256;
 #if LOG_SEVERITY >= LEVEL_DEBUG
-const bool drawResults_b = false;
+const bool drawResults_b = true;
 #else
 const bool drawResults_b = false;
 #endif
+
+typedef struct DescriptorContainer {
+	bool valid;
+	GBL::Descriptor_t descriptor;
+	GBL::KeyPointCollection_t keypoints;
+} DescriptorContainer_t;
+
+typedef struct MatchesContainer {
+	bool valid;
+	GBL::MatchCollection_t matches;
+} MatchesContainer_t;
 
 }
 

@@ -64,8 +64,9 @@ GBL::CmRetCode_t InputVideo::getNextFrame(GBL::Frame_t& nextFrame) {
 		_imageIndex++;
 		result = GBL::RESULT_SUCCESS;
 	} else {
-		LOG_ERROR("Could not read next frame");
+		LOG_WARNING("Could not read next frame");
 	}
+	LOG_INFO("Frame index = %d, Dims: %d, size: %d x %d", _imageIndex, nextFrame.dims, nextFrame.rows, nextFrame.cols);
 	LOG_EXIT("Result = %d", result);
 	return result;
 }

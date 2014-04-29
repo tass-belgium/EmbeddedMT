@@ -14,7 +14,9 @@ namespace OutputMethod {
 class OutputImageSequence : public OutputMethodInterface {
 public:
 	virtual GBL::CmRetCode_t open(const char* filename);
-	virtual GBL::CmRetCode_t write(const GBL::Frame_t);
+	virtual GBL::CmRetCode_t write(const GBL::Frame_t frame);
+	virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
+
 	virtual GBL::CmRetCode_t close();
 
 private:

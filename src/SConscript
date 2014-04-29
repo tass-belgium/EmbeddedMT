@@ -2,6 +2,7 @@ Import('env')
 
 folders = [
     'application/SConscript',
+	'cm/SConscript',
     'descriptor/SConscript',
     'displacement/SConscript',
     'draw/SConscript',
@@ -17,13 +18,14 @@ SConscript(folders)
 libs = [
     # Modules
     'inputMethod',
-    'outputMethod',
     'findTheBall',
     'descriptor',
     'displacementBase',
     'draw',
     'imProc',
     'matcher',
+	'utils',
+	'outputMethod',
 
 	# 3rd party
 	'openSURF',
@@ -55,3 +57,7 @@ libs_path = [
 target = env.Program('proofOfConcept.cpp', LIBS=libs, LIBPATH=libs_path)
 installed_bin = env.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
 bin = env.Alias("demo", installed_bin)
+
+target = env.Program('pipeline.cpp', LIBS=libs, LIBPATH=libs_path)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['BIN_DIR']), target)
+bin = env.Alias("pipeline", installed_bin)
