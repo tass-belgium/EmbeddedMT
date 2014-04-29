@@ -59,12 +59,15 @@ GBL::CmRetCode_t InputVideo::getFrame(uint16_t index, GBL::Frame_t& frame) {
 GBL::CmRetCode_t InputVideo::getNextFrame(GBL::Frame_t& nextFrame) {
 	LOG_ENTER("Getting next frame, videofile = %p", &_videoFile);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
+#pragma omp critical
+	{
 	if(_imageIndex < size()) {
 		nextFrame = _frames[_imageIndex];
 		_imageIndex++;
 		result = GBL::RESULT_SUCCESS;
 	} else {
 		LOG_WARNING("Could not read next frame");
+	}
 	}
 	LOG_INFO("Frame index = %d, Dims: %d, size: %d x %d", _imageIndex, nextFrame.dims, nextFrame.rows, nextFrame.cols);
 	LOG_EXIT("Result = %d", result);

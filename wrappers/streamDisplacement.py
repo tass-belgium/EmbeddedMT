@@ -27,12 +27,13 @@ def usage():
     print("\t-r             Clean and rebuild")
     print("\t-i             Do not interpolate result")
     print("\t-a             Enable profiling")
+    print("\t-d <mechanism> Multi-threading mechanism: <none>, openmp")
     
 def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ria", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:riad:", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -48,6 +49,7 @@ def main():
     rebuild = False
     interpolate = True
     profile = 'no'
+    threadmode = 'none'
     for o, a in opts:
         if o == "-t":
             target = a
@@ -72,6 +74,8 @@ def main():
             interpolate = False
         elif o == "-a":
             profile = 'yes'
+        elif o == "-d":
+            threadmode = a
         else:
             assert False, "unhandled option"
             usage()
@@ -89,7 +93,7 @@ def main():
     threadSyncer = gbl.threadSyncVariables()
 
     # Execute
-    t = threading.Thread(target=executeApplication, args=(target, mode, sequence, alg, output, logLevel, profile, serverHost, serverPort, threadSyncer))
+    t = threading.Thread(target=executeApplication, args=(target, mode, sequence, alg, output, logLevel, profile, threadmode, serverHost, serverPort, threadSyncer))
     t.start()
 
     while(threadSyncer.doneBuilding == False):
@@ -107,18 +111,18 @@ def main():
 
     return 0
 
-def executeApplication(target, mode, sequence, alg, output, logLevel, profile, serverHost, serverPort, threadSyncer):
+def executeApplication(target, mode, sequence, alg, output, logLevel, profile, threadmode, serverHost, serverPort, threadSyncer):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     fname = '{scriptDir}/../build/{target}/{mode}/bin/pipeline'.format(scriptDir=scriptDir,target=target, mode=mode)
 
     # build application
-    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} profile={profile} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel,profile=profile, buildTarget='pipeline')
+    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} profile={profile} multithreading={threadmode} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel,profile=profile, threadmode=threadmode, buildTarget='pipeline')
     print(cmd)
     ret = os.system(cmd)
     if(ret != 0):
         print('Building returned error (code: {errorcode}). Exiting'.format(errorcode=ret))
-        return RetCodes.RESULT_FAILURE
+        return gbl.RetCodes.RESULT_FAILURE
 
     threadSyncer.doneBuilding = True
     while(threadSyncer.startExecuting):

@@ -23,6 +23,8 @@ GBL::CmRetCode_t DisplacementBase::calculateDisplacement(const GBL::MatchCollect
 	}
 	displacement.x = x/(float_t) matches.size();
 	displacement.y = y/(float_t) matches.size();
+	LOG_INFO("X displacement = %d", displacement.x);
+	LOG_INFO("Y displacement = %d", displacement.y);
 	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }

@@ -5,6 +5,7 @@ testSequences/*/
 toolchains/*/
 *.result
 */output/*
+*/__pycache__/*
 
 # Scons
 .sconsign.dblite

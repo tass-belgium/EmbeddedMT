@@ -23,11 +23,6 @@ map_arch_to_toolchain = {
     'armv6zk' : 'arm-bcm2708hardfp-linux-gnueabi-'
 }
 
-map_toolchain_to_openmp_support = {
-    '' : True,
-    'arm-bcm2708hardfp-linux-gnueabi-' : False,
-}
-
 map_logLevel_to_define = {
     'debug' : 'LOG_LEVEL_DEBUG',
     'warning' : 'LOG_LEVEL_WARNING',
@@ -54,6 +49,12 @@ opts.Add(EnumVariable('profile', 'Set profile flag', 'no',
 					allowed_values=('yes', 'no'),
 					map = {},
 					ignorecase=2))
+
+opts.Add(EnumVariable('multithreading', 'Set multithreading', 'none',
+					allowed_values=('none', 'openmp'),
+					map = {},
+					ignorecase=2))
+
 
 env=Environment(variables=opts)
 Export('env')
@@ -118,7 +119,7 @@ if env['profile'] == 'yes':
 env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
 
-if map_toolchain_to_openmp_support[toolchain] == True and env['mode'] != 'debug':
+if env['multithreading'] == 'openmp':
     env['CPPFLAGS'].append(['-fopenmp']);
     env['LINKFLAGS'].append(['-fopenmp']);
     

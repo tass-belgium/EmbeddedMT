@@ -62,13 +62,22 @@ const bool drawResults_b = false;
 
 typedef struct DescriptorContainer {
 	bool valid;
+	bool ready;
 	GBL::Descriptor_t descriptor;
 	GBL::KeyPointCollection_t keypoints;
+
+	DescriptorContainer() {
+		valid = false;
+		ready = false;
+	}
 } DescriptorContainer_t;
 
 typedef struct MatchesContainer {
 	bool valid;
 	GBL::MatchCollection_t matches;
+	MatchesContainer() {
+		valid = false;
+	}
 } MatchesContainer_t;
 
 }

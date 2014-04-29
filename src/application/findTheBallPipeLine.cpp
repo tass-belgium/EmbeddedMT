@@ -22,6 +22,9 @@
 #include "outputMethod/outputImageSequence.hpp"
 #include "findTheBallPipeLine.hpp"
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+
 const bool subtractBackground = true;
 static GBL::Frame_t background;
 
@@ -50,39 +53,61 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 	}
 	const uint32_t nbFrames = inputMethodInterface.size() - 1; // Subtract the background from the sequence
 
+	std::vector<GBL::Displacement_t> displacements(nbFrames - 1);
 	GBL::DescriptorContainer_t descriptors[nbFrames];
 	GBL::MatchesContainer_t matches[nbFrames-1];
-	std::vector<GBL::Displacement_t> displacements(nbFrames - 1);
 
 	LOG_INFO("Processing frames");
 	GBL::Frame_t* frame = new GBL::Frame_t;
 	uint32_t i = 0;
+#pragma omp parallel default(none) shared(inputMethodInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, matches, imProc, frame, i)
+{	
+
+	#pragma omp single nowait
 	while(inputMethodInterface.getNextFrame(*frame) == GBL::RESULT_SUCCESS) {
-		// There is a next frame
-		GBL::Frame_t* newFrame = new GBL::Frame_t;
-		if(subtractBackground) {
-			LOG_INFO("Frame size = %d x %d, dim = %d", frame->rows, frame->cols, frame->dims);
-			imProc->fastSubtract(*frame, background, *newFrame); 
-			LOG_INFO("Frame size = %d x %d, dim = %d", newFrame->rows, newFrame->cols, newFrame->dims);
+		#pragma omp task firstprivate(i, frame) shared(descriptors, descriptorInterface, matches, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background) 
+		{
+			// There is a next frame
+			GBL::Frame_t newFrame;
+			if(subtractBackground) {
+				LOG_INFO("Frame size = %d x %d, dim = %d", frame->rows, frame->cols, frame->dims);
+				imProc->fastSubtract(*frame, background, newFrame); 
+				LOG_INFO("Frame size = %d x %d, dim = %d", newFrame.rows, newFrame.cols, newFrame.dims);
+			}
+			delete frame;
+			// Description
+			LOG_ENTER("Describing image %d", i); 
+			descriptionHelper(newFrame, descriptors[i], descriptorInterface);
+
+			// Check neighbours whether they are ready
+			if(i > 0) {
+				if(descriptors[i-1].ready == true) {
+					LOG_INFO("Matching %d and %d", i-1, i);
+					matcherHelper(descriptors[i-1], descriptors[i], matches[i-1], matcherInterface);
+					LOG_INFO("Calculating displacement of %d and %d", i-1, i);
+					displacements[i-1].sequenceNo = i-1;
+					displacementHelper(descriptors[i-1], descriptors[i], matches[i-1], displacements[i-1], displacementInterface, outputMethodInterface);
+				}	
+			}
+			if(i < nbFrames - 1) {
+				if(descriptors[i+1].ready == true) {
+					LOG_INFO("Matching %d and %d", i, i+1);
+					matcherHelper(descriptors[i], descriptors[i+1], matches[i], matcherInterface);
+					LOG_INFO("Calculating displacement of %d and %d", i, i+1);
+					displacements[i].sequenceNo = i;
+					displacementHelper(descriptors[i], descriptors[i+1], matches[i], displacements[i], displacementInterface, outputMethodInterface);
+				}
+			}
 		}
-		
-		// Description
-		LOG_ENTER("Describing image %d", i); 
-		descriptionHelper(*newFrame, descriptors[i], descriptorInterface);	
-		
-		// Match
-		// TODO change this mechanism to a threaded one
-		if( i > 0) {
-			matcherHelper(descriptors[i-1], descriptors[i], matches[i-1], matcherInterface);
-			displacementHelper(descriptors[i-1], descriptors[i], matches[i-1], displacements[i-1], displacementInterface, outputMethodInterface);
-		}
-		delete newFrame;
-		i++;	
+		i++;
+		frame = new GBL::Frame_t;
 	}
+}
+	#pragma omp single nowait
 	if (GBL::drawResults_b) {
 		Utils::Utils::drawResults(inputMethodInterface, drawer, *imProc, descriptors, matches, nbFrames, background);	
 	}
-	// TODO: Wait for all threads to finish
+
 	
 	inputMethodInterface.stop();
 	delete frame;
@@ -93,12 +118,15 @@ void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorConta
 	LOG_ENTER("Describing frame %p, type = %d, rows = %d, cols = %d, dims = %d", &frameToDescribe, frameToDescribe.type(), frameToDescribe.rows, frameToDescribe.cols, frameToDescribe.dims);
 	descriptorInterface.describe(frameToDescribe, descriptor.keypoints, descriptor.descriptor);
 	LOG_INFO("Number of found key points = %d, descriptor length = %d", (uint32_t ) descriptor.descriptor.rows, descriptor.descriptor.cols);
+	LOG_INFO("Describing frame %p, type = %d, rows = %d, cols = %d, dims = %d", &frameToDescribe, frameToDescribe.type(), frameToDescribe.rows, frameToDescribe.cols, frameToDescribe.dims);
 	if (descriptor.descriptor.rows == 0) {
 		LOG_WARNING("Did not find any keypoints");
 		descriptor.valid = false;
 	} else {
+		LOG_WARNING("We did find a couple of keypoints");
 		descriptor.valid = true;
 	}
+	descriptor.ready = true;
 	LOG_EXIT("void");
 }
 
