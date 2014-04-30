@@ -13,6 +13,10 @@
 #include "opencv2/highgui/highgui.hpp"
 
 namespace InputMethod {
+bool InputVideo::isMoreInput(void) {
+	return (_imageIndex < size());
+}
+
 GBL::CmRetCode_t InputVideo::start(const char* inputFile) {
 	LOG_ENTER("input file = %s", inputFile);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
@@ -47,9 +51,6 @@ GBL::CmRetCode_t InputVideo::getFrame(uint16_t index, GBL::Frame_t& frame) {
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	if(index < size()) {
 		frame = _frames[index];
-/*		_videoFile.set(CV_CAP_PROP_POS_FRAMES, (double) index);
-		LOG_INFO("Frame position: %f", _videoFile.get(CV_CAP_PROP_POS_FRAMES));
-		_videoFile.read(frame);*/
 		result = GBL::RESULT_SUCCESS;
 	}
 	LOG_EXIT("result = %d", result);
@@ -75,6 +76,7 @@ GBL::CmRetCode_t InputVideo::getNextFrame(GBL::Frame_t& nextFrame) {
 }
 GBL::CmRetCode_t InputVideo::stop(void) {
 	_videoFile.release();
+//	delete _frames;
 	return GBL::RESULT_SUCCESS;
 }
 }

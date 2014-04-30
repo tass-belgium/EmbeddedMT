@@ -18,6 +18,8 @@
 #include "log/logging.hpp"
 #include "utils.hpp"
 #include "outputMethod/outputImageSequence.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
 
 namespace Utils {
 
@@ -68,7 +70,8 @@ GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMe
 	for (uint32_t j = 0; j < nbFrames-1; j++) {
 		LOG_INFO("Generating frame %d", j+1);
 		GBL::Frame_t preFrame2;
-		if (inputMethod.getFrame(j+1, preFrame2) != GBL::RESULT_SUCCESS) {
+		// Index of getFrame should compensate for first background image
+		if (inputMethod.getFrame(j+2, preFrame2) != GBL::RESULT_SUCCESS) {
 			LOG_ERROR("Could not get frame %d", j+1);
 			continue;
 		}
@@ -79,9 +82,11 @@ GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMe
 		} else {
 			frame2 = preFrame2;
 		}
-		GBL::Image_t outputFrame;
-		drawer.draw(frame1, frame2, allMatches[j].matches, descriptors[j].keypoints, descriptors[j + 1].keypoints, outputFrame);
-		outputMethod.write(outputFrame);
+		if(allMatches[j].valid == true) {
+			GBL::Image_t outputFrame;
+			drawer.draw(frame1, frame2, allMatches[j].matches, descriptors[j].keypoints, descriptors[j + 1].keypoints, outputFrame);
+			outputMethod.write(outputFrame);
+		}
 		frame1 = frame2;
 	}
 	drawer.closeFile();
@@ -91,4 +96,19 @@ GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMe
 	LOG_EXIT("Done drawing %s", outputFile);
 	return GBL::RESULT_SUCCESS;
 }
+
+GBL::CmRetCode_t Utils::drawResult(const GBL::Frame_t image1, const GBL::Frame_t image2, const Draw::DrawInterface& drawer, GBL::DescriptorContainer_t descriptor1, GBL::DescriptorContainer_t descriptor2, GBL::MatchesContainer_t matches) {
+	GBL::Image_t outputFrame;
+	if(matches.valid == true) {
+		drawer.draw(image1, image2, matches.matches, descriptor1.keypoints, descriptor2.keypoints, outputFrame);
+		cv::imshow("tmp", outputFrame);
+		cv::waitKey(10);
+	} else {
+		drawer.draw(image1, image2, std::vector<GBL::Match_t>(0), GBL::KeyPointCollection_t(0), GBL::KeyPointCollection_t(0), outputFrame);
+		cv::imshow("tmp", outputFrame);
+		cv::waitKey(10);
+	}
+	return GBL::RESULT_SUCCESS;
+}
+
 }

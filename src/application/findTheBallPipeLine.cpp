@@ -14,6 +14,7 @@
  *
  * =====================================================================================
  */
+#include <unistd.h>
 #include "cm/global.hpp"
 #include "cm/utils.hpp"
 #include "log/logging.hpp"
@@ -51,21 +52,27 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 			return std::vector < GBL::Displacement_t > (0);
 		}
 	}
-	const uint32_t nbFrames = inputMethodInterface.size() - 1; // Subtract the background from the sequence
+	const uint32_t nbFrames = 50;
 
-	std::vector<GBL::Displacement_t> displacements(nbFrames - 1);
 	GBL::DescriptorContainer_t descriptors[nbFrames];
-	GBL::MatchesContainer_t matches[nbFrames-1];
+	GBL::MatchesContainer_t matches[nbFrames];
+	std::vector<GBL::Displacement_t> displacements(nbFrames);
 
 	LOG_INFO("Processing frames");
 	GBL::Frame_t* frame = new GBL::Frame_t;
 	uint32_t i = 0;
-#pragma omp parallel default(none) shared(inputMethodInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, matches, imProc, frame, i)
+	uint32_t sequenceNo = 0;
+#pragma omp parallel shared(inputMethodInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, matches, imProc, frame, i, sequenceNo)
 {	
 
 	#pragma omp single nowait
-	while(inputMethodInterface.getNextFrame(*frame) == GBL::RESULT_SUCCESS) {
-		#pragma omp task firstprivate(i, frame) shared(descriptors, descriptorInterface, matches, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background) 
+	while(inputMethodInterface.isMoreInput()) {
+		if(inputMethodInterface.getNextFrame(*frame) != GBL::RESULT_SUCCESS) {
+			// Lets assume max 30 fps and put the thread to sleep for a while
+			usleep(20000);
+			continue;
+		}
+		#pragma omp task firstprivate(i, frame, sequenceNo) shared(descriptors, descriptorInterface, matches, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background) 
 		{
 			// There is a next frame
 			GBL::Frame_t newFrame;
@@ -74,41 +81,65 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 				imProc->fastSubtract(*frame, background, newFrame); 
 				LOG_INFO("Frame size = %d x %d, dim = %d", newFrame.rows, newFrame.cols, newFrame.dims);
 			}
-			delete frame;
 			// Description
 			LOG_ENTER("Describing image %d", i); 
+			descriptors[i].sequenceNo = sequenceNo;
 			descriptionHelper(newFrame, descriptors[i], descriptorInterface);
 
-			// Check neighbours whether they are ready
-			if(i > 0) {
-				if(descriptors[i-1].ready == true) {
-					LOG_INFO("Matching %d and %d", i-1, i);
-					matcherHelper(descriptors[i-1], descriptors[i], matches[i-1], matcherInterface);
-					LOG_INFO("Calculating displacement of %d and %d", i-1, i);
-					displacements[i-1].sequenceNo = i-1;
-					displacementHelper(descriptors[i-1], descriptors[i], matches[i-1], displacements[i-1], displacementInterface, outputMethodInterface);
-				}	
-			}
-			if(i < nbFrames - 1) {
-				if(descriptors[i+1].ready == true) {
-					LOG_INFO("Matching %d and %d", i, i+1);
-					matcherHelper(descriptors[i], descriptors[i+1], matches[i], matcherInterface);
-					LOG_INFO("Calculating displacement of %d and %d", i, i+1);
-					displacements[i].sequenceNo = i;
-					displacementHelper(descriptors[i], descriptors[i+1], matches[i], displacements[i], displacementInterface, outputMethodInterface);
+			// Check whether neighbours still exist
+			uint32_t prevNeighbourIndex = (i+nbFrames-1) % nbFrames;
+			if(descriptors[prevNeighbourIndex].sequenceNo == sequenceNo-1) {
+				// Check neighbours whether they are ready
+				if(descriptors[prevNeighbourIndex].ready == true) {
+					LOG_INFO("Matching %d and %d", prevNeighbourIndex, i);
+					matcherHelper(descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], matcherInterface);
+					LOG_INFO("Calculating displacement of %d and %d", prevNeighbourIndex, i);
+					displacements[prevNeighbourIndex].sequenceNo = sequenceNo - 1;
+					displacementHelper(descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], displacements[prevNeighbourIndex], displacementInterface, outputMethodInterface);
+
+					if (GBL::drawResults_b) {
+						GBL::Frame_t prevNeighbourFrame;
+						LOG_INFO("Generating corresponding frame %d and %d", prevNeighbourIndex, i);
+						// For the index of getFrame we need to add the background frame again
+						if(inputMethodInterface.getFrame(sequenceNo, prevNeighbourFrame) == GBL::RESULT_SUCCESS) {
+							Utils::Utils::drawResult(prevNeighbourFrame, *frame, drawer, descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex]);	
+						} else {
+							LOG_WARNING("Could not get frame of neighbour");
+						}
+					}
 				}
+			} else {
+				LOG_WARNING("Previous neighbour was someone else");
 			}
+			uint32_t nextNeighbourIndex = (i+1) % nbFrames;
+			if(descriptors[nextNeighbourIndex].sequenceNo == sequenceNo+1) {
+				if(descriptors[nextNeighbourIndex].ready == true) {
+					LOG_INFO("Matching %d and %d", i, nextNeighbourIndex);
+					matcherHelper(descriptors[i], descriptors[nextNeighbourIndex], matches[i], matcherInterface);
+					LOG_INFO("Calculating displacement of %d and %d", i, nextNeighbourIndex);
+					displacements[i].sequenceNo = sequenceNo;
+					displacementHelper(descriptors[i], descriptors[nextNeighbourIndex], matches[i], displacements[i], displacementInterface, outputMethodInterface);
+				}
+			} else {
+				LOG_WARNING("Next neighbour was someone else");
+			}
+			delete frame;
 		}
-		i++;
+		sequenceNo++;
+		i = (i+1) % nbFrames;
+		// Reset the i-th buffers
+		descriptors[i].valid = false;
+		descriptors[i].ready = false;
+		matches[i].valid = false;
 		frame = new GBL::Frame_t;
 	}
 }
-	#pragma omp single nowait
+
+	#pragma omp master nowait
 	if (GBL::drawResults_b) {
 		Utils::Utils::drawResults(inputMethodInterface, drawer, *imProc, descriptors, matches, nbFrames, background);	
 	}
 
-	
 	inputMethodInterface.stop();
 	delete frame;
 	return displacements;
@@ -123,7 +154,7 @@ void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorConta
 		LOG_WARNING("Did not find any keypoints");
 		descriptor.valid = false;
 	} else {
-		LOG_WARNING("We did find a couple of keypoints");
+		LOG_INFO("We did find a couple of keypoints");
 		descriptor.valid = true;
 	}
 	descriptor.ready = true;

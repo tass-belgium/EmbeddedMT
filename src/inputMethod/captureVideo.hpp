@@ -1,19 +1,20 @@
 /*
- * inputVideo.hpp
+ * captureVideo.hpp
  *
- *  Created on: Apr 18, 2014
+ *  Created on: Apr 30, 2014
  *      Author: Bart Verhagen
  */
 
-#ifndef INPUTVIDEO_HPP_
-#define INPUTVIDEO_HPP_
+#ifndef CAPTUREVIDEO_HPP_
+#define CAPTUREVIDEO_HPP_
 
 #include "inputMethodInterface.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 namespace InputMethod {
-class InputVideo : public InputMethodInterface {
+class CaptureVideo : public InputMethodInterface {
 public:
+	CaptureVideo(uint8_t cameraId);
 	virtual bool isMoreInput(void);
 	virtual GBL::CmRetCode_t start(const char* inputFile);
 	virtual uint32_t size(void) const;
@@ -22,11 +23,11 @@ public:
 	virtual GBL::CmRetCode_t stop(void);
 private:
 	cv::VideoCapture _videoFile;
+	std::vector<GBL::Image_t> _frameBuffer;
+	const uint8_t _cameraId;
 	uint32_t _nbFrames;
-	GBL::Image_t* _frames;
-	uint32_t _imageIndex;
 };
 }
 
 
-#endif /* INPUTVIDEO_HPP_ */
+#endif /* CAPTUREVIDEO_HPP_ */

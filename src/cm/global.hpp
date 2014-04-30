@@ -61,6 +61,7 @@ const bool drawResults_b = false;
 #endif
 
 typedef struct DescriptorContainer {
+	uint32_t sequenceNo;
 	bool valid;
 	bool ready;
 	GBL::Descriptor_t descriptor;

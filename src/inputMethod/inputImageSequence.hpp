@@ -15,6 +15,7 @@
 namespace InputMethod {
 class InputImageSequence : public InputMethodInterface {
 public:
+	virtual bool isMoreInput(void);
 	virtual GBL::CmRetCode_t start(const char* inputFile);
 	virtual uint32_t size(void) const;
 	virtual GBL::CmRetCode_t getFrame(uint16_t index, GBL::Frame_t& frame);

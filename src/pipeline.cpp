@@ -21,6 +21,7 @@
 #include "displacement/displacementBase.hpp"
 #include "inputMethod/inputImageSequence.hpp"
 #include "inputMethod/inputVideo.hpp"
+#include "inputMethod/captureVideo.hpp"
 #include "outputMethod/outputImageSequence.hpp"
 #include "outputMethod/socketInterface.hpp"
 
@@ -206,21 +207,34 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 }
 
 GBL::CmRetCode_t getInputMethod(const char* file, InputMethod::InputMethodInterface** inputMethod) {
+	LOG_ENTER("Input argc = %s, inputMethod = %p", file, &inputMethod); 
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
-	struct stat st_buf;
-	uint32_t status = stat(file, &st_buf);
-	if (status == 0) {
-		if (S_ISDIR (st_buf.st_mode)) {
-			LOG_INFO("%s detected to be a directory.", file);
-			*inputMethod = new InputMethod::InputImageSequence();
-		} else {
-			LOG_INFO("%s detected to be a file", file);
-			*inputMethod = new InputMethod::InputVideo();
-		}
+	// Check if we can convert the string to an integer
+	char* endptr;
+	uint8_t cameraId = strtol(file, &endptr, 10);
+	LOG_INFO("CameraId = %d, endptr = %p", cameraId, endptr);
+	if (endptr != nullptr && *endptr == '\0') {
+		// We could do a valid conversion of the string to an integer
+		LOG_INFO("%s detected to be a stream (no. %d)", file, cameraId);
+		*inputMethod = new InputMethod::CaptureVideo(cameraId);
 		result = GBL::RESULT_SUCCESS;
 	} else {
-		LOG_ERROR("Could not get information about %s", file);
+		struct stat st_buf;
+		uint32_t status = stat(file, &st_buf);
+		if (status == 0) {
+			if (S_ISDIR (st_buf.st_mode)) {
+				LOG_INFO("%s detected to be a directory.", file);
+				*inputMethod = new InputMethod::InputImageSequence();
+			} else {
+				LOG_INFO("%s detected to be a file", file);
+				*inputMethod = new InputMethod::InputVideo();
+			}
+			result = GBL::RESULT_SUCCESS;
+		} else {
+			LOG_ERROR("Could not get information about %s", file);
+		}
 	}
+	LOG_EXIT("result = %d", result);
 	return result;
 }
 

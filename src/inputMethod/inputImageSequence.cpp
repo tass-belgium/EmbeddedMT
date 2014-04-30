@@ -14,6 +14,9 @@
 
 namespace InputMethod {
 
+bool InputImageSequence::isMoreInput() {
+	return (_imageIndex < size());
+}
 GBL::CmRetCode_t InputImageSequence::start(const char* inputFile) {
 	LOG_ENTER("Input file = %s", inputFile);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
