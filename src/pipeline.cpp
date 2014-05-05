@@ -111,7 +111,7 @@ GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacem
 		return GBL::RESULT_FAILURE;
 	}
 	for (uint32_t i = 0; i < data.size(); i++) {
-		file << data[i].x << "\t" << data[i].y << std::endl;
+		file << "{\"sequenceNo\":" << data[i].sequenceNo << ",\"displacementX\":" << data[i].x << ",\"displacementY:\":" << data[i].y << "}" << std::endl;
 	}
 	file.close();
 	return GBL::RESULT_SUCCESS;
