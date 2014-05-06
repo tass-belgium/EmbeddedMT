@@ -58,14 +58,13 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 
 	const uint32_t nbFrames = 50;
 	GBL::DescriptorContainer_t descriptors[nbFrames];
-	GBL::MatchesContainer_t matches[nbFrames];
 	std::vector<GBL::Displacement_t> displacements(nbFrames);
 
 	LOG_INFO("Processing frames");
 	GBL::Frame_t* frame = new GBL::Frame_t;
 	uint32_t i = 0;
 	uint32_t sequenceNo = 0;
-#pragma omp parallel shared(inputMethodInterface, detectorInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, matches, imProc, frame, i, sequenceNo)
+#pragma omp parallel shared(inputMethodInterface, detectorInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, imProc, frame, i, sequenceNo, outImSeq)
 {	
 
 	#pragma omp single nowait
@@ -75,7 +74,7 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 			usleep(20000);
 			continue;
 		}
-		#pragma omp task firstprivate(i, frame, sequenceNo) shared(descriptors, detectorInterface, descriptorInterface, matches, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background) 
+		#pragma omp task firstprivate(i, frame, sequenceNo) shared(descriptors, detectorInterface, descriptorInterface, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background, outImSeq) 
 		{
 			// Description
 			LOG_ENTER("Describing image %d", i); 
@@ -88,17 +87,18 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 				// Check neighbours whether they are ready
 				if(descriptors[prevNeighbourIndex].ready == true) {
 					LOG_INFO("Matching %d and %d", prevNeighbourIndex, i);
-					matcherHelper(descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], matcherInterface);
+					GBL::MatchesContainer_t matches;
+					matcherHelper(descriptors[prevNeighbourIndex], descriptors[i], matches, matcherInterface);
 					LOG_INFO("Calculating displacement of %d and %d", prevNeighbourIndex, i);
 					displacements[prevNeighbourIndex].sequenceNo = sequenceNo - 1;
-					displacementHelper(descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], displacements[prevNeighbourIndex], displacementInterface, outputMethodInterface);
+					displacementHelper(descriptors[prevNeighbourIndex], descriptors[i], matches, displacements[prevNeighbourIndex], displacementInterface, outputMethodInterface);
 
 					if (GBL::drawResults_b || GBL::showStuff_b) {
 						GBL::Frame_t prevNeighbourFrame;
 						LOG_INFO("Generating corresponding frame %d and %d", prevNeighbourIndex, i);
 						// For the index of getFrame we need to add the background frame again
 						if(inputMethodInterface.getFrame(sequenceNo, prevNeighbourFrame) == GBL::RESULT_SUCCESS) {
-							Utils::Utils::drawResult(prevNeighbourFrame, *frame, drawer, descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], outImSeq);	
+							Utils::Utils::drawResult(prevNeighbourFrame, *frame, drawer, descriptors[prevNeighbourIndex], descriptors[i], matches, outImSeq);	
 						} else {
 							LOG_WARNING("Could not get frame of neighbour");
 						}
@@ -112,10 +112,11 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 			if(descriptors[nextNeighbourIndex].sequenceNo == sequenceNo+1) {
 				if(descriptors[nextNeighbourIndex].ready == true) {
 					LOG_INFO("Matching %d and %d", i, nextNeighbourIndex);
-					matcherHelper(descriptors[i], descriptors[nextNeighbourIndex], matches[i], matcherInterface);
+					GBL::MatchesContainer_t matches;
+					matcherHelper(descriptors[i], descriptors[nextNeighbourIndex], matches, matcherInterface);
 					LOG_INFO("Calculating displacement of %d and %d", i, nextNeighbourIndex);
 					displacements[i].sequenceNo = sequenceNo;
-					displacementHelper(descriptors[i], descriptors[nextNeighbourIndex], matches[i], displacements[i], displacementInterface, outputMethodInterface);
+					displacementHelper(descriptors[i], descriptors[nextNeighbourIndex], matches, displacements[i], displacementInterface, outputMethodInterface);
 				}
 			} else {
 				LOG_WARNING("Next neighbour was someone else");
@@ -128,7 +129,6 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 		descriptors[i].valid = false;
 		descriptors[i].ready = false;
 		descriptors[i].keypoints.clear();
-		matches[i].valid = false;
 		frame = new GBL::Frame_t;
 	}
 }
