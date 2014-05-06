@@ -48,7 +48,7 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 	}
 
 	// Get background image
-	GBL::Image_t background;
+	GBL::Frame_t background;
 	LOG_INFO("Retrieving background");
 	// For now take first frame as the background
 	if (inputMethodInterface.getNextFrame(background) != GBL::RESULT_SUCCESS) {
@@ -102,7 +102,6 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 						} else {
 							LOG_WARNING("Could not get frame of neighbour");
 						}
-						
 					}
 				}
 			} else {
@@ -180,6 +179,8 @@ void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL
 		}
 	} else {
 		LOG_WARNING("Invalid matches");
+		displacement.x = 0;
+		displacement.y = 0;
 	}
 	LOG_INFO("Writing displacement to socket");
 	outputMethodInterface.write(displacement);
