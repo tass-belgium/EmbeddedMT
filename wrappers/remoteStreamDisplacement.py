@@ -99,7 +99,7 @@ def main():
     threadSyncer = gbl.threadSyncVariables()
 
     # Execute
-    t = threading.Thread(target=executeApplication, args=(target, mode, sequence, alg, output, logLevel, threadMode, user, ip, sequence, serverHost, serverPort, threadSyncer))
+    t = threading.Thread(target=executeApplication, args=(target, mode, sequence, alg, output, logLevel, profile, threadMode, user, ip, sequence, serverHost, serverPort, threadSyncer))
     t.start()
     
     while(threadSyncer.doneBuilding == False):
@@ -118,13 +118,13 @@ def main():
 
     return 0
 
-def executeApplication(target, mode, sequence, alg, output, logLevel, threadMode, user, ip, args, serverHost, serverPort, threadSyncer):
+def executeApplication(target, mode, sequence, alg, output, logLevel, profile, threadMode, user, ip, args, serverHost, serverPort, threadSyncer):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     fname = '{scriptDir}/../build/{target}/{mode}/bin/pipeline'.format(scriptDir=scriptDir,target=target, mode=mode)
     
     # build application
-    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} multithreading={threadMode} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel, threadMode=threadMode, buildTarget='pipeline')
+    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} profile={profile} logLevel={logLevel} multithreading={threadMode} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel, threadMode=threadMode, buildTarget='pipeline', profile=profile)
     print(cmd)
     ret = os.system(cmd)
     if(ret != 0):
