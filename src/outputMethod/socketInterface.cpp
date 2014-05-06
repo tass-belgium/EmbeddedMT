@@ -58,7 +58,8 @@ GBL::CmRetCode_t SocketInterface::write(const GBL::Displacement_t& displacement)
 	snprintf(message, sizeof(message), "{\"sequenceNo\":%4d,\"displacementX\":%4d,\"displacementY\":%4d}", displacement.sequenceNo, displacement.x, displacement.y);
 	if (send(_sockfd, message, sizeof(message), 0) != sizeof(message)) {
 		LOG_ERROR("Could not send message");
-		result = GBL::RESULT_FAILURE;
+	} else {
+		result = GBL::RESULT_SUCCESS;
 	}
 	LOG_EXIT("result = %d", result);
 	return result;

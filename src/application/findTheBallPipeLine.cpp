@@ -40,6 +40,13 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 		return std::vector < GBL::Displacement_t > (0);
 	}
 
+	// Open our own output interface in case we want to draw
+	OutputMethod::OutputImageSequence* outImSeq = nullptr;
+	if(GBL::drawResults_b) {
+		outImSeq = new OutputMethod::OutputImageSequence();
+		outImSeq->open("correspondence_frame");
+	}
+
 	// Get background image
 	GBL::Image_t background;
 	LOG_INFO("Retrieving background");
@@ -86,15 +93,16 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 					displacements[prevNeighbourIndex].sequenceNo = sequenceNo - 1;
 					displacementHelper(descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], displacements[prevNeighbourIndex], displacementInterface, outputMethodInterface);
 
-					if (GBL::drawResults_b) {
+					if (GBL::drawResults_b || GBL::showStuff_b) {
 						GBL::Frame_t prevNeighbourFrame;
 						LOG_INFO("Generating corresponding frame %d and %d", prevNeighbourIndex, i);
 						// For the index of getFrame we need to add the background frame again
 						if(inputMethodInterface.getFrame(sequenceNo, prevNeighbourFrame) == GBL::RESULT_SUCCESS) {
-							Utils::Utils::drawResult(prevNeighbourFrame, *frame, drawer, descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex]);	
+							Utils::Utils::drawResult(prevNeighbourFrame, *frame, drawer, descriptors[prevNeighbourIndex], descriptors[i], matches[prevNeighbourIndex], outImSeq);	
 						} else {
 							LOG_WARNING("Could not get frame of neighbour");
 						}
+						
 					}
 				}
 			} else {
@@ -124,12 +132,9 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 		frame = new GBL::Frame_t;
 	}
 }
-
-	#pragma omp master nowait
-	if (GBL::drawResults_b) {
-		Utils::Utils::drawResults(inputMethodInterface, drawer, *imProc, descriptors, matches, nbFrames, background);	
+	if(GBL::drawResults_b) {
+		outImSeq->close();
 	}
-
 	inputMethodInterface.stop();
 	delete frame;
 	return displacements;

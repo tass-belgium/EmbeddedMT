@@ -60,6 +60,12 @@ const bool drawResults_b = true;
 const bool drawResults_b = false;
 #endif
 
+#ifdef SHOW_STUFF
+const bool showStuff_b = true;
+#else
+const bool showStuff_b = false;
+#endif
+
 typedef struct DescriptorContainer {
 	uint32_t sequenceNo;
 	bool valid;

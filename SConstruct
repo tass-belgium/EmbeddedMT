@@ -55,7 +55,11 @@ opts.Add(EnumVariable('multithreading', 'Set multithreading', 'none',
 					map = {},
 					ignorecase=2))
 
-
+opts.Add(EnumVariable('showstuff','Show realtime stuff', 'no',
+				allowed_values=('yes','no'),
+				map={},
+				ignorecase=2))
+	
 env=Environment(variables=opts)
 Export('env')
 
@@ -120,8 +124,11 @@ env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
 
 if env['multithreading'] == 'openmp':
-    env['CPPFLAGS'].append(['-fopenmp']);
-    env['LINKFLAGS'].append(['-fopenmp']);
+    env['CPPFLAGS'].append(['-fopenmp'])
+    env['LINKFLAGS'].append(['-fopenmp'])
+
+if env['showstuff'] == 'yes':
+	env['CPPDEFINES'].append(['SHOW_STUFF'])
     
 if(target == 'rpi'):
     env['CPPFLAGS'].append(['-mfpu=vfp', '-mfloat-abi=hard', '-march=armv6zk', '-mtune=arm1176jzf-s'])

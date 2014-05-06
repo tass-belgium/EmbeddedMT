@@ -57,7 +57,7 @@ GBL::CmRetCode_t CaptureVideo::getNextFrame(GBL::Frame_t& nextFrame) {
 	{
 		if(_videoFile.read(nextFrame)) {
 			cv::cvtColor(nextFrame, nextFrame, CV_BGR2GRAY);
-			if(GBL::drawResults_b) {
+			if(GBL::drawResults_b || GBL::showStuff_b) {
 				_frameBuffer.push_back(nextFrame);
 			}
 			_nbFrames++;

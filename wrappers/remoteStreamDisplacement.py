@@ -30,12 +30,13 @@ def usage():
     print("\t-i             Try to interpolate result")
     print("\t-a             Enable profiling")
     print("\t-d <mechanism> Multi-threading mechanism: <none>, openmp")
+    print("\t-b             Show stuff")
     
 def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:riad:", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:riad:b", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -54,6 +55,7 @@ def main():
     ip = '10.20.5.103'
     user = 'root'
     threadMode = 'none'
+    showstuff = 'no'
 
     for o, a in opts:
         if o == "-t":
@@ -81,6 +83,8 @@ def main():
             profile = 'yes'
         elif o == "-d":
             threadMode = a
+        elif o == "-b":
+            showstuff = 'yes'
         else:
             assert False, "unhandled option"
             usage()
@@ -99,7 +103,7 @@ def main():
     threadSyncer = gbl.threadSyncVariables()
 
     # Execute
-    t = threading.Thread(target=executeApplication, args=(target, mode, sequence, alg, output, logLevel, profile, threadMode, user, ip, sequence, serverHost, serverPort, threadSyncer))
+    t = threading.Thread(target=executeApplication, args=(target, mode, sequence, alg, output, logLevel, profile, threadMode, showstuff, user, ip, sequence, serverHost, serverPort, threadSyncer))
     t.start()
     
     while(threadSyncer.doneBuilding == False):
@@ -118,13 +122,13 @@ def main():
 
     return 0
 
-def executeApplication(target, mode, sequence, alg, output, logLevel, profile, threadMode, user, ip, args, serverHost, serverPort, threadSyncer):
+def executeApplication(target, mode, sequence, alg, output, logLevel, profile, threadMode, showstuff, user, ip, args, serverHost, serverPort, threadSyncer):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     fname = '{scriptDir}/../build/{target}/{mode}/bin/pipeline'.format(scriptDir=scriptDir,target=target, mode=mode)
     
     # build application
-    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} profile={profile} logLevel={logLevel} multithreading={threadMode} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel, threadMode=threadMode, buildTarget='pipeline', profile=profile)
+    cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} profile={profile} logLevel={logLevel} multithreading={threadMode} showstuff={showstuff} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel, threadMode=threadMode, buildTarget='pipeline', profile=profile, showstuff = showstuff)
     print(cmd)
     ret = os.system(cmd)
     if(ret != 0):

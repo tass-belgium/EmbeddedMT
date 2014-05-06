@@ -22,13 +22,6 @@
 #include "opencv2/highgui/highgui.hpp"
 
 namespace Utils {
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  drawResults
- *  Description: Draws correspondences between two consecutive frames to output folder 
- * =====================================================================================
- */
 GBL::CmRetCode_t Utils::drawResults(InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, GBL::DescriptorContainer_t* descriptors, GBL::MatchesContainer_t* allMatches, uint32_t nbFrames, const GBL::Image_t& image2) {
 	LOG_ENTER("void");
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
@@ -45,7 +38,7 @@ GBL::CmRetCode_t Utils::drawResults(InputMethod::InputMethodInterface& inputMeth
 	}
 	LOG_EXIT("result = %d", result);
 	return result;
-}		/* -----  end of function drawResults  ----- */
+}
 
 void Utils::fastSubtractHandler(const ImageProc::ImageProc& imProc, const GBL::Image_t& image1, const GBL::Image_t& image2, GBL::Image_t& outputImage) {
 	imProc.fastSubtract(image1, image2, outputImage);
@@ -97,17 +90,24 @@ GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMe
 	return GBL::RESULT_SUCCESS;
 }
 
-GBL::CmRetCode_t Utils::drawResult(const GBL::Frame_t image1, const GBL::Frame_t image2, const Draw::DrawInterface& drawer, GBL::DescriptorContainer_t descriptor1, GBL::DescriptorContainer_t descriptor2, GBL::MatchesContainer_t matches) {
+GBL::CmRetCode_t Utils::drawResult(const GBL::Frame_t image1, const GBL::Frame_t image2, const Draw::DrawInterface& drawer, GBL::DescriptorContainer_t descriptor1, GBL::DescriptorContainer_t descriptor2, GBL::MatchesContainer_t matches, OutputMethod::OutputMethodInterface* outputMethod) {
+	LOG_ENTER("Drawing results");
 	GBL::Image_t outputFrame;
 	if(matches.valid == true) {
 		drawer.draw(image1, image2, matches.matches, descriptor1.keypoints, descriptor2.keypoints, outputFrame);
-		cv::imshow("tmp", outputFrame);
-		cv::waitKey(10);
 	} else {
 		drawer.draw(image1, image2, std::vector<GBL::Match_t>(0), GBL::KeyPointCollection_t(0), GBL::KeyPointCollection_t(0), outputFrame);
+	}
+	if(GBL::showStuff_b) {
 		cv::imshow("tmp", outputFrame);
 		cv::waitKey(10);
 	}
+	if(GBL::drawResults_b) {
+		if(outputMethod != nullptr) {
+			outputMethod->write(outputFrame);
+		}
+	}
+	LOG_EXIT("Success");
 	return GBL::RESULT_SUCCESS;
 }
 
