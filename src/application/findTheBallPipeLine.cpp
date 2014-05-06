@@ -80,6 +80,8 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 				LOG_INFO("Frame size = %d x %d, dim = %d", frame->rows, frame->cols, frame->dims);
 				imProc->fastSubtract(*frame, background, newFrame); 
 				LOG_INFO("Frame size = %d x %d, dim = %d", newFrame.rows, newFrame.cols, newFrame.dims);
+			} else {
+				newFrame = *frame;
 			}
 			// Description
 			LOG_ENTER("Describing image %d", i); 
