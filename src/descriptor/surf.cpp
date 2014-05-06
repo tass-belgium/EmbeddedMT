@@ -23,7 +23,6 @@ GBL::CmRetCode_t Surf::describe(const GBL::Image_t& image, GBL::KeyPointCollecti
 
 	// detecting keypoints
 	cv::SurfFeatureDetector detector(hessianThreshold, nOctaves, nOctaveLayers, extended, upright);
-
 	detector.detect(image, keypoints);
 
 	// computing descriptors

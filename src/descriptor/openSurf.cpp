@@ -34,17 +34,6 @@ GBL::CmRetCode_t OpenSurf::describe(const GBL::Image_t& image, GBL::KeyPointColl
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	IpVec ipts;
 
-//	cv::SurfFeatureDetector detector(100, 20, 3);
-	cv::SimpleBlobDetector::Params params;
-	params.filterByColor = false;
-	params.filterByArea = true;
-	params.filterByCircularity = false;
-	params.filterByInertia = false;
-	params.filterByConvexity = false;
-	
-	cv::SimpleBlobDetector detector(params);
-	detector.detect(image, keypoints);
-
 	// Convert keypoints to ipvec
 	for(uint32_t i = 0; i < keypoints.size(); i++) {
 		Ipoint ipoint;

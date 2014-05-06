@@ -10,6 +10,7 @@
 
 #include "cm/global.hpp"
 #include "imProc/imageProcInterface.hpp"
+#include "detector/detectorInterface.hpp"
 #include "descriptor/descriptorInterface.hpp"
 #include "match/matchInterface.hpp"
 #include "draw/drawInterface.hpp"
@@ -18,7 +19,6 @@
 #include "outputMethod/outputMethodInterface.hpp"
 
 std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer,
-		const Descriptor::DescriptorInterface& descriptorInterface, const Match::MatcherInterface& matcherInterface, const Displacement::DisplacementInterface& displacementInterface,
-		InputMethod::InputMethodInterface& inputMethodInterface, OutputMethod::OutputMethodInterface& outputMethodInterface);
+		const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const Match::MatcherInterface& matcherInterface, const Displacement::DisplacementInterface& displacementInterface, InputMethod::InputMethodInterface& inputMethodInterface, OutputMethod::OutputMethodInterface& outputMethodInterface);
 
 #endif

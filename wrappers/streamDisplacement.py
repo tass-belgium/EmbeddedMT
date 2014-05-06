@@ -25,7 +25,7 @@ def usage():
     print("\t-c <alg>       Define algorithm to use: <0>:SURF+BFM, 1:SURF+FLANN, 2:SIFT+BFM, 3:SIFT+FLANN")
     print("\t-l <logLevel>  Define log level: <debug>, warning or error")
     print("\t-r             Clean and rebuild")
-    print("\t-i             Do not interpolate result")
+    print("\t-i             Try to interpolate result")
     print("\t-a             Enable profiling")
     print("\t-d <mechanism> Multi-threading mechanism: <none>, openmp")
     
@@ -47,7 +47,7 @@ def main():
     alg = 0
     logLevel = 'debug'
     rebuild = False
-    interpolate = True
+    interpolate = False
     profile = 'no'
     threadmode = 'none'
     for o, a in opts:
@@ -71,7 +71,7 @@ def main():
         elif o == "-r":
             rebuild = True
         elif o == "-i":
-            interpolate = False
+            interpolate = True
         elif o == "-a":
             profile = 'yes'
         elif o == "-d":

@@ -7,6 +7,8 @@
 #include "log/logging.hpp"
 #include "cm/global.hpp"
 #include "imProc/imageProcBase.hpp"
+#include "detector/simpleBlobDetector.hpp"
+#include "detector/averageContourDetector.hpp"
 #include "descriptor/sift.hpp"
 #include "descriptor/surf.hpp"
 #include "descriptor/orb.hpp"
@@ -29,7 +31,7 @@
 
 static const char_t* getMethodPname(uint8_t matchAlgorithm);
 static GBL::CmRetCode_t getInputMethod(const char* file, InputMethod::InputMethodInterface** inputMethod);
-static GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::DescriptorInterface** descriptor, const Match::MatcherInterface** matcher);
+static GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorInterface** detector, const Descriptor::DescriptorInterface** descriptor, const Match::MatcherInterface** matcher); 
 static GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data);
 static int64_t GetTimeMs64();
 
@@ -44,6 +46,7 @@ int main(int argc, char** argv) {
 	InputMethod::InputMethodInterface* inputMethod = nullptr;
 	OutputMethod::OutputMethodInterface* outputMethod = nullptr;
 
+	const Detector::DetectorInterface* detector = nullptr;
 	const Descriptor::DescriptorInterface* descriptor = nullptr;
 	const Match::MatcherInterface* matcher = nullptr;
 
@@ -73,14 +76,14 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	if (getExecutors(matchAlgorithm, &descriptor, &matcher) != GBL::RESULT_SUCCESS) {
+	if (getExecutors(matchAlgorithm, &detector, &descriptor, &matcher) != GBL::RESULT_SUCCESS) {
 		LOG_ERROR("Could not get valid descriptor and matcher. Define a valid algorithm to be used.");
 		return -1;
 	}
 
 	clock_t tStart = clock();
 	int64_t startTime = GetTimeMs64();
-	std::vector<GBL::Displacement_t> displacements = findTheBallPipeline(imageSequenceFolder, imProc, *drawer, *descriptor, *matcher, *displacement, *inputMethod, *outputMethod);
+	std::vector<GBL::Displacement_t> displacements = findTheBallPipeline(imageSequenceFolder, imProc, *drawer, *detector, *descriptor, *matcher, *displacement, *inputMethod, *outputMethod);
 	int64_t endTime = GetTimeMs64();
 	float_t totalTimeElapsed = (float_t) (clock() - tStart) / CLOCKS_PER_SEC;
 	LOG(stdout, "TIME", "CPU time of processing stage: %f s", totalTimeElapsed);
@@ -150,6 +153,9 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 		case 9:
 			algoName = "Simple Blob + BRIEF";
 			break;
+		case 10:
+			algoName = "Average contour + BRIEF";
+			break;
 		default:
 			algoName = "unkown";
 			break;
@@ -157,45 +163,60 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 	return algoName;
 }
 
-GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::DescriptorInterface** descriptor, const Match::MatcherInterface** matcher) {
+GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorInterface** detector, const Descriptor::DescriptorInterface** descriptor, const Match::MatcherInterface** matcher) {
 	switch (matchAlgorithm) {
 		case 0:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Surf();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 1:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Surf();
 			*matcher = new Match::FlannBasedMatcher();
 			break;
 		case 2:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Sift();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 3:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Sift();
 			*matcher = new Match::FlannBasedMatcher();
 			break;
 		case 4:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Orb();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 5:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Brisk();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 6:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Freak();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 7:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::OpenSurf();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 8:
+			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::OpenSurf();
 			*matcher = new Match::OpenSurfMatcher();
 			break;
 		case 9:
+			*detector = new Detector::SimpleBlobDetector();
+			*descriptor = new Descriptor::Brief();
+			*matcher = new Match::BfMatcher();
+			break;
+		case 10:
+			*detector = new Detector::AverageContourDetector(25.0, 30U);
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;

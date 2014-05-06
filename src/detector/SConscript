@@ -1,0 +1,10 @@
+Import('env')
+
+lib_files = [
+	'averageContourDetector.cpp',
+	'simpleBlobDetector.cpp'
+]
+
+lib = env.Library('detector', lib_files)
+installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
+env.Alias('buildLibs', installed_lib)

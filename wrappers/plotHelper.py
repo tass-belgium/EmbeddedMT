@@ -49,6 +49,6 @@ def plotReceivedPoints(displacements, color, threadSyncer):
         plt.plot(x, y,'{color}x'.format(color=color))
         fig.canvas.draw()
         plt.draw()
-        plt.pause(0.1)
+        plt.pause(0.01)
         if(threadSyncer.continuePlotting == True):
             break;

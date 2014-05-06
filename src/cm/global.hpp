@@ -55,7 +55,7 @@ typedef struct displacement {
 
 const uint16_t maxFilenameLength = 256;
 #if LOG_SEVERITY >= LEVEL_DEBUG
-const bool drawResults_b = false;
+const bool drawResults_b = true;
 #else
 const bool drawResults_b = false;
 #endif

@@ -26,15 +26,12 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
-const bool subtractBackground = true;
-static GBL::Frame_t background;
-
-void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const Descriptor::DescriptorInterface& descriptorInterface); 
+void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const GBL::Image_t& background, const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const ImageProc::ImageProc& imProc);
 void matcherHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, GBL::MatchesContainer_t& matches, const Match::MatcherInterface& matcherInterface); 
 void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, const GBL::MatchesContainer_t& matches, GBL::Displacement_t& displacement, const Displacement::DisplacementInterface& displacementInterface, OutputMethod::OutputMethodInterface& outputMethodInterface); 
 
 std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer,
-		const Descriptor::DescriptorInterface& descriptorInterface, const Match::MatcherInterface& matcherInterface, const Displacement::DisplacementInterface& displacementInterface,
+		const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const Match::MatcherInterface& matcherInterface, const Displacement::DisplacementInterface& displacementInterface,
 		InputMethod::InputMethodInterface& inputMethodInterface, OutputMethod::OutputMethodInterface& outputMethodInterface) {
 	
 	// Single threaded initialization phase
@@ -44,16 +41,15 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 	}
 
 	// Get background image
-	if (subtractBackground) {
-		LOG_INFO("Retrieving background");
-		// For now take first frame as the background
-		if (inputMethodInterface.getNextFrame(background) != GBL::RESULT_SUCCESS) {
-			LOG_ERROR("Could not get background");
-			return std::vector < GBL::Displacement_t > (0);
-		}
+	GBL::Image_t background;
+	LOG_INFO("Retrieving background");
+	// For now take first frame as the background
+	if (inputMethodInterface.getNextFrame(background) != GBL::RESULT_SUCCESS) {
+		LOG_ERROR("Could not get background");
+		return std::vector < GBL::Displacement_t > (0);
 	}
-	const uint32_t nbFrames = 50;
 
+	const uint32_t nbFrames = 50;
 	GBL::DescriptorContainer_t descriptors[nbFrames];
 	GBL::MatchesContainer_t matches[nbFrames];
 	std::vector<GBL::Displacement_t> displacements(nbFrames);
@@ -62,7 +58,7 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 	GBL::Frame_t* frame = new GBL::Frame_t;
 	uint32_t i = 0;
 	uint32_t sequenceNo = 0;
-#pragma omp parallel shared(inputMethodInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, matches, imProc, frame, i, sequenceNo)
+#pragma omp parallel shared(inputMethodInterface, detectorInterface, descriptorInterface, matcherInterface, displacementInterface, outputMethodInterface, background, displacements, descriptors, matches, imProc, frame, i, sequenceNo)
 {	
 
 	#pragma omp single nowait
@@ -72,21 +68,12 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 			usleep(20000);
 			continue;
 		}
-		#pragma omp task firstprivate(i, frame, sequenceNo) shared(descriptors, descriptorInterface, matches, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background) 
+		#pragma omp task firstprivate(i, frame, sequenceNo) shared(descriptors, detectorInterface, descriptorInterface, matches, matcherInterface, displacements, displacementInterface, outputMethodInterface, imProc, background) 
 		{
-			// There is a next frame
-			GBL::Frame_t newFrame;
-			if(subtractBackground) {
-				LOG_INFO("Frame size = %d x %d, dim = %d", frame->rows, frame->cols, frame->dims);
-				imProc->fastSubtract(*frame, background, newFrame); 
-				LOG_INFO("Frame size = %d x %d, dim = %d", newFrame.rows, newFrame.cols, newFrame.dims);
-			} else {
-				newFrame = *frame;
-			}
 			// Description
 			LOG_ENTER("Describing image %d", i); 
 			descriptors[i].sequenceNo = sequenceNo;
-			descriptionHelper(newFrame, descriptors[i], descriptorInterface);
+			descriptionHelper(*frame, descriptors[i], background, detectorInterface, descriptorInterface, *imProc);
 
 			// Check whether neighbours still exist
 			uint32_t prevNeighbourIndex = (i+nbFrames-1) % nbFrames;
@@ -132,6 +119,7 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 		// Reset the i-th buffers
 		descriptors[i].valid = false;
 		descriptors[i].ready = false;
+		descriptors[i].keypoints.clear();
 		matches[i].valid = false;
 		frame = new GBL::Frame_t;
 	}
@@ -147,8 +135,9 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 	return displacements;
 }
 
-void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const Descriptor::DescriptorInterface& descriptorInterface) {
+void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const GBL::Image_t& background, const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const ImageProc::ImageProc& imProc) {
 	LOG_ENTER("Describing frame %p, type = %d, rows = %d, cols = %d, dims = %d", &frameToDescribe, frameToDescribe.type(), frameToDescribe.rows, frameToDescribe.cols, frameToDescribe.dims);
+	detectorInterface.detect(frameToDescribe, descriptor.keypoints, background, imProc);
 	descriptorInterface.describe(frameToDescribe, descriptor.keypoints, descriptor.descriptor);
 	LOG_INFO("Number of found key points = %d, descriptor length = %d", (uint32_t ) descriptor.descriptor.rows, descriptor.descriptor.cols);
 	LOG_INFO("Describing frame %p, type = %d, rows = %d, cols = %d, dims = %d", &frameToDescribe, frameToDescribe.type(), frameToDescribe.rows, frameToDescribe.cols, frameToDescribe.dims);

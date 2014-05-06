@@ -10,7 +10,8 @@ folders = [
     'match/SConscript',
     'log/SConscript',
     'inputMethod/SConscript',
-    'outputMethod/SConscript'
+    'outputMethod/SConscript',
+	'detector/SConscript'
 ]
 
 SConscript(folders)
@@ -20,6 +21,7 @@ libs = [
     'inputMethod',
     'findTheBall',
     'descriptor',
+	'detector',
     'displacementBase',
     'draw',
     'imProc',
