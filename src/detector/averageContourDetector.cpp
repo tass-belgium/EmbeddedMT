@@ -21,13 +21,15 @@
 #include "opencv2/highgui/highgui.hpp"
 
 namespace Detector {
-AverageContourDetector::AverageContourDetector() : _threshold(20.0), _boundaryLength(30U) {
+AverageContourDetector::AverageContourDetector() : _threshold(20), _boundaryLength(30U) {
 	;
 }
 
-AverageContourDetector::AverageContourDetector(double_t threshold, uint32_t boundaryLength) : _threshold(threshold), _boundaryLength(boundaryLength) {
+AverageContourDetector::AverageContourDetector(uint8_t threshold, uint32_t boundaryLength) : _threshold(threshold), _boundaryLength(boundaryLength) {
 	;
 }
+
+
 
 GBL::CmRetCode_t AverageContourDetector::detect(const GBL::Image_t& inputImage, GBL::KeyPointCollection_t& detectedKeypoints) const {
 	LOG_ENTER("Image = %p, keypoints = %p", &inputImage, &detectedKeypoints);
@@ -62,7 +64,7 @@ GBL::CmRetCode_t AverageContourDetector::detect(const GBL::Image_t& inputImage, 
 	GBL::Image_t outputImage = inputImage - background;
 
 	// TODO: make a symmetrical one for darker blobs. This comes with a couple of additional problems...
-	cv::threshold(outputImage, outputImage, _threshold, 255, cv::THRESH_BINARY);
+	imProc.threshold(outputImage, _threshold);
 	return detect(outputImage, detectedKeypoints);
 }
 }

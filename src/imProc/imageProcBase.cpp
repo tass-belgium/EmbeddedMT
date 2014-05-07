@@ -30,10 +30,10 @@ GBL::CmRetCode_t ImageProcBase::sharpen(const GBL::InputImage_t inputImage, GBL:
 
 GBL::CmRetCode_t ImageProcBase::subtract(const GBL::Image_t firstImage, const GBL::Image_t secondImage, GBL::Image_t outputImage) const {
 	cv::Mat isBackground;
-	int8_t threshold = 20;
+	int8_t subtractThreshold = 20;
 	isBackground = firstImage - secondImage;
 	for(int32_t i = 0; i < isBackground.rows*isBackground.cols; i++) {
-		if(std::abs(isBackground.data[i]) < threshold) {
+		if(std::abs(isBackground.data[i]) < subtractThreshold) {
 			isBackground.data[i] = 0;
 		} else {
 			isBackground.data[i] = 1;
@@ -51,4 +51,19 @@ GBL::CmRetCode_t ImageProcBase::fastSubtract(const GBL::Image_t& firstImage, con
 	LOG_EXIT("GBL::RESULT_SUCCESS");
 	return GBL::RESULT_SUCCESS;
 }
+
+void ImageProcBase::threshold(GBL::Frame_t& image, uint8_t threshold) const {
+	for(int32_t row = 0; row < image.rows; row++) {
+		uint8_t* dataPtr = image.ptr(row);
+		for(int32_t col = 0; col < image.cols; col++) {
+			if(*dataPtr < threshold) {
+				*dataPtr = 0;
+			} else {
+				*dataPtr = 0xFF;
+			}
+			dataPtr++;
+		}
+	}
+}
+
 }
