@@ -19,6 +19,8 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include "ofeli/ac_withoutedges.hpp"
+#include "ofeli/linked_list.hpp"
 
 namespace Detector {
 AverageContourDetector::AverageContourDetector() : _threshold(20), _boundaryLength(30U) {
@@ -37,7 +39,11 @@ GBL::CmRetCode_t AverageContourDetector::detect(const GBL::Image_t& inputImage, 
 	std::vector<std::vector<cv::Point> > contours;
 	std::vector<cv::Vec4i> hierarchy;
 	
-	cv::findContours(inputImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+//	cv::findContours(inputImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	ofeli::ACwithoutEdges contourObject(inputImage.data, inputImage.cols, inputImage.rows); 
+	contourObject.evolve();
+	const ofeli::list<int>* Lout = &contourObject.get_Lout();
+
 	LOG_INFO("Found %d contours", (uint32_t) contours.size());
 	for(size_t i = 0; i < contours.size(); i++) {
 		// Check for the size of the area
@@ -50,7 +56,7 @@ GBL::CmRetCode_t AverageContourDetector::detect(const GBL::Image_t& inputImage, 
 			}
 			float_t x_center = (float_t) x/ (float_t) contours[i].size();
 			float_t y_center = (float_t) y/ (float_t) contours[i].size();
-			// TODO: determine scale and angle for more robust keypoints descriptions
+			// TODO: determine scale and angle for possibly more robust keypoints descriptions
 			GBL::KeyPoint_t keypoint(x_center, y_center, 1); 
 			detectedKeypoints.push_back(keypoint);
 		}

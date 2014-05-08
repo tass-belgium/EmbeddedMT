@@ -1,6 +1,7 @@
 files = [
 	'openSURF/SConscript',
-	'check/check-0.9.12/src/SConscript'
+	'check/check-0.9.12/src/SConscript',
+	'ofeli/SConscript'
 ]
 
 SConscript(files)

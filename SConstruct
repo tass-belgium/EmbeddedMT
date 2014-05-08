@@ -103,7 +103,6 @@ env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_di
 # Fix for 3rd party modules that actually want to by installed in the system dirs
 env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)])
 
-
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
 

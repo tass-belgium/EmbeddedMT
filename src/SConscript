@@ -40,6 +40,9 @@ libs = [
     'opencv_nonfree',
     'opencv_imgproc',
     'opencv_core',
+
+	# Ofeli
+	'ofeli',
     
     # Std libraries
     env['STD_LIBS']

@@ -1,0 +1,29 @@
+Import('env')
+
+source_files = [
+	'activecontour.cpp',
+	'ac_withoutedges.cpp',
+	'ac_withoutedges_yuv.cpp',
+	'geodesic_ac.cpp',
+	'hausdorff_distance.cpp',
+]
+
+header_files = [
+	'activecontour.hpp',
+	'ac_withoutedges.hpp',
+	'ac_withoutedges_yuv.hpp',
+	'geodesic_ac.hpp',
+	'hausdorff_distance.hpp',
+	'linked_list.hpp',
+]
+
+env_ofeli = env.Clone()
+env_ofeli['CPPFLAGS'].append(['-DLINUX'])
+
+# Install lib
+lib = env_ofeli.Library('ofeli', source_files)
+installed_lib = env_ofeli.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
+env_ofeli.Alias('build3rdparty', installed_lib)
+
+# Install header files
+env_ofeli.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)
