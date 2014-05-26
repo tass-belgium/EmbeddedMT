@@ -9,7 +9,7 @@ map_target_to_arch = {
 }
 
 map_arch_to_static_lib = {
-    'x64' : False,
+    'x64' : True,
     'armv6zk' : True
 }
 
@@ -60,7 +60,14 @@ opts.Add(EnumVariable('showstuff','Show realtime stuff', 'no',
 				map={},
 				ignorecase=2))
 	
-env=Environment(variables=opts)
+# Tools
+tools_list = [
+	# default tools
+	'default',
+	'opencvBuilder'
+]
+
+env=Environment(variables=opts, tools = tools_list)
 Export('env')
 
 target=env['target']
@@ -68,18 +75,20 @@ arch=map_target_to_arch[target]
 toolchain=map_arch_to_toolchain[arch]
 
 rootDir = Dir('.').abspath
-buildDir = Dir('build/{target}/{mode}/src'.format(target=target, mode=env['mode'])).abspath
+rootBuildDir = Dir('build/{target}/{mode}'.format(target=target, mode=env['mode'])).abspath
+buildDir = Dir('{rootBuildDir}/src'.format(rootBuildDir = rootBuildDir)).abspath
 sourceDir = Dir('src').abspath
 thirdpartyDir = Dir('3rdparty').abspath
-thirdpartyBuildDir = '{buildDir}/3rdparty'.format(buildDir = buildDir)
+thirdpartyBuildDir = '{rootBuildDir}/3rdparty'.format(rootBuildDir = rootBuildDir)
 VariantDir('{buildDir}'.format(buildDir=buildDir), sourceDir)
 VariantDir('{thirdpartyDir}'.format(thirdpartyDir=thirdpartyBuildDir), thirdpartyDir)
 
-opencv_dir = Dir('3rdparty/opencv').abspath
-
 env['THIRD_PARTY_DIR'] = '{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)
+env['THIRD_PARTY_INCLUDE_DIR'] = '{thirdpartyBuildDir}/include'.format(thirdpartyBuildDir=thirdpartyBuildDir)
+env['THIRD_PARTY_LIBS_DIR'] = '{thirdpartyBuildDir}/libs'.format(thirdpartyBuildDir=thirdpartyBuildDir)
 env['LIBS_DIR'] = '{buildDir}/../libs'.format(buildDir = buildDir)
 env['BIN_DIR'] = '{buildDir}/../bin'.format(buildDir = buildDir)
+env['openCV_DIR'] = Dir('3rdparty/opencv').abspath
 
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
@@ -93,16 +102,13 @@ env['CPPFLAGS'] = []
 env['CXXFLAGS'] = []
 env['LDFLAGS'] = []
 env['CFLAGS'] = []
+env['LINKFLAGS'] = []
 
 env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
-env['CPPPATH'].append('{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir))
-env['CPPPATH'].append('{opencv_dir}/include'.format(opencv_dir=opencv_dir))
-env['CPPPATH'].append('{opencv_dir}/include/opencv'.format(opencv_dir=opencv_dir))
-env['CPPPATH'].append('{opencv_dir}/include/opencv2'.format(opencv_dir=opencv_dir))
+env['CPPPATH'].append('{thirdpartyBuildDir}'.format(thirdpartyBuildDir=env['THIRD_PARTY_INCLUDE_DIR']))
 
 # Fix for 3rd party modules that actually want to by installed in the system dirs
-env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)])
-
+env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=env['THIRD_PARTY_INCLUDE_DIR'])])
 
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
@@ -142,11 +148,6 @@ env['STD_LIBS'] = [
     'stdc++'
 ]
 
-env['openCV_LIBS_DIRS'] = [
-    '{opencv_dir}/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir),
-    '{opencv_dir}/3rdparty/lib/{arch}'.format(arch=arch,opencv_dir=opencv_dir)
-]
-
 print("Target: {target}".format(target=target))
 print("Target architecture: {arch}".format(arch=arch))
 print("Building in {buildDir}".format(buildDir=buildDir))
@@ -158,8 +159,9 @@ print("Compiler: {compiler}".format(compiler=env['CC']))
 print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
 SConscript_files = [
-	"{buildDir}/SConscript".format(buildDir=buildDir),
-	'{buildDir}/3rdparty/SConscript'.format(buildDir=buildDir)
+	'3rdparty/SConscript',
+	'{buildDir}/SConscript'.format(buildDir=buildDir),
+#	'{thirdpartyBuildDir}/SConscript'.format(thirdpartyBuildDir = thirdpartyBuildDir),
 ]
 
 SConscript(SConscript_files)

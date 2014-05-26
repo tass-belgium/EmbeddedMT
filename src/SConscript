@@ -33,27 +33,22 @@ libs = [
 	'openSURF',
  
     # openCV libraries
-    'opencv_features2d',
-    'opencv_highgui',
     'opencv_photo',
-    'opencv_flann',
     'opencv_nonfree',
+	'opencv_legacy',
+    'opencv_highgui',
+    'opencv_flann',
+    'opencv_features2d',
     'opencv_imgproc',
     'opencv_core',
-    
-    # Std libraries
-    env['STD_LIBS']
 ]
 
-if env['USE_STATIC_LIBS'] == True:
-    libs.append([
-        'liblibjpeg',
-        'zlib'
-    ])
+libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
+libs.extend(env['STD_LIBS'])
 
 libs_path = [
-    env['openCV_LIBS_DIRS'],
-    env['LIBS_DIR']
+    env['LIBS_DIR'],
+	env['THIRD_PARTY_LIBS_DIR'],
 ]
 
 target = env.Program('proofOfConcept.cpp', LIBS=libs, LIBPATH=libs_path)

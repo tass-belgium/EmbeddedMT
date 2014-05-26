@@ -12,8 +12,6 @@
  *      Author: cv
  */
 #include <string>
-#include <cv.h>
-#include <highgui.h>
 
 #include "cm/global.hpp"
 #include "cm/utils.hpp"

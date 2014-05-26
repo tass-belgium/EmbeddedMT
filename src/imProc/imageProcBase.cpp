@@ -5,7 +5,6 @@
  *      Author: cv
  */
 
-#include <cv.h>
 #include <cmath>
 
 #include "imageProcBase.hpp"

@@ -23,7 +23,11 @@
   #undef max
 #endif
 
-#include <cv.h>
+#include "opencv2/core/core_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/photo/photo_c.h"
+#include "opencv2/objdetect/objdetect_c.h"
+#include "opencv2/legacy/legacy.hpp"
 
 //! Computes the integral image of image img.  Assumes source image to be a 
 //! 32-bit floating point.  Returns IplImage in 32-bit float form.

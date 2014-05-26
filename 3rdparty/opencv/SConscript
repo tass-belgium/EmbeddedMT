@@ -1,0 +1,21 @@
+import os
+Import('env')
+
+opencv_module_dir = '{opencv_dir}/opencv/modules'.format(opencv_dir = env['openCV_DIR'])
+opencv_3rdparty_dir = '{opencv_dir}/opencv/3rdparty'.format(opencv_dir = env['openCV_DIR'])
+env['opencv_config'] = {}
+env.configOpencv()
+env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'] = []
+
+for entry in os.listdir(opencv_3rdparty_dir):
+	if(os.path.isdir('{module_dir}/{module}'.format(module_dir = opencv_3rdparty_dir, module = entry))):
+		# Generate module lib
+		env['opencv_3rdparty'] = Dir('{module_dir}/{module}'.format(module_dir = opencv_3rdparty_dir, module = entry)).abspath
+		env.thirdpartyOpencv()
+
+for entry in os.listdir(opencv_module_dir):
+	if(os.path.isdir('{module_dir}/{module}'.format(module_dir = opencv_module_dir, module = entry))):
+		# Generate module lib
+		env['opencv_module'] = Dir('{module_dir}/{module}'.format(module_dir = opencv_module_dir, module = entry)).abspath
+		env.openclOpencv()
+		env.buildOpencv()

@@ -20,7 +20,7 @@ GBL::CmRetCode_t Draw::draw(const GBL::Image_t& img1, const GBL::Image_t& img2, 
 		std::vector<GBL::KeyPoint_t> keypoints2, GBL::Image_t& outputFrame) const {
 	//-- Draw only "good" matches
 	GBL::Image_t img_matches;
-	cv::drawMatches(img1, keypoints1, img2, keypoints2, good_matches, outputFrame, cv::Scalar::all(-1), cv::Scalar::all(-1), cv::vector<char>(),
+	cv::drawMatches(img1, keypoints1, img2, keypoints2, good_matches, outputFrame, cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
 			cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 	return GBL::RESULT_SUCCESS;
 }
@@ -30,7 +30,7 @@ GBL::CmRetCode_t Draw::openFile(const char* file, uint16_t width, uint16_t heigh
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	cv::Size size(width, height);
 	const std::string filename(file);
-	_videoFile.open(filename, CV_FOURCC('P','I','M','1'), (double) 30.0f, size, true);
+//	_videoFile.open(filename, CV_FOURCC('P','I','M','1'), (double) 30.0f, size, true);
 	if (_videoFile.isOpened()) {  // check if we succeeded
 		result = GBL::RESULT_SUCCESS;
 	} else {

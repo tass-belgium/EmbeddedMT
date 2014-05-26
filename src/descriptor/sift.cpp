@@ -15,8 +15,10 @@
 namespace Descriptor {
 GBL::CmRetCode_t Sift::describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
 	LOG_ENTER("image = %p", &image);
-	cv::SiftFeatureDetector* detectortype = new cv::SiftFeatureDetector();
-	cv::PyramidAdaptedFeatureDetector detector(detectortype, 1); // levels of image scale
+	cv::SiftFeatureDetector detectortype = cv::SiftFeatureDetector();
+	cv::Ptr<cv::FeatureDetector> levelDetector = cv::FeatureDetector::create("SIFT");
+
+	cv::PyramidAdaptedFeatureDetector detector(levelDetector, 1); // levels of image scale
 	cv::SiftDescriptorExtractor extractor;
 	cv::Mat descriptors1;
 

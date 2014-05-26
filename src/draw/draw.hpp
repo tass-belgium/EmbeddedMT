@@ -4,10 +4,8 @@
  *  Created on: Apr 8, 2014
  *      Author: cv
  */
-
-#include "opencv2/opencv.hpp"
-
 #include "cm/global.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include "drawInterface.hpp"
 
 namespace Draw {

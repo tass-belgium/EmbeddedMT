@@ -28,4 +28,4 @@ installed_lib = env_opensurf.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR'
 env_opensurf.Alias('build3rdparty', installed_lib)
 
 # Install header files
-env_opensurf.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_DIR']), header_files)
+env_opensurf.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR']), header_files)

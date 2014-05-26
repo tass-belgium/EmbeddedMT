@@ -1,6 +1,9 @@
+Import('env')
+
 files = [
 	'openSURF/SConscript',
-	'check/check-0.9.12/src/SConscript'
+	'check/check-0.9.12/src/SConscript',
+	'opencv/SConscript'
 ]
 
 SConscript(files)

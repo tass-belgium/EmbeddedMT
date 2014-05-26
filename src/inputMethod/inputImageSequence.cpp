@@ -5,6 +5,7 @@
  *      Author: cv
  */
 #include <dirent.h>
+#include <cstring>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -45,7 +46,7 @@ GBL::CmRetCode_t InputImageSequence::getFrame(uint16_t index, GBL::Frame_t& fram
 	LOG_ENTER("Getting image %d in %p", index, &frame);
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	if (index < _images.size()) {
-		frame = cv::imread(_images[index], CV_LOAD_IMAGE_GRAYSCALE);
+		frame = cv::imread(_images[index], cv::IMREAD_GRAYSCALE);
 		result = GBL::RESULT_SUCCESS;
 	} else {
 		LOG_ERROR("There is no next frame");

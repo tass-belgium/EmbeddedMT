@@ -4,13 +4,12 @@
  *  Created on: Apr 18, 2014
  *      Author: cv
  */
-
 #include "inputVideo.hpp"
 
 #include "log/logging.hpp"
 
 #include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/highgui.hpp"
 
 namespace InputMethod {
 bool InputVideo::isMoreInput(void) {
@@ -22,7 +21,7 @@ GBL::CmRetCode_t InputVideo::start(const char* inputFile) {
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	_videoFile.open(inputFile);
 	if (_videoFile.isOpened()) {  // check if we succeeded
-		_nbFrames = (uint32_t) _videoFile.get(CV_CAP_PROP_FRAME_COUNT);
+		_nbFrames = (uint32_t) _videoFile.get(cv::CAP_PROP_FRAME_COUNT);
 		LOG_INFO("Reading video");
 		_frames = new GBL::Image_t[_nbFrames];
 		result = GBL::RESULT_SUCCESS;

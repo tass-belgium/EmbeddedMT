@@ -10,7 +10,6 @@ libs = [
 
 libs_path = [
     env['LIBS_DIR'],
-    env['openCV_LIBS_DIRS'],
 ]
 
 target = env.Program('testInputVideo.cpp', LIBS=libs, LIBPATH=libs_path)
