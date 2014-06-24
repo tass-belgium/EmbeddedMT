@@ -1,3 +1,4 @@
+import os
 opts = Variables()
 
 x64_compiler_path = Dir('/usr/bin').abspath
@@ -5,12 +6,8 @@ armv6_compiler_path = Dir('toolchains/arm-bcm2708hardfp-linux-gnueabi/bin').absp
 
 map_target_to_arch = {
     'native' : 'x64',
+    'macosx' : 'x64',
     'rpi' : 'armv6zk'
-}
-
-map_arch_to_static_lib = {
-    'x64' : True,
-    'armv6zk' : True
 }
 
 map_arch_to_toolchain_path = {
@@ -31,7 +28,7 @@ map_logLevel_to_define = {
 }
 
 opts.Add(EnumVariable('target', 'Set target', 'native',
-                    allowed_values=('native', 'rpi'),
+                    allowed_values=('native', 'macosx', 'rpi'),
                     map={},
                     ignorecase=2))
 
@@ -67,7 +64,7 @@ tools_list = [
 	'opencvBuilder'
 ]
 
-env=Environment(variables=opts, tools = tools_list)
+env=Environment(variables=opts, tools = tools_list, ENV = {'PATH' : os.environ['PATH']})
 Export('env')
 
 target=env['target']
@@ -83,6 +80,7 @@ thirdpartyBuildDir = '{rootBuildDir}/3rdparty'.format(rootBuildDir = rootBuildDi
 VariantDir('{buildDir}'.format(buildDir=buildDir), sourceDir)
 VariantDir('{thirdpartyDir}'.format(thirdpartyDir=thirdpartyBuildDir), thirdpartyDir)
 
+env['TARGET'] = target
 env['THIRD_PARTY_DIR'] = '{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)
 env['THIRD_PARTY_INCLUDE_DIR'] = '{thirdpartyBuildDir}/include'.format(thirdpartyBuildDir=thirdpartyBuildDir)
 env['THIRD_PARTY_LIBS_DIR'] = '{thirdpartyBuildDir}/libs'.format(thirdpartyBuildDir=thirdpartyBuildDir)
@@ -113,8 +111,7 @@ env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
 
-env['LINKFLAGS'].append(['-pthread'])
-env['USE_STATIC_LIBS'] = map_arch_to_static_lib[arch]
+#env['LINKFLAGS'].append(['-pthread'])
 
 if env['mode'] == 'release':
     env['CPPFLAGS'].append('-Ofast')
@@ -134,7 +131,7 @@ if env['multithreading'] == 'openmp':
     env['LINKFLAGS'].append(['-fopenmp'])
 
 if env['showstuff'] == 'yes':
-	env['CPPDEFINES'].append(['SHOW_STUFF'])
+    env['CPPDEFINES'].append(['SHOW_STUFF'])
     
 if(target == 'rpi'):
     env['CPPFLAGS'].append(['-mfpu=vfp', '-mfloat-abi=hard', '-march=armv6zk', '-mtune=arm1176jzf-s'])
@@ -142,7 +139,7 @@ if(target == 'rpi'):
     env['CPPFLAGS'].append('-Wno-psabi')
 
 env['STD_LIBS'] = [
-    'rt',
+#    'rt',
     'm',
     'dl',
     'stdc++'

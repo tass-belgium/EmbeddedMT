@@ -20,6 +20,8 @@ header_files = [
 ]
 
 env_opensurf = env.Clone()
+# Empty defines to avoid unnecessary rebuilding of the library
+env_opensurf['CPPDEFINES'] = []
 env_opensurf['CPPFLAGS'].append(['-DLINUX'])
 
 # Install lib

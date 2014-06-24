@@ -20,6 +20,8 @@ def build_opencv_emitter(target, source, env):
         # Add general headers
         source.extend(opencv_config.getFilesInFolder('{module}/../../include/opencv2'.format(module = env['opencv_module']), headerExtensions))
         source.extend(opencv_config.getFilesInFolder('{module}/../../include/opencv'.format(module = env['opencv_module']), headerExtensions))
+	# TODO: remove this dirty macport fix
+	opencv_module_includes.append('/opt/local/include')
         # Add opencl header files to includes
         if opencv_config.ccmake['WITH_OPENCL']:
             opencv_module_includes.append('{module}../../3rdparty/include/opencl/1.2'.format(module = env['opencv_module']))
@@ -34,7 +36,15 @@ def build_opencv_emitter(target, source, env):
 
     # Search additional library dependencies
     try:
-        env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'].extend(opencv_config.getAdditionalLibs[str(module)]())
+	addLibs,addLinkFlags = opencv_config.getAdditionalLibs[str(module)]()
+	try:
+        	env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'].extend(addLibs)
+	except KeyError:
+		env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'] = addLibs
+	try:
+		env['OPENCVBUILDER_ADDITIONAL_FLAGS'].extend(addLinkFlags)
+	except KeyError:
+		env['OPENCVBUILDER_ADDITIONAL_FLAGS'] = addLinkFlags
     except KeyError:
         pass
 
@@ -61,7 +71,7 @@ def build_opencv_generator(source, target, env, for_signature):
     
     # Build module
     sources = list()
-    sources.extend(opencv_config.getFilesInFolder('{module}/src'.format(module = env['opencv_module']), ['.c']))
+    sources.extend(opencv_config.getFilesInFolder('{module}/src'.format(module = env['opencv_module']), ['.c', '.mm']))
     sources.append('{module}/src/opencl_kernels.cpp'.format(module = env['opencv_module']))
     try:
         sources,additionalIncludes,additionalLibs = opencv_config.modulesToFilter[str(module)](sources, env['opencv_module'])
@@ -78,9 +88,13 @@ def config_opencv_emitter(target, source, env):
     ''' Emitter for opencv config '''
     source = [opencv_config.configFile]
     target = []
-    
+   
+    # Store ccmake values for building 
     for configParam,value in env['opencv_config'].iteritems():
         opencv_config.ccmake[configParam] = value
+
+    # Add additional include paths
+    opencv_config.opencvBuilderAdditionalIncludePaths = env['OPENCVBUILDER_INCLUDE_PATHS']
     return target,source
 
 def config_opencv_generator(source, target, env, for_signature):
@@ -139,6 +153,8 @@ def thirdparty_opencv_generator(source, target, env, for_signature):
 
     # Configure build environment for opencv
     env_opencv = env.Clone()
+    # Empty defines to avoid unnecessary rebuilding of the library
+    env_opencv['CPPDEFINES'] = []
     env_opencv['CPPPATH'].append(opencv_module_includes)
     env_opencv['CPPPATH'].append('{module}'.format(module = env['opencv_3rdparty']))
 

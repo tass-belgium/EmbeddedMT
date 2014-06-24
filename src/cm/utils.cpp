@@ -22,7 +22,7 @@
 #include "opencv2/highgui/highgui.hpp"
 
 namespace Utils {
-GBL::CmRetCode_t Utils::drawResults(InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, GBL::DescriptorContainer_t* descriptors, GBL::MatchesContainer_t* allMatches, uint32_t nbFrames, const GBL::Image_t& image2) {
+GBL::CmRetCode_t Utils::drawResults(InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const GBL::Image_t& image2) {
 	LOG_ENTER("void");
 	GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 	OutputMethod::OutputImageSequence outputMethod;
@@ -44,7 +44,7 @@ void Utils::fastSubtractHandler(const ImageProc::ImageProc& imProc, const GBL::I
 	imProc.fastSubtract(image1, image2, outputImage);
 }
 
-GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, GBL::DescriptorContainer_t* descriptors, GBL::MatchesContainer_t* allMatches, uint32_t nbFrames, const char* outputFile,DrawResultProc_f procFunction, const GBL::Image_t* const image2) {
+GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const char* outputFile,DrawResultProc_f procFunction, const GBL::Image_t* const image2) {
 	LOG_ENTER("Drawing %s files", outputFile);
 	if(outputMethod.open(outputFile) != GBL::RESULT_SUCCESS) {
 		LOG_ERROR("Could not open %s", outputFile);

@@ -6,7 +6,7 @@
  */
 
 #ifndef INPUTIMAGESEQUENCE_HPP_
-#define INPUTIMQGESEQUENCE_HPP_
+#define INPUTIMAGESEQUENCE_HPP_
 
 #include <string>
 

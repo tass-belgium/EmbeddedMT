@@ -47,7 +47,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 	}
 
 	const uint32_t nbFrames = inputMethod.size() - 1; // Subtract the background from the sequence
-	GBL::DescriptorContainer_t descriptors[nbFrames];
+	std::vector<GBL::DescriptorContainer_t> descriptors(nbFrames);
 	for (uint32_t i = 0; i < nbFrames; i++) {
 		GBL::Frame_t inputFrame;
 
@@ -83,7 +83,7 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 		LOG_INFO("Descriptor type = %d", CV_MAT_TYPE(descriptors[i].descriptor.type()));
 	}
 
-	GBL::MatchesContainer_t allMatches[nbFrames - 1];
+	std::vector<GBL::MatchesContainer_t> allMatches(nbFrames - 1);
 	for (uint32_t i = 0; i < nbFrames - 1; i++) {
 		uint32_t nextImageIndex = i + 1;
 		allMatches[i].valid = false;

@@ -48,7 +48,9 @@ libs.extend(env['STD_LIBS'])
 
 libs_path = [
     env['LIBS_DIR'],
-	env['THIRD_PARTY_LIBS_DIR'],
+    env['THIRD_PARTY_LIBS_DIR'],
+    # TODO: fix ugly macport fix
+    '/opt/local/lib',
 ]
 
 target = env.Program('proofOfConcept.cpp', LIBS=libs, LIBPATH=libs_path)
