@@ -137,7 +137,6 @@ if(target == 'rpi'):
     env['CPPFLAGS'].append('-Wno-psabi')
 
 env['STD_LIBS'] = [
-#    'rt',
     'm',
     'dl',
     'stdc++'
@@ -155,8 +154,8 @@ print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
 SConscript_files = [
 	'3rdparty/SConscript',
-	'{buildDir}/SConscript'.format(buildDir=buildDir),
 #	'{thirdpartyBuildDir}/SConscript'.format(thirdpartyBuildDir = thirdpartyBuildDir),
+	'{buildDir}/SConscript'.format(buildDir=buildDir),
 ]
 
 SConscript(SConscript_files)
