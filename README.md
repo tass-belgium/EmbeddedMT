@@ -27,14 +27,25 @@ For GUI:
 - For MAC OS X:
  	- Qtkit (normally standard present)
 
+All necessary packages are available in most Linux package managers and Macports.
+
+Names of the necessary packages in macports:
+- gcc 4.8 : gcc48 (it is recommended to install gcc using the 'Command Line Tools' from the App Store, this way you will get the latest clang compiler)
+- python2.7 : python27
+- python3.4 : python34
+- ffmpeg : ffmpeg (gstreamer 1.0 : gestreamer1 and gst-ffmpeg)
+- numpy: py34-numpy
+- matplotlib: py34-matplotlib
 
 How to build:
 -------------
 run get3rdpartyGit.sh:	$ ./get3rdpartyGit.sh
 run demo (first time the project will be built):
-	for linux:		$ cd demo; ./demo_linux.sh
+	for Linux:	$ cd demo; ./demo_linux.sh
 	for MAC OS X:	$ cd demo; ./demo_macosx.sh
 
 How to use:
 -----------
 For localhost demo's run the demo as described in 'how to build'. Alternatively or for non-localhost usage, use the python wrappers in wrappers/. Use the -h function for more info on each wrapper.
+
+NOTE: for the best results it is recommended to set the exposure time of the capture device to manual.
