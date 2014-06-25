@@ -80,7 +80,7 @@ thirdpartyBuildDir = '{rootBuildDir}/3rdparty'.format(rootBuildDir = rootBuildDi
 VariantDir('{buildDir}'.format(buildDir=buildDir), sourceDir)
 VariantDir('{thirdpartyDir}'.format(thirdpartyDir=thirdpartyBuildDir), thirdpartyDir)
 
-env['TARGET'] = target
+env['BUILD_TARGET'] = target
 env['THIRD_PARTY_DIR'] = '{thirdpartyBuildDir}'.format(thirdpartyBuildDir=thirdpartyBuildDir)
 env['THIRD_PARTY_INCLUDE_DIR'] = '{thirdpartyBuildDir}/include'.format(thirdpartyBuildDir=thirdpartyBuildDir)
 env['THIRD_PARTY_LIBS_DIR'] = '{thirdpartyBuildDir}/libs'.format(thirdpartyBuildDir=thirdpartyBuildDir)
@@ -110,8 +110,6 @@ env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir
 
 env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
-
-#env['LINKFLAGS'].append(['-pthread'])
 
 if env['mode'] == 'release':
     env['CPPFLAGS'].append('-Ofast')

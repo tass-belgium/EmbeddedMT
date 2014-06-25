@@ -17,11 +17,11 @@ ccmake = {
         'BUILD_TIFF' : False,
         'BUILD_ZLIB' : False,		# Supported
         'BZIP2_LIBRARIES' : '/lib64/libbz2.so',
-        'BUILD_WITH_DEBUG_INFO' : configParameters.INHERIT,	
+        'BUILD_WITH_DEBUG_INFO' : False, # Supported	
 
         # Enable stuff
         'ENABLE_AVX' : False,
-        'ENABLE_COVERAGE' : False,
+        'ENABLE_COVERAGE' : configParameters.INHERIT,
         'ENABLE_FAST_MATH' : False,
         'ENABLE_OMIT_POINTER_FRAME' : False,
         'ENABLE_PRECOMPILED_HEADER' : False,
@@ -35,14 +35,17 @@ ccmake = {
         'ENABLE_SSSE3' : False,
 
         # With stuff
-        'WITH_1394' : False,
+        'WITH_1394-V1' : False,
+        'WITH_1394-V2' : False,
 	'WITH_ANDROID' : False,
         'WITH_CARBON' : False,
         'WITH_CLP' : False,
+        'WITH_CMU1394' : False,
 	'WITH_COCOA' : False,		# Supported
         'WITH_CUBLAS' : False,
         'WITH_CUDA' : False,
         'WITH_CUFFT' : False,
+        'WITH_DSHOW' : False,
         'WITH_EIGEN' : False,
         'WITH_FFMPEG' : False,		# Supported
         'WITH_GIGEAPI' : False,		# Supported
@@ -50,12 +53,14 @@ ccmake = {
         'WITH_GSTREAMER_0_10' : False,	# Supported
         'WITH_GTK' : False,		# Supported
 	'WITH_IOS' : False,
+        'WITH_INTELPERC' : False,
         'WITH_IPP' : False,
         'WITH_IPP_A' : False,
         'WITH_JASPER' : False,
         'WITH_JPEG' : False,		# Supported
         'WITH_LIBV4L' : False,		# Supported
         'WITH_MIL' : False,
+        'WITH_MSMF' : False,
         'WITH_NVCUVID' : False,
         'WITH_OPENCL' : False,
         'WITH_OPENCLAMDBLAS' : False,
@@ -74,7 +79,7 @@ ccmake = {
         'WITH_UNICAP' : False,
         'WITH_V4L' : False,		# Supported, but same as WITH_LIBV4L. Consider giving it the same value
         'WITH_VFW' : False,
-        'WITH_VTK' :  False,
+        'WITH_VTK' : False,
         'WITH_WIN32UI' : False,
         'WITH_WEBP' : False,
         'WITH_XIMEA' : False,		# Supported
@@ -106,8 +111,12 @@ class configFileGenerator(object):
         return configFileGenerator.defUndef(value, 'HAVE_XINE')
    
     @staticmethod
-    def withDc1394(value):
+    def withDc1394V2(value):
         return configFileGenerator.defUndef(value, 'HAVE_DC1394_2')
+    
+    @staticmethod
+    def withDc1394(value):
+        return configFileGenerator.defUndef(value, 'HAVE_DC1394')
 
     @staticmethod
     def withFfmpeg(value):
@@ -166,14 +175,17 @@ ccmakeToCvconfig = {
         'ENABLE_SSSE3' : configFileGenerator.notDefined,
 
         # With stuff
-        'WITH_1394' : configFileGenerator.withDc1394,
+        'WITH_1394-V1' : configFileGenerator.withDc1394,
+        'WITH_1394-V2' : configFileGenerator.withDc1394V2,
 	'WITH_ANDROID' : configFileGenerator.notDefined,
         'WITH_CARBON' : configFileGenerator.notDefined,
         'WITH_CLP' : configFileGenerator.notDefined,
+        'WITH_CMU1394' : configFileGenerator.notDefined,
 	'WITH_COCOA' : configFileGenerator.withCocoa,
         'WITH_CUBLAS' : configFileGenerator.notDefined,
         'WITH_CUDA' : configFileGenerator.notDefined,
         'WITH_CUFFT' : configFileGenerator.notDefined,
+        'WITH_DSHOW' : configFileGenerator.notDefined,
         'WITH_EIGEN' : configFileGenerator.notDefined,
         'WITH_FFMPEG' : configFileGenerator.withFfmpeg,
         'WITH_GIGEAPI' : configFileGenerator.notDefined,
@@ -181,12 +193,14 @@ ccmakeToCvconfig = {
         'WITH_GSTREAMER_0_10' : configFileGenerator.notDefined,
         'WITH_GTK' : configFileGenerator.withGtk,
 	'WITH_IOS' : configFileGenerator.notDefined,
+        'WITH_INTELPERC' : configFileGenerator.notDefined,
         'WITH_IPP' : configFileGenerator.notDefined,
         'WITH_IPP_A' : configFileGenerator.notDefined,
         'WITH_JASPER' : configFileGenerator.notDefined,
         'WITH_JPEG' : configFileGenerator.withJpeg,
         'WITH_LIBV4L' : configFileGenerator.withLibv4l,
         'WITH_MIL' : configFileGenerator.notDefined,
+        'WITH_MSMF' : configFileGenerator.notDefined,
         'WITH_NVCUVID' : configFileGenerator.notDefined,
         'WITH_OPENCL' : configFileGenerator.notDefined,
         'WITH_OPENCLAMDBLAS' : configFileGenerator.notDefined,
@@ -236,8 +250,8 @@ class modulesToFilterFunctions(object):
         # TODO: Add ximea 32-bit lib if needed 
         additionalLibs.append('m3apiX64')
 	sources = modulesToFilterFunctions.optionToSources('WITH_XINE', sources, '{module}/src/cap_xine.cpp'.format(module = modulePath))
-	sources = modulesToFilterFunctions.optionToSources('WITH_1394', sources, '{module}/src/cap_dc1394.cpp'.format(module = modulePath))
-	sources = modulesToFilterFunctions.optionToSources('WITH_1394', sources, '{module}/src/cap_dc1394_v2.cpp'.format(module = modulePath))
+	sources = modulesToFilterFunctions.optionToSources('WITH_1394-V1', sources, '{module}/src/cap_dc1394.cpp'.format(module = modulePath))
+	sources = modulesToFilterFunctions.optionToSources('WITH_1394-V2', sources, '{module}/src/cap_dc1394_v2.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_GIGEAPI', sources, '{module}/src/cap_giganetix.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_VFW', sources, '{module}/src/cap_vfw.cpp'.format(module = modulePath))
         if not ccmake['WITH_GSTREAMER'] and not ccmake['WITH_GSTREAMER_0_10']:
@@ -254,14 +268,15 @@ class modulesToFilterFunctions(object):
             additionalIncludes.extend(findGtk2())
             
         sources = modulesToFilterFunctions.optionToSources('WITH_CARBON', sources, '{module}/src/window_carbon.cpp'.format(module = modulePath))
-        sources = modulesToFilterFunctions.optionToSources('WITH_UNICAP', sources, '{module}/src/cap_unicap.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_WIN32UI', sources, '{module}/src/window_w32.cpp'.format(module = modulePath))
 	sources = modulesToFilterFunctions.optionToSources('WITH_COCOA', sources, '{module}/src/window_cocoa.mm'.format(module = modulePath))
 	sources = modulesToFilterFunctions.optionToSources('WITH_GTK', sources, '{module}/src/window_gtk.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_QT', sources, '{module}/src/window_QT.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_UNICAP', sources, '{module}/src/cap_unicap.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_QT', sources, '{module}/src/cap_qt.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_QTKIT', sources, '{module}/src/cap_qtkit.mm'.format(module = modulePath))
 	sources = modulesToFilterFunctions.optionToSources('WITH_LIBV4L', sources, '{module}/src/cap_libv4l.cpp'.format(module = modulePath))
-        # Backwards compatibility with 2.4.8
+        sources = modulesToFilterFunctions.optionToSources('WITH_V4L', sources, '{module}/src/cap_v4l.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_TYZX', sources, '{module}/src/cap_tyzx.cpp'.format(module = modulePath))
         sources = modulesToFilterFunctions.optionToSources('WITH_MIL', sources, '{module}/src/cap_mil.cpp'.format(module = modulePath))
 	sources = modulesToFilterFunctions.optionToSources('WITH_IOS', sources, '{module}/src/cap_ios_abstract_camera.mm'.format(module = modulePath))
@@ -269,12 +284,23 @@ class modulesToFilterFunctions(object):
 	sources = modulesToFilterFunctions.optionToSources('WITH_IOS', sources, '{module}/src/cap_ios_video_camera.mm'.format(module = modulePath))
 	sources = modulesToFilterFunctions.optionToSources('WITH_QTKIT', sources, '{module}/src/cap_avfoundation.mm'.format(module = modulePath))
 	sources = modulesToFilterFunctions.optionToSources('WITH_IOS', sources, '{module}/src/ios_conversions.mm'.format(module = modulePath))
+        # In order to support the following: add reference to their respective libs
+        sources = modulesToFilterFunctions.optionToSources('WITH_ANDROID', sources, '{module}/src/cap_android.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_CMU1394', sources, '{module}/src/cap_cmu.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_DSHOW', sources, '{module}/src/cap_dshow.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_FFMPEG', sources, '{module}/src/cap_ffmpeg_api.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_FFMPEG', sources, '{module}/src/cap_ffmpeg.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_FFMPEG', sources, '{module}/src/cap_ffmpeg_impl.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_INTELPERC', sources, '{module}/src/cap_intelperc.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_MSMF', sources, '{module}/src/cap_msmf.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_OPENNI', sources, '{module}/src/cap_openni.cpp'.format(module = modulePath))
+        sources = modulesToFilterFunctions.optionToSources('WITH_PVAPI', sources, '{module}/src/cap_pvapi.cpp'.format(module = modulePath))
         return sources,additionalIncludes,additionalLibs
+
     @staticmethod
     def nonfree(sources, modulePath):
         additionalIncludes = list()
         additionalLibs = list()
-#        sources = modulesToFilterFunctions.optionToSources('WITH_OPENCL', sources, '{module}/src/surf.ocl.cpp'.format(module = modulePath))
         additionalIncludes.append('../../3rdparty/include/opencl/1.2')
         return sources,additionalIncludes,additionalLibs
     @staticmethod
@@ -306,6 +332,8 @@ def findGtk2():
 	paths.append('{path}/pango-1.0'.format(path=includePath))
 	paths.append('{path}/gdk-pixbuf-2.0'.format(path=includePath))
 	paths.append('{path}/atk-1.0'.format(path=includePath))
+        paths.append('{path}/glib-2.0'.format(path=includePath))
+        paths.append('{path}/glib-2.0/include'.format(path=includePath))
     return paths
 
 modulesToFilter = {
@@ -332,6 +360,7 @@ class getAdditionalLibsFunctions(object):
     def highgui():
         libs = []
 	frameworks = []
+        frameworks.append('-pthread')
         if ccmake['WITH_GTK']:
             libs.extend([
 		'gtk-x11-2.0',
@@ -353,7 +382,7 @@ class getAdditionalLibsFunctions(object):
 		'v4l2',
 		'v4l1',
                 ])
-	if ccmake['WITH_1394']:
+	if ccmake['WITH_1394-V2'] or ccmake['WITH_1394-V1']:
             libs.extend([
 		'dc1394',
                 ])
@@ -379,7 +408,7 @@ class getAdditionalLibsFunctions(object):
 
 getAdditionalLibs = {
         'core' : getAdditionalLibsFunctions.core,
-        'highgui' : getAdditionalLibsFunctions.highgui
+        'highgui' : getAdditionalLibsFunctions.highgui,
 }
 
 def getDefinesAndCompileOptions():

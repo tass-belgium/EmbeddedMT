@@ -2,7 +2,7 @@ import os
 Import('env')
 
 # Target specific settings
-if env['target'] == 'native':
+if env['BUILD_TARGET'] == 'native':
     env['opencv_config'] = {
 	'BUILD_JPEG' : True,
 	'BUILD_ZLIB' : True,
@@ -19,7 +19,7 @@ if env['target'] == 'native':
 	'/usr/include',
 	'/usr/lib',
     ]
-elif env['target'] == 'macosx':
+elif env['BUILD_TARGET'] == 'macosx':
     env['opencv_config'] = {
 	'BUILD_JPEG' : True,
 	'BUILD_ZLIB' : True,
