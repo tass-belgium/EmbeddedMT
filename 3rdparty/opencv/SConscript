@@ -35,8 +35,8 @@ elif env['BUILD_TARGET'] == 'macosx':
 	'/usr/include',
 	'/usr/lib',
     	# Enable macports support
-	'opt/local/include',
-	'opt/local/lib',
+	'/opt/local/include',
+	'/opt/local/lib',
     ]
 else:
     env['opencv_config'] = {
