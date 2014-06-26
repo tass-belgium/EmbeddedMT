@@ -1,9 +1,12 @@
 from SCons.Builder import Builder
 import os
+import string
+import shutil
 import thirdparty_config
 import opencv_config
 
 opencv_module_includes = list()
+configDirectory = 'opencv'
 
 def build_opencv_emitter(target, source, env):
     ''' Emitter for openCV builder '''
@@ -13,15 +16,16 @@ def build_opencv_emitter(target, source, env):
 
     # Add module hpp file
     source.extend(opencv_config.getFilesInFolder('{module}/include/opencv2'.format(module = env['opencv_module']), headerExtensions))
-    env.Install('{includeDir}/opencv2'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR'], module = module), source)
+    print source
+    env.Install('{includeDir}/opencv2'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR']), source)
 
     # If core module, add general includes
     if 'core' in env['opencv_module']:
         # Add general headers
         source.extend(opencv_config.getFilesInFolder('{module}/../../include/opencv2'.format(module = env['opencv_module']), headerExtensions))
         source.extend(opencv_config.getFilesInFolder('{module}/../../include/opencv'.format(module = env['opencv_module']), headerExtensions))
-	# TODO: remove this dirty macport fix
-	opencv_module_includes.append('/opt/local/include')
+        for includePath in env['OPENCVBUILDER_INCLUDE_PATHS']:
+	    opencv_module_includes.append(includePath)
         # Add opencl header files to includes
         if opencv_config.ccmake['WITH_OPENCL']:
             opencv_module_includes.append('{module}../../3rdparty/include/opencl/1.2'.format(module = env['opencv_module']))
@@ -77,7 +81,6 @@ def build_opencv_generator(source, target, env, for_signature):
         sources,additionalIncludes,additionalLibs = opencv_config.modulesToFilter[str(module)](sources, env['opencv_module'])
         env_opencv['CPPPATH'].extend(additionalIncludes)
     except KeyError:
-#        print 'Nothing special to do with the sources of module {module}. Continuing happily'.format(module = module)
         pass
 
     lib = env_opencv.Library('{lib}'.format(lib = target[0]), sources)
@@ -86,12 +89,18 @@ def build_opencv_generator(source, target, env, for_signature):
 
 def config_opencv_emitter(target, source, env):
     ''' Emitter for opencv config '''
-    source = [opencv_config.configFile]
-    target = []
-   
+    directory = os.getcwd()
+    source.append('cvconfig.in')
+    target.append('{includeDir}/cvconfig.h'.format(includeDir = env['THIRD_PARTY_INCLUDE_DIR']))
+
     # Store ccmake values for building 
     for configParam,value in env['opencv_config'].iteritems():
         opencv_config.ccmake[configParam] = value
+
+    # Check if configDirectory exists. If not, we are building in a variantDir and the entire directory structure should be copied
+    if not os.path.isdir(configDirectory):
+        print('VariantDir detected. Copying the necessary files...')
+        copyDirectoryTree('{opencvDir}/{opencv_source}'.format(opencvDir=env['openCV_DIR'], opencv_source = configDirectory), configDirectory)
 
     # Add additional include paths
     opencv_config.opencvBuilderAdditionalIncludePaths = env['OPENCVBUILDER_INCLUDE_PATHS']
@@ -99,14 +108,14 @@ def config_opencv_emitter(target, source, env):
 
 def config_opencv_generator(source, target, env, for_signature):
     ''' Generator for openCV builder '''
-    configDirectory = 'opencv'
-
+    # Check if target folder exists
+    if not os.path.isdir(env['THIRD_PARTY_INCLUDE_DIR']):
+        os.popen('mkdir -p "{dir}"'.format(dir = env['THIRD_PARTY_INCLUDE_DIR']))
     # write config file
-    with open('{configDirectory}/{configFile}'.format(configDirectory = configDirectory, configFile = opencv_config.configFile), 'w') as f:
+    with open('{includeDir}/{configFile}'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR'], configFile = opencv_config.configFile), 'w') as f:
+        print "creating cvconfig.h"
         generateConfigFile(f, opencv_config.ccmake)
-
-    install_config = env.Install("{includeDir}".format(includeDir=env['THIRD_PARTY_INCLUDE_DIR']), '{configDirectory}/{configFile}'.format(configDirectory=configDirectory, configFile = opencv_config.configFile))
-    return install_config 
+    return target
 
 def generateConfigFile(configFile, config = {}):
     ''' Generate the config file '''
@@ -117,8 +126,7 @@ def generateConfigFile(configFile, config = {}):
 
 def opencl_opencv_emitter(target, source, env):
     ''' Opencl builder emitter '''
-    target = []
-    source = ['{module}/src/opencl_kernels.hpp'.format(module = env['opencv_module'])]
+    source.append('{module}/src/opencl_kernels.hpp'.format(module = env['opencv_module']))
     return target, source
 
 def opencl_opencv_generator(source, target, env, for_signature):
@@ -179,14 +187,12 @@ def generate(env):
     opencvBuilder = Builder(emitter = build_opencv_emitter, generator = build_opencv_generator)
     env.Append(BUILDERS = {'buildOpencv' : opencvBuilder})
 
-#def getFilesInFolder(folder, headerExtensions = ['.h']):
-#    headers = list()
-#    try:
-#        content = os.listdir('{folder}'.format(folder = folder))
-#        for ext in headerExtensions:
-#            header_content = ['{folder}/{file}'.format(folder = folder, file = header_file) for header_file in content if ext in header_file]
-#           headers.extend(header_content)
-#    except OSError:
-#        print '{folder} not found. No problem: carpe diem'.format(folder = folder)
-#        pass
-#    return headers
+def copyDirectoryTree(src, dst):
+    print('Copying directory structure...')
+    fread = os.popen('find {src} -type d -print'.format(src = src))
+    folders = fread.read()
+    fread.close()
+    fnames = string.split(folders,"\n")
+    startString = len(src)
+    for f in fnames:
+        os.popen('mkdir -p "{dst}/{dir}"'.format(dst = dst, dir = f[startString:]))

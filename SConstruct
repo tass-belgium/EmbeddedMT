@@ -153,8 +153,8 @@ print("Compiler: {compiler}".format(compiler=env['CC']))
 print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
 SConscript_files = [
-	'3rdparty/SConscript',
-#	'{thirdpartyBuildDir}/SConscript'.format(thirdpartyBuildDir = thirdpartyBuildDir),
+#	'3rdparty/SConscript',
+	'{thirdpartyBuildDir}/SConscript'.format(thirdpartyBuildDir = thirdpartyBuildDir),
 	'{buildDir}/SConscript'.format(buildDir=buildDir),
 ]
 

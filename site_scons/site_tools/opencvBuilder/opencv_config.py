@@ -434,6 +434,5 @@ def getFilesInFolder(folder, headerExtensions = ['.h']):
             header_content = ['{folder}/{file}'.format(folder = folder, file = header_file) for header_file in content if ext in header_file]
             headers.extend(header_content)
     except OSError:
-#        print '{folder} not found. No problem: carpe diem'.format(folder = folder)
         pass
     return headers
