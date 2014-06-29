@@ -12,7 +12,6 @@
 #include "descriptor/orb.hpp"
 #include "descriptor/brisk.hpp"
 #include "descriptor/freak.hpp"
-#include "descriptor/openSurf.hpp"
 #include "descriptor/brief.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
@@ -128,12 +127,6 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 		case 6:
 			algoName = "SURF+FREAK+brute force";
 			break;
-		case 7:
-			algoName = "Simple Blobl + openSURF+brute force";
-			break;
-		case 8:
-			algoName = "openSURF";
-			break;
 		case 9:
 			algoName = "Simple Blob + BRIEF";
 			break;
@@ -173,14 +166,6 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Descriptor::Descrip
 		case 6:
 			*descriptor = new Descriptor::Freak();
 			*matcher = new Match::BfMatcher();
-			break;
-		case 7:
-			*descriptor = new Descriptor::OpenSurf();
-			*matcher = new Match::BfMatcher();
-			break;
-		case 8:
-			*descriptor = new Descriptor::OpenSurf();
-			*matcher = new Match::OpenSurfMatcher();
 			break;
 		case 9:
 			*descriptor = new Descriptor::Brief();

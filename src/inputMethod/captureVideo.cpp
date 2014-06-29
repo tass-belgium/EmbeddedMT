@@ -56,7 +56,7 @@ GBL::CmRetCode_t CaptureVideo::getNextFrame(GBL::Frame_t& nextFrame) {
 #pragma omp critical
 	{
 		if(_videoFile.read(nextFrame)) {
-			cv::cvtColor(nextFrame, nextFrame, CV_BGR2GRAY);
+			cv::cvtColor(nextFrame, nextFrame, cv::COLOR_BGR2GRAY);
 			if(GBL::drawResults_b || GBL::showStuff_b) {
 				_frameBuffer.push_back(nextFrame);
 			}

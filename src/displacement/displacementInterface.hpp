@@ -9,7 +9,6 @@
 #define DISPLACEMENTINTERFACE_HPP_
 
 #include "cm/global.hpp"
-#include "ipoint.h"
 
 namespace Displacement {
 class DisplacementInterface {

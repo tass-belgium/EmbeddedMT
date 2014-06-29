@@ -3,7 +3,6 @@ Import('env')
 lib_files = [
     'bfMatcher.cpp',
 	'flannBasedMatcher.cpp',
-	'openSurfMatcher.cpp'
 ]
 
 lib = env.Library('matcher', lib_files)
