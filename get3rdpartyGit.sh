@@ -1,2 +1,2 @@
 #!/bin/bash
-3rdparty/opencv/getOpenCV_latest.sh
+3rdparty/get3rdparty.sh

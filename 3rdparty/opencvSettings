@@ -1,4 +1,3 @@
-import os
 Import('env')
 
 # Target specific settings
@@ -34,7 +33,7 @@ elif env['BUILD_TARGET'] == 'macosx':
     env['OPENCVBUILDER_INCLUDE_PATHS'] = [
 	'/usr/include',
 	'/usr/lib',
-    	# Enable macports support
+    # Enable macports support
 	'/opt/local/include',
 	'/opt/local/lib',
     ]
@@ -46,21 +45,9 @@ else:
 	'/usr/lib',
     ]
 
-opencv_module_dir = '{opencv_dir}/opencv/modules'.format(opencv_dir = env['openCV_DIR'])
-opencv_3rdparty_dir = '{opencv_dir}/opencv/3rdparty'.format(opencv_dir = env['openCV_DIR'])
-env.configOpencv()
+env['OPENCVBUILDER_INCLUDE_DIR'] = env['THIRD_PARTY_INCLUDE_DIR']
+env['OPENCVBUILDER_LIBS_DIR'] = env['THIRD_PARTY_LIBS_DIR']
+env['OPENCVBUILDER_MODULE_DIR'] = '{opencv_dir}/opencv/modules'.format(opencv_dir = env['openCV_DIR'])
+env['OPENCVBUILDER_3RDPARTY_DIR'] = '{opencv_dir}/opencv/3rdparty'.format(opencv_dir = env['openCV_DIR'])
 
-for entry in os.listdir(opencv_3rdparty_dir):
-	if(os.path.isdir('{module_dir}/{module}'.format(module_dir = opencv_3rdparty_dir, module = entry))):
-		# Generate module lib
-		env['opencv_3rdparty'] = Dir('{module_dir}/{module}'.format(module_dir = opencv_3rdparty_dir, module = entry)).abspath
-		env.thirdpartyOpencv()
-
-for entry in os.listdir(opencv_module_dir):
-	if(os.path.isdir('{module_dir}/{module}'.format(module_dir = opencv_module_dir, module = entry))):
-		# Generate module lib
-		env['opencv_module'] = Dir('{module_dir}/{module}'.format(module_dir = opencv_module_dir, module = entry)).abspath
-		env.openclOpencv()
-		env.buildOpencv()
-
-env['LINKFLAGS'] = env['OPENCVBUILDER_ADDITIONAL_FLAGS']
+SConscript('openCV-sconsbuilder/SConscript')

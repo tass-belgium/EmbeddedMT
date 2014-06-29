@@ -1,11 +1,12 @@
 # Project specific
 build/*
-3rdparty/opencv/*/
+3rdparty/openCV-sconsbuilder
 testSequences/*/
 toolchains/*/
 *.result
 */output/*
 */__pycache__/*
+*.pyc
 
 # Scons
 .sconsign.dblite
