@@ -16,7 +16,6 @@ def build_opencv_emitter(target, source, env):
 
     # Add module hpp file
     source.extend(opencv_config.getFilesInFolder('{module}/include/opencv2'.format(module = env['opencv_module']), headerExtensions))
-    print source
     env.Install('{includeDir}/opencv2'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR']), source)
 
     # If core module, add general includes

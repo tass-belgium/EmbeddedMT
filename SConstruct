@@ -86,7 +86,7 @@ env['THIRD_PARTY_INCLUDE_DIR'] = '{thirdpartyBuildDir}/include'.format(thirdpart
 env['THIRD_PARTY_LIBS_DIR'] = '{thirdpartyBuildDir}/libs'.format(thirdpartyBuildDir=thirdpartyBuildDir)
 env['LIBS_DIR'] = '{buildDir}/../libs'.format(buildDir = buildDir)
 env['BIN_DIR'] = '{buildDir}/../bin'.format(buildDir = buildDir)
-env['openCV_DIR'] = Dir('3rdparty/opencv').abspath
+env['openCV_DIR'] = Dir('3rdparty/openCV-sconsbuilder').abspath
 
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
