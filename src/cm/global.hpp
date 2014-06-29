@@ -16,8 +16,6 @@
 #include "opencv2/photo/photo.hpp"
 #include "opencv2/video/video.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
-#include "opencv2/legacy/legacy.hpp"
-#include "opencv2/legacy/compat.hpp"
 
 #define nullptr 0
 

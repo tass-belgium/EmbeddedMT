@@ -10,8 +10,6 @@
 
 #include "cm/global.hpp"
 
-#include "ipoint.h"
-
 namespace Descriptor {
 class DescriptorInterface {
 public:

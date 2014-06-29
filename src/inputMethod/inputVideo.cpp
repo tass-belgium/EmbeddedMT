@@ -10,6 +10,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 namespace InputMethod {
 bool InputVideo::isMoreInput(void) {
@@ -30,7 +31,7 @@ GBL::CmRetCode_t InputVideo::start(const char* inputFile) {
 				LOG_ERROR("Could not read frame %d", i);
 				result = GBL::RESULT_FAILURE;
 			} else {
-				cv::cvtColor(_frames[i], _frames[i], CV_BGR2GRAY);
+				cv::cvtColor(_frames[i], _frames[i], cv::COLOR_BGR2GRAY);
 			}		
 		}
 	} else {

@@ -29,13 +29,10 @@ libs = [
 	'utils',
 	'outputMethod',
 
-	# 3rd party
-	'openSURF',
- 
     # openCV libraries
     'opencv_photo',
     'opencv_nonfree',
-	'opencv_legacy',
+#	'opencv_legacy',
     'opencv_highgui',
     'opencv_flann',
     'opencv_features2d',

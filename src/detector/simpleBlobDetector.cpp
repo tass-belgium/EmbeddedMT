@@ -17,6 +17,7 @@
 
 #include "simpleBlobDetector.hpp"
 #include "opencv2/core/core.hpp"
+#include "opencv2/features2d/features2d.hpp"
 
 namespace Detector {
 GBL::CmRetCode_t SimpleBlobDetector::detect(const GBL::Image_t& inputImage, GBL::KeyPointCollection_t& detectedKeypoints) const {

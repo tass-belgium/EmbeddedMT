@@ -35,7 +35,7 @@ GBL::CmRetCode_t AverageContourDetector::detect(const GBL::Image_t& inputImage, 
 	std::vector<std::vector<cv::Point> > contours;
 	std::vector<cv::Vec4i> hierarchy;
 	
-	cv::findContours(inputImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	cv::findContours(inputImage, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 	LOG_INFO("Found %d contours", (uint32_t) contours.size());
 	for(size_t i = 0; i < contours.size(); i++) {
 		// Check for the size of the area
