@@ -21,6 +21,7 @@ For the image processing part:
 
 For GUI:
 - python 3 (3.4 recommend, else change in demo/demo\_macosx)
+- scipy
 - numpy
 - matplotlib
 - For Linux:
@@ -35,6 +36,7 @@ Names of the necessary packages in macports:
 - python2.7 : python27
 - python3.4 : python34
 - ffmpeg : ffmpeg (gstreamer 1.0 : gestreamer1 and gst-ffmpeg)
+- scipy: py34-scipy
 - numpy: py34-numpy
 - matplotlib: py34-matplotlib
 
