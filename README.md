@@ -43,14 +43,16 @@ Names of the necessary packages in macports:
 How to build:
 -------------
 run get3rdpartyGit.sh:	
+
 	$ ./get3rdpartyGit.sh
 
 run demo (first time the project will be built):
+	- for Linux:	
 
-	for Linux:	
 		$ cd demo; ./demo_linux.sh
 		
-	for MAC OS X:	
+	- for MAC OS X:	
+
 		$ cd demo; ./demo_macosx.sh
 
 How to use:
