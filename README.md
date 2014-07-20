@@ -10,7 +10,8 @@ Most dependencies are because of the diverse availability of capturing devices a
 
 For the image processing part:
 - gcc or clang
-- python 2.x
+- scons
+- cmake
 - ffmpeg + swscale (minimal dependencies of ffmpeg: avformat, avcodec, avutil, swscale)
 - For Linux:
 	- V4L (V1 & V2)
