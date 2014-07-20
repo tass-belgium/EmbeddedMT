@@ -9,12 +9,13 @@ Dependencies:
 Most dependencies are because of the diverse availability of capturing devices and video en- and decoders available. May be improved later.
 
 For the image processing part:
+- wget & unzip for retrieving third party dependencies.
 - gcc or clang
 - scons
 - cmake
 - ffmpeg + swscale (minimal dependencies of ffmpeg: avformat, avcodec, avutil, swscale)
 - For Linux:
-	- V4L (V1 & V2)
+	- V4L (V1 & V2) (only for webcams that support V4L. Ximea and Xine webcam support can be enabled in the openCV-sconsbuilder settings).
 - For MAC OS X:
 	- Cocoa framework (normally standard present)
 => Ffmpeg can be replaced by gstreamer package (minimal dependencies: gstreamer, gstapp, gstpbutils, gstriff, gobject, glib2.0)
@@ -32,7 +33,7 @@ For GUI:
 All necessary packages are available in most Linux package managers and Macports.
 
 Names of the necessary packages in macports:
-- gcc 4.8 : gcc48 (it is recommended to install gcc using the 'Command Line Tools' from the App Store, this way you will get the latest clang compiler)
+- gcc 4.8 : gcc48 (it is recommended to install gcc using the 'Command Line Tools' (part of Xcode) from the App Store, this way you will get the latest clang compiler)
 - python2.7 : python27
 - python3.4 : python34
 - ffmpeg : ffmpeg (gstreamer 1.0 : gestreamer1 and gst-ffmpeg)
