@@ -36,6 +36,7 @@ libs = [
     'opencv_highgui',
     'opencv_flann',
     'opencv_features2d',
+	'opencv_imgcodecs',
     'opencv_imgproc',
     'opencv_core',
 ]
