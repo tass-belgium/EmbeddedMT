@@ -61,3 +61,7 @@ How to use:
 For localhost demo's run the demo as described in 'how to build'. Alternatively or for non-localhost usage, use the python wrappers in wrappers/. Use the -h function for more info on each wrapper.
 
 NOTE: for the best results it is recommended to set the exposure time of the capture device to manual.
+
+Contact
+-------
+Contact bart.verhagen@tass.be
