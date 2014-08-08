@@ -32,8 +32,8 @@ libs = [
     # openCV libraries
     'opencv_photo',
     'opencv_nonfree',
-#	'opencv_legacy',
     'opencv_highgui',
+	'opencv_videoio',
     'opencv_flann',
     'opencv_features2d',
 	'opencv_imgcodecs',
