@@ -8,13 +8,14 @@ libs = [
     'opencv_highgui',
     'opencv_imgproc',
     'opencv_core',
-	# opencv libraries
-	'check',
-	env['STD_LIBS']
+
 ]
 
+libs.extend(env['TEST_LIBS'])
+libs.extend(env['STD_LIBS'])
+
 libs_path = [
-    env['LIBS_DIR'],
+    env['LIBS_DIR']
 ]
 
 files = [

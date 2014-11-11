@@ -87,6 +87,7 @@ env['THIRD_PARTY_LIBS_DIR'] = '{thirdpartyBuildDir}/libs'.format(thirdpartyBuild
 env['LIBS_DIR'] = '{buildDir}/../libs'.format(buildDir = buildDir)
 env['BIN_DIR'] = '{buildDir}/../bin'.format(buildDir = buildDir)
 env['openCV_DIR'] = Dir('3rdparty/openCV-sconsbuilder').abspath
+env['TEST_BIN_DIR'] = '{bindir}/test'.format(bindir = env['BIN_DIR'])
 
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
@@ -105,7 +106,7 @@ env['LINKFLAGS'] = []
 env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
 env['CPPPATH'].append('{thirdpartyBuildDir}'.format(thirdpartyBuildDir=env['THIRD_PARTY_INCLUDE_DIR']))
 
-# Fix for 3rd party modules that actually want to by installed in the system dirs
+# Fix for 3rd party modules that actually want to be installed in the system dirs
 env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=env['THIRD_PARTY_INCLUDE_DIR'])])
 
 env['CPPDEFINES'] = []
@@ -137,9 +138,14 @@ if(target == 'rpi'):
     env['CPPFLAGS'].append('-Wno-psabi')
 
 env['STD_LIBS'] = [
+	'rt',
     'm',
     'dl',
     'stdc++'
+]
+
+env['TEST_LIBS'] = [
+    'check',
 ]
 
 print("Target: {target}".format(target=target))
@@ -153,7 +159,6 @@ print("Compiler: {compiler}".format(compiler=env['CC']))
 print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
 SConscript_files = [
-#	'3rdparty/SConscript',
 	'{thirdpartyBuildDir}/SConscript'.format(thirdpartyBuildDir = thirdpartyBuildDir),
 	'{buildDir}/SConscript'.format(buildDir=buildDir),
 ]

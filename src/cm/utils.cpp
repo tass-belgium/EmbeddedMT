@@ -14,6 +14,7 @@
  *
  * =====================================================================================
  */
+#include <iostream>
 
 #include "log/logging.hpp"
 #include "utils.hpp"
@@ -109,6 +110,17 @@ GBL::CmRetCode_t Utils::drawResult(const GBL::Frame_t image1, const GBL::Frame_t
 	}
 	LOG_EXIT("Success");
 	return GBL::RESULT_SUCCESS;
+}
+
+void Utils::printImage(const GBL::Image_t& image) {
+    std::cout << "[" << std::endl;
+    for(int32_t i = 0; i < image.rows; i++) {
+        for(int32_t j = 0; j < image.cols; j++) {
+            std::cout << std::hex << image.at<int>(i, j) << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "]" << std::endl;
 }
 
 }

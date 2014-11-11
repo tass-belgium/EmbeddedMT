@@ -1,7 +1,8 @@
 Import('env')
 
 lib_files = [
-	'utils.cpp'
+	'utils.cpp',
+	'point.cpp'
 ]
 
 lib = env.Library('utils', lib_files)

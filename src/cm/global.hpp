@@ -11,6 +11,7 @@
 #include <string>
 #include <stdint.h>
 #include <vector>
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/photo/photo.hpp"
@@ -46,10 +47,11 @@ typedef enum cmRetCodes {
 	RESULT_FAILURE
 } CmRetCode_t;
 
+/* 
 typedef struct point {
 	uint32_t x;
 	uint32_t y;
-} Point_t;
+} Point_t;*/
 
 typedef struct displacement {
 	int32_t sequenceNo;
