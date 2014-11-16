@@ -26,8 +26,8 @@ namespace test {
                                                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-        Contours findContours(tmpImage, minimumRegionSize, maskWidthOneSide);
-        std::vector<std::vector<GBL::Point> > contours = findContours.find();
+        Contours findContours(minimumRegionSize, maskWidthOneSide);
+        std::vector<std::vector<GBL::Point> > contours = findContours.find(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -62,8 +62,8 @@ namespace test {
                                                                     1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-        Contours findContours(tmpImage, minimumRegionSize, maskWidthOneSide);
-        std::vector<std::vector<GBL::Point> > contours = findContours.find();
+        Contours findContours(minimumRegionSize, maskWidthOneSide);
+        std::vector<std::vector<GBL::Point> > contours = findContours.find(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

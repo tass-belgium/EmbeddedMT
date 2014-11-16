@@ -10,17 +10,16 @@ typedef int8_t region_t;
 
 class GrowRegions {
     public:
-        GrowRegions();
-        GrowRegions(const region_t minimumRegionSize);
-        GrowRegions(const region_t minimumRegionSize, const region_t granularity);
-        GrowRegions(const region_t minimumRegionSize, const region_t granularity, const uint8_t backgroundValue);
-
+        GrowRegions(const region_t minimumRegionSize = 1, const region_t granularity = 1, const uint8_t backgroundValue = 0);
+	
         // Important: this function will DESTROY the image that is given
-        std::vector<std::vector<GBL::Point> > growUniform(uint8_t* const image, const uint32_t sizeX, const uint32_t sizeY);
+        std::vector<std::vector<GBL::Point> > growUniform(GBL::Image_t& image);
+
+		// Safer but slower method for growing uniform regions	
+		std::vector<std::vector<GBL::Point> > growUniform(const GBL::Image_t& image);
 
     private:
-//        inline int calculateSize(std::vector<Point>& contourPoints);
-        inline uint32_t growSeededUniform(GBL::Point& seed, uint8_t* const image, const uint32_t sizeX, const uint32_t sizeY, std::vector<GBL::Point>& contourPoints);
+        inline uint32_t growSeededUniform(GBL::Point& seed, GBL::Image_t& image, std::vector<GBL::Point>& contourPoints);
 
         // Deprecated
 //        inline void growSeededUniformRecursive(point_t& startingPoint, uint8_t* const image, const uint32_t sizeX, const uint32_t sizeY, uint32_t* regionSize, std::vector<point_t>& contourPoints, const uint8_t value);

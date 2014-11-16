@@ -5,18 +5,6 @@
 
 #include "detector/regionGrowing/unittest/testUtils.hpp"
 
-GrowRegions::GrowRegions() : _pixelAlreadyConsidered(0xFF), _minimumRegionSize(1), _granularity(1), _backgroundValue(0) {
-    ;
-}
-
-GrowRegions::GrowRegions(const region_t minimumRegionSize) : _pixelAlreadyConsidered(0xFF), _minimumRegionSize(minimumRegionSize), _granularity(1), _backgroundValue(0) {
-    ;
-}
-
-GrowRegions::GrowRegions(const region_t minimumRegionSize, const region_t granularity) : _pixelAlreadyConsidered(0xFF), _minimumRegionSize(minimumRegionSize), _granularity(granularity), _backgroundValue(0) {
-    ;
-}
-
 GrowRegions::GrowRegions(const region_t minimumRegionSize, const region_t granularity, const uint8_t backgroundValue) : _pixelAlreadyConsidered(0xFF), _minimumRegionSize(minimumRegionSize), _granularity(granularity), _backgroundValue(backgroundValue) {
     ;
 }
@@ -60,8 +48,8 @@ GrowRegions::GrowRegions(const region_t minimumRegionSize, const region_t granul
 
 //}
 
-uint32_t GrowRegions::growSeededUniform(GBL::Point& seed, uint8_t* const image, const uint32_t sizeX, const uint32_t sizeY, std::vector<GBL::Point>& contourPoints) {
-    const uint8_t value = image[seed.getY() * sizeX + seed.getX()];
+uint32_t GrowRegions::growSeededUniform(GBL::Point& seed, GBL::Image_t& image, std::vector<GBL::Point>& contourPoints) {
+    const uint8_t value = image.at<uint8_t>(seed.getY(),seed.getX());
     uint32_t regionSize = 0;
     std::vector<GBL::Point> stack;
     stack.push_back(seed);
@@ -73,16 +61,16 @@ uint32_t GrowRegions::growSeededUniform(GBL::Point& seed, uint8_t* const image, 
         stack.pop_back();
 
         // Ignore if point is outside the image boundaries
-        if(currentPoint.getY() < sizeY && currentPoint.getX() < sizeX) {
-            if(image[currentPoint.getY() * sizeX + currentPoint.getX()] != _pixelAlreadyConsidered) {
-                if(image[currentPoint.getY() * sizeX + currentPoint.getX()] != value) {
+        if(currentPoint.getY() < uint32_t(image.rows) && currentPoint.getX() < uint32_t(image.cols)) {
+            if(image.at<uint8_t>(currentPoint.getRow(), currentPoint.getCol()) != _pixelAlreadyConsidered) {
+                if(image.at<uint8_t>(currentPoint.getRow(), currentPoint.getCol()) != value) {
                     // This point is a contour point. Add to contourpoints and stop this iteration
                     contourPoints.push_back(currentPoint);
                     regionSize++;
                 } else {
                     // This means all neighbours have the same value: add all of them to the stack and mark this one as read
                     regionSize++;   // Add neighbour pixels to the region size
-                    image[currentPoint.getY() * sizeX + currentPoint.getX()] = _pixelAlreadyConsidered;
+                    image.at<uint8_t>(currentPoint.getRow(), currentPoint.getCol()) = _pixelAlreadyConsidered;
                     
 					GBL::Point neighbour;
                     neighbour.setX(currentPoint.getX());  // Assign x for safety, compiler should optimize this call
@@ -112,17 +100,17 @@ uint32_t GrowRegions::growSeededUniform(GBL::Point& seed, uint8_t* const image, 
     return regionSize;
 }
 
-std::vector<std::vector<GBL::Point> > GrowRegions::growUniform(uint8_t* const image, const uint32_t sizeX, const uint32_t sizeY) {
+std::vector<std::vector<GBL::Point> > GrowRegions::growUniform(GBL::Image_t& image) {
     // Try to grow points at a distance of _minimumRegionSize from each other
     std::vector<std::vector<GBL::Point> > foundRegions;
 	GBL::Point growPoint(uint32_t(_minimumRegionSize/2), uint32_t(_minimumRegionSize/2));
-    while(growPoint.getY() < sizeY) {
+    while(growPoint.getY() < uint32_t(image.rows)) {
         growPoint.setX(0);
-        while(growPoint.getX() < sizeX) {
+        while(growPoint.getX() < uint32_t(image.cols)) {
             // If the growPoint is zero, we ignore it
-            if(image[growPoint.getY() * sizeX + growPoint.getX()] != 0 && image[growPoint.getY()*sizeX + growPoint.getX()] != _backgroundValue) {
+            if(image.at<uint8_t>(growPoint.getY(), growPoint.getX()) != 0 && image.at<uint8_t>(growPoint.getY(),growPoint.getX()) != _backgroundValue) {
                 std::vector<GBL::Point> newRegion;
-                uint32_t regionSize = growSeededUniform(growPoint, image, sizeX, sizeY, newRegion);
+                uint32_t regionSize = growSeededUniform(growPoint, image, newRegion);
                 if(regionSize >= uint32_t(_minimumRegionSize*_minimumRegionSize)) { 
                     foundRegions.push_back(newRegion);
 					std::vector<std::vector<GBL::Point> > tmpRegion;
@@ -136,3 +124,9 @@ std::vector<std::vector<GBL::Point> > GrowRegions::growUniform(uint8_t* const im
     }
     return foundRegions;
 }
+
+std::vector<std::vector<GBL::Point> > GrowRegions::growUniform(const GBL::Image_t& image) {
+	GBL::Image_t tmpImage(image);
+	return growUniform(tmpImage);
+}
+

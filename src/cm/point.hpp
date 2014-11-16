@@ -18,6 +18,14 @@ namespace GBL {
 			inline uint32_t getY() const {
 				return _y;
 			}
+			
+			inline uint32_t getRow() const {
+				return getY();
+			}
+
+			inline uint32_t getCol() const {
+				return getX();
+			}
 
 			inline void setX(const uint32_t x) {
 				_x = x;   
@@ -25,6 +33,14 @@ namespace GBL {
 
 			inline void setY(const uint32_t y) {
 				_y = y;
+			}
+
+			inline void setRow(const uint32_t row) {
+				setY(row);
+			}
+
+			inline void setCol(const uint32_t col) {
+				setX(col);
 			}
 
 			inline void incrementX(const uint32_t xIncrement) {

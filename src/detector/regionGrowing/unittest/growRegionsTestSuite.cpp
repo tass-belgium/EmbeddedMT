@@ -29,7 +29,8 @@ namespace test {
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
         GrowRegions growRegions(2, 1, 0x01U);
-        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -62,7 +63,8 @@ namespace test {
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
         GrowRegions growRegions(2, 1, 0x01U);
-        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -95,7 +97,8 @@ namespace test {
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
         GrowRegions growRegions(1, 1, 0x01U);
-        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -128,7 +131,8 @@ namespace test {
                                                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
         GrowRegions growRegions(1, 1, 0x0U);
-        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -161,7 +165,8 @@ namespace test {
                                                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
         GrowRegions growRegions(2, 1, 0x0U);
-        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
