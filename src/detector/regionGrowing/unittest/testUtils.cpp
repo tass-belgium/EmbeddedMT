@@ -7,6 +7,7 @@
 
 namespace test {
 uint32_t Utils::pointAt(const GBL::Point& point, const uint32_t sizeX, const uint32_t sizeY) {
+	::Utils::Unused<const uint32_t>::UnusedVariable(sizeY);
     return (point.getY() * sizeX + point.getX());
 }
 
@@ -67,14 +68,14 @@ bool Utils::contourPointsMatch(const std::vector<std::vector<GBL::Point> >& cont
 
 void Utils::printContour(const std::vector<std::vector<GBL::Point> >& contours, const uint32_t sizeX, const uint32_t sizeY) {
    uint8_t newImage[sizeX*sizeY+1]; 
-   // Nulify image
+   // Nullify image
    for(uint32_t i = 0; i < sizeY; i++) {
         for(uint32_t j = 0; j < sizeX; j++) {
             newImage[i * sizeX + j] = 0;
         }
    }
 
-   uint32_t value = 0;
+   uint8_t value = 0;
     for (std::vector<std::vector<GBL::Point > >::const_iterator contour = contours.begin() ; contour != contours.end(); ++contour) {
         value++;
 
@@ -88,8 +89,15 @@ void Utils::printContour(const std::vector<std::vector<GBL::Point> >& contours, 
 void Utils::printImage(const uint8_t* const image, const uint32_t sizeX, const uint32_t sizeY) {
 	uint8_t newImage[sizeX*sizeY+1];
 	memcpy(newImage, image, sizeof(uint8_t) * (sizeX*sizeY+1));
-	GBL::Image_t tmpImage(sizeY, sizeX, CV_8UC1, newImage);
-	::Utils::Utils::printImage(tmpImage);
+	
+	std::cout << "[" << std::endl;
+	for(uint32_t y = 0; y < sizeY; y++) {
+		for(uint32_t x = 0; x < sizeX; x++) {
+			std::cout << int(image[y * sizeX + x]) << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "]" << std::endl;
 }
 }
 

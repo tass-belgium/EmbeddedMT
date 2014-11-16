@@ -11,8 +11,11 @@
 namespace test {
     START_TEST(testFindContoursSimple)
     {
+		region_t minimumRegionSize = 2;
+		uint8_t maskWidthOneSide = 1;
+
         const uint32_t imageLength = 10;
-        const uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
                                                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
                                                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
@@ -22,8 +25,8 @@ namespace test {
                                                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
                                                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-        Contours findContours(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        Contours findContours(tmpImage, minimumRegionSize, maskWidthOneSide);
         std::vector<std::vector<GBL::Point> > contours = findContours.find();
 
         // Implementation specific: this particular method will remove shifted edges
@@ -45,8 +48,10 @@ namespace test {
 
     START_TEST(testFindContoursSimple2)
     {
+		region_t minimumRegionSize = 2;
+		uint8_t maskWidthOneSide = 1;
         const uint32_t imageLength = 10;
-        const uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        uint8_t testImage[imageLength*imageLength] = {    	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                                     1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
                                                                     1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
                                                                     1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
@@ -56,22 +61,22 @@ namespace test {
                                                                     1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
                                                                     1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
                                                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-        Contours findContours(testImage, imageLength, imageLength);
+		GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+        Contours findContours(tmpImage, minimumRegionSize, maskWidthOneSide);
         std::vector<std::vector<GBL::Point> > contours = findContours.find();
 
         // Implementation specific: this particular method will remove shifted edges
         const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                                0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
-                                                                0, 1, 0, 1, 0, 1, 0, 0, 1, 0,
-                                                                0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
                                                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                                0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
-                                                                0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
-                                                                0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
-                                                                0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
+                                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                                                0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                                                                0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+                                                                0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+                                                                0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
                                                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        ck_assert_int_eq(contours.size(), 4);
+        ck_assert_int_eq(contours.size(), 1);
         ck_assert_int_eq(test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
     }
     END_TEST

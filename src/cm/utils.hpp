@@ -32,6 +32,15 @@ private:
 	static void fastSubtractHandler(const ImageProc::ImageProc& imProc, const GBL::Image_t& image1, const GBL::Image_t& image2, GBL::Image_t& outputImage);
 };
 
+template<class T> class Unused {
+	public:
+		static inline void UnusedVariable(T unusedVariable) {
+			(void) unusedVariable;
+		}
+	private:
+		Unused();
+};
+
 }
 
 #endif

@@ -3,20 +3,21 @@
 
 #include <vector>
 #include "cm/global.hpp"
+#include "growRegions.hpp"
 
 class Contours {
     public:
-        Contours(const uint8_t* image, const uint32_t sizeX, const uint32_t sizeY);
+        Contours(const GBL::Image_t image, const region_t minimumRegionSize = 2, const uint8_t maskWidthOneSide = 1);
         std::vector<std::vector<GBL::Point> > find(void);
 
 
     private:
         Contours(void);
 
-        void andWithNeighbouringPixels(uint8_t* const resultImage);
+		GBL::Image_t andWithNeighbouringPixels(void);
 
-        const uint8_t* _image;
-        const uint32_t _sizeX;
-        const uint32_t _sizeY;
+		const GBL::Image_t _image;
+		const region_t _minimumRegionSize;
+		const uint8_t _maskWidthOneSide;
 };
 #endif

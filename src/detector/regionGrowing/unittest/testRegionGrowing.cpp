@@ -12,11 +12,11 @@ int main(int argc, char** argv) {
     SRunner *sr;
     SRunner *sr_regions;
 
-/*    s_regions = test::growRegionsTestSuite();
+    s_regions = test::growRegionsTestSuite();
     sr_regions = srunner_create(s_regions);
     
     srunner_run_all(sr_regions, CK_NORMAL);
-*/
+
 
     s = test::findContoursTestSuite();
     sr = srunner_create(s);
@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     srunner_run_all(sr, CK_NORMAL);
     number_failed = srunner_ntests_failed(sr);
 
-//    srunner_free(sr_regions;
+    srunner_free(sr_regions);
     srunner_free(sr);
     return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -4,59 +4,49 @@
 #include "growRegions.hpp"
 #include "findContours.hpp"
 
-const region_t MINIMUM_REGION_SIZE = 2;
-const uint8_t MASK_WIDTH_ONE_SIDE = 1;
 
-Contours::Contours(const uint8_t* image, const uint32_t sizeX, const uint32_t sizeY) :
-    _image(image), _sizeX(sizeX), _sizeY(sizeY) 
+Contours::Contours(GBL::Image_t image, const region_t minimumRegionSize, const uint8_t maskWidthOneSide) :
+    _image(image), _minimumRegionSize(minimumRegionSize), _maskWidthOneSide(maskWidthOneSide) 
 {
-    ;
+   ; 
 }
 
-void Contours::andWithNeighbouringPixels(uint8_t* const resultImage)
+GBL::Image_t Contours::andWithNeighbouringPixels(void)
 {
+	GBL::Image_t resultImage = cv::Mat::zeros(_image.rows, _image.cols, _image.type());
     // Mask:
     // 0 1 0
     // 1 1 1
     // 0 1 0
-    
-    // Fill border with 0's
-    for(uint32_t i = 0; i < _sizeY; i++) {
-        for(uint32_t j = 0; j < MASK_WIDTH_ONE_SIDE; j++) {
-            resultImage[i * _sizeX + j] = 0;
-            resultImage[i * _sizeX + _sizeX - 1 - j] = 0;
-        }
-    }
-    for(uint32_t i = 0; i < MASK_WIDTH_ONE_SIDE; i++) {
-        for(uint32_t j = 0; j < _sizeX; j++) {
-            resultImage[i * _sizeX + j] = 0;
-            resultImage[(_sizeY - i - 1)* _sizeX + j] = 0;
-        }
-    }
-
-    for(uint32_t i = MASK_WIDTH_ONE_SIDE; i < _sizeY - MASK_WIDTH_ONE_SIDE; i++) {
-       for(uint32_t j = MASK_WIDTH_ONE_SIDE; j < _sizeX - MASK_WIDTH_ONE_SIDE; j++) {
-           uint8_t andedValue = _image[i * _sizeX + j];
+   
+   // This can be vectorized	
+    for(int32_t i = _maskWidthOneSide; i < _image.rows - _maskWidthOneSide; ++i) {
+		uint8_t* const resultRowPtr = resultImage.ptr<uint8_t>(i);
+		const uint8_t* const imageRowPtr = _image.ptr<uint8_t>(i);
+       	for(int32_t j = _maskWidthOneSide; j < _image.cols - _maskWidthOneSide; ++j) {
+           uint8_t andedValue = imageRowPtr[j];
            // Apply the mask
-           for(region_t k = 1; k <= MASK_WIDTH_ONE_SIDE; k++) {
+           for(region_t k = 1; k <= _maskWidthOneSide; ++k) {
                // Horizontal displacement
-                andedValue &= _image[i * _sizeX + j - k] & _image[i * _sizeX + j + k];
+                andedValue &= imageRowPtr[j-k] & imageRowPtr[j+k];
                 // Vertical displacement
-                andedValue &= _image[(i - k) * _sizeX + j] & _image[(i+k) * _sizeX + j];
+				const uint8_t* const imagePreviousRowPtr = _image.ptr<uint8_t>(i-k);
+				const uint8_t* const imageNextRowPtr = _image.ptr<uint8_t>(i+k);
+                andedValue &= imagePreviousRowPtr[j] & imageNextRowPtr[j];
            }
-            resultImage[i * (_sizeX*MASK_WIDTH_ONE_SIDE) + j] = andedValue;
+           resultRowPtr[j] = andedValue;
        }
     }
+	return resultImage;
 }
 
 std::vector<std::vector<GBL::Point> > Contours::find() {
     // Assumption: the image was quantized where only one bit is non-zero. The non-zero bit defines to which quantization class the bit belongs
     // Step 1: And bits and all neighbouring bits. 
-    uint8_t tmpImage[_sizeX*_sizeY];
-    andWithNeighbouringPixels(tmpImage);
+	GBL::Image_t tmpImage = andWithNeighbouringPixels();
 
     // Step 2: Grow uniform regions
-    GrowRegions region(MINIMUM_REGION_SIZE, MASK_WIDTH_ONE_SIDE, 0x01);
-    std::vector<std::vector<GBL::Point> > contours = region.growUniform(tmpImage, _sizeX, _sizeY);
+    GrowRegions region(_minimumRegionSize, _maskWidthOneSide, 0x00);
+    std::vector<std::vector<GBL::Point> > contours = region.growUniform(tmpImage.data, tmpImage.cols, tmpImage.rows);
     return contours;
 }

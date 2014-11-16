@@ -19,7 +19,7 @@ libs_path = [
 ]
 
 files = [
-	'testContours.cpp',
+	'testRegionGrowing.cpp',
 	'testUtils.cpp',
 	'findContoursTestSuite.cpp',
 	'growRegionsTestSuite.cpp',
