@@ -49,7 +49,9 @@ GrowRegions::GrowRegions(const region_t minimumRegionSize, const region_t granul
 //}
 
 uint32_t GrowRegions::growSeededUniform(GBL::Point& seed, GBL::Image_t& image, std::vector<GBL::Point>& contourPoints) {
-    const uint8_t value = image.at<uint8_t>(seed.getY(),seed.getX());
+	// Retrieve the value the fast way
+	const uint8_t* const seedRowPtr = image.ptr<uint8_t>(seed.getRow());
+    const uint8_t value = seedRowPtr[seed.getX()];
     uint32_t regionSize = 0;
     std::vector<GBL::Point> stack;
     stack.push_back(seed);
@@ -62,15 +64,16 @@ uint32_t GrowRegions::growSeededUniform(GBL::Point& seed, GBL::Image_t& image, s
 
         // Ignore if point is outside the image boundaries
         if(currentPoint.getY() < uint32_t(image.rows) && currentPoint.getX() < uint32_t(image.cols)) {
-            if(image.at<uint8_t>(currentPoint.getRow(), currentPoint.getCol()) != _pixelAlreadyConsidered) {
-                if(image.at<uint8_t>(currentPoint.getRow(), currentPoint.getCol()) != value) {
+			uint8_t* const currentPointRowPtr = image.ptr<uint8_t>(currentPoint.getRow());
+            if(currentPointRowPtr[currentPoint.getCol()] != _pixelAlreadyConsidered) {
+                if(currentPointRowPtr[currentPoint.getCol()] != value) {
                     // This point is a contour point. Add to contourpoints and stop this iteration
                     contourPoints.push_back(currentPoint);
                     regionSize++;
                 } else {
                     // This means all neighbours have the same value: add all of them to the stack and mark this one as read
                     regionSize++;   // Add neighbour pixels to the region size
-                    image.at<uint8_t>(currentPoint.getRow(), currentPoint.getCol()) = _pixelAlreadyConsidered;
+                    currentPointRowPtr[currentPoint.getCol()] = _pixelAlreadyConsidered;
                     
 					GBL::Point neighbour;
                     neighbour.setX(currentPoint.getX());  // Assign x for safety, compiler should optimize this call
@@ -107,8 +110,9 @@ std::vector<std::vector<GBL::Point> > GrowRegions::growUniform(GBL::Image_t& ima
     while(growPoint.getY() < uint32_t(image.rows)) {
         growPoint.setX(0);
         while(growPoint.getX() < uint32_t(image.cols)) {
+			const uint8_t* const rowPtr = image.ptr<uint8_t>(growPoint.getRow());
             // If the growPoint is zero, we ignore it
-            if(image.at<uint8_t>(growPoint.getY(), growPoint.getX()) != 0 && image.at<uint8_t>(growPoint.getY(),growPoint.getX()) != _backgroundValue) {
+            if(rowPtr[growPoint.getX()] != 0 && rowPtr[growPoint.getX()] != _backgroundValue) {
                 std::vector<GBL::Point> newRegion;
                 uint32_t regionSize = growSeededUniform(growPoint, image, newRegion);
                 if(regionSize >= uint32_t(_minimumRegionSize*_minimumRegionSize)) { 
