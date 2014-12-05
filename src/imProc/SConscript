@@ -1,7 +1,15 @@
 Import('env')
 
+folders = [
+    'regionGrowing/SConscript',
+]
+
+SConscript(folders)
+
 lib_files = [
-    'imageProcBase.cpp'
+    'imageProcBase.cpp',
+	'regionGrowing/findContours.cpp',
+	'regionGrowing/growRegions.cpp'
 ]
 
 lib = env.Library('imProc', lib_files)

@@ -1,24 +1,28 @@
 #include <cstdlib>
 
-#include "check.h"
-
+#include "cm/utils.hpp"
 #include "findContoursTestSuite.hpp"
 #include "growRegionsTestSuite.hpp"
 
-int main(int argc, char** argv) {
+#include "check.h"
+
+using embeddedMT::test::growRegionsTestSuite;
+using embeddedMT::test::findContoursTestSuite;
+
+int main() {
     int number_failed;
     Suite *s;
     Suite *s_regions;
     SRunner *sr;
     SRunner *sr_regions;
 
-    s_regions = test::growRegionsTestSuite();
+    s_regions = growRegionsTestSuite();
     sr_regions = srunner_create(s_regions);
     
     srunner_run_all(sr_regions, CK_NORMAL);
 
 
-    s = test::findContoursTestSuite();
+    s = findContoursTestSuite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_NORMAL);

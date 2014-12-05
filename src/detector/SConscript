@@ -1,18 +1,8 @@
 Import('env')
 
-folders = [
-    'regionGrowing/SConscript',
-]
-
-SConscript(folders)
-
 lib_files = [
 	'averageContourDetector.cpp',
 	'simpleBlobDetector.cpp',
-	# Grow regions
-	'regionGrowing/findContours.cpp',
-	'regionGrowing/growRegions.cpp'
-
 ]
 
 lib = env.Library('detector', lib_files)

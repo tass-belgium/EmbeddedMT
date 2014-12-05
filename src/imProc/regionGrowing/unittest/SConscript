@@ -1,10 +1,12 @@
 Import('env')
 
 libs = [
-    'detector',
+    'imProc',
 	'utils',
 	'outputMethod',
     # openCV libraries',
+	'opencv_photo',
+	'opencv_imgproc',
 	'opencv_imgcodecs',
     'opencv_core',
 ]
