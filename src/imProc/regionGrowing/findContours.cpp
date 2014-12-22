@@ -4,8 +4,8 @@
 #include "growRegions.hpp"
 #include "findContours.hpp"
 
-namespace embeddedMT {
-	namespace imageProc {
+namespace EmbeddedMT {
+	namespace ImageProc {
 		Contours::Contours(const region_t minimumRegionSize, const uint8_t maskWidthOneSide, const ImageProc* const imProc) :
 			_minimumRegionSize(minimumRegionSize), _maskWidthOneSide(maskWidthOneSide), _imProc(imProc) 
 		{
@@ -19,8 +19,7 @@ namespace embeddedMT {
 
 			// Step 2: Grow uniform regions
 			GrowRegions region(_minimumRegionSize, _maskWidthOneSide, 0x00);
-			std::vector<std::vector<GBL::Point> > contours = region.growUniform(tmpImage);
-			return contours;
+			return region.growUniform(tmpImage);
 		}
 
 	}

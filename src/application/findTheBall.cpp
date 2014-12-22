@@ -20,6 +20,8 @@
 
 #include "outputMethod/outputImageSequence.hpp"
 
+using namespace EmbeddedMT;
+
 const bool denoise = false;
 const bool sharpen = false;
 const bool subtractBackground = true;

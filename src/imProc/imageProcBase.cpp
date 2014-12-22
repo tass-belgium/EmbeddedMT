@@ -15,8 +15,8 @@
 
 #include "log/logging.hpp"
 
-namespace embeddedMT {
-	namespace imageProc {
+namespace EmbeddedMT {
+	namespace ImageProc {
 		GBL::CmRetCode_t ImageProcBase::denoise(const GBL::InputImage_t inputImage, GBL::OutputImage_t outputImage) const {
 			cv::fastNlMeansDenoising(inputImage, outputImage);
 			return GBL::RESULT_SUCCESS;

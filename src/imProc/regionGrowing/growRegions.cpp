@@ -3,8 +3,8 @@
 
 #include "growRegions.hpp"
 
-namespace embeddedMT {
-	namespace imageProc {
+namespace EmbeddedMT {
+	namespace ImageProc {
 
 		GrowRegions::GrowRegions(const region_t minimumRegionSize, const region_t granularity, const uint8_t backgroundValue) : _pixelAlreadyConsidered(0xFF), _minimumRegionSize(minimumRegionSize), _granularity(granularity), _backgroundValue(backgroundValue) {
 			;

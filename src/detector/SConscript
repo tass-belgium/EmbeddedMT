@@ -3,6 +3,7 @@ Import('env')
 lib_files = [
 	'averageContourDetector.cpp',
 	'simpleBlobDetector.cpp',
+	'fastAverageContourDetector.cpp',
 ]
 
 lib = env.Library('detector', lib_files)

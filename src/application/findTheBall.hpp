@@ -17,6 +17,6 @@
 #include "inputMethod/inputMethodInterface.hpp"
 #include "outputMethod/outputMethodInterface.hpp"
 
-std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer, const Descriptor::DescriptorInterface& descriptor, const Match::MatcherInterface& matcher, const Displacement::DisplacementInterface& displacement, InputMethod::InputMethodInterface& inputMethod, OutputMethod::OutputMethodInterface& outputMethod);
+std::vector<EmbeddedMT::GBL::Displacement_t> findTheBall(const char* const videoFile, const EmbeddedMT::ImageProc::ImageProc* imProc, EmbeddedMT::Draw::DrawInterface& drawer, const EmbeddedMT::Descriptor::DescriptorInterface& descriptor, const EmbeddedMT::Match::MatcherInterface& matcher, const EmbeddedMT::Displacement::DisplacementInterface& displacement, EmbeddedMT::InputMethod::InputMethodInterface& inputMethod, EmbeddedMT::OutputMethod::OutputMethodInterface& outputMethod);
 
 #endif /* FINDTHEBALL_HPP_ */

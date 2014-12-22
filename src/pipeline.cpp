@@ -9,6 +9,7 @@
 #include "imProc/imageProcBase.hpp"
 #include "detector/simpleBlobDetector.hpp"
 #include "detector/averageContourDetector.hpp"
+#include "detector/fastAverageContourDetector.hpp"
 #include "descriptor/sift.hpp"
 #include "descriptor/surf.hpp"
 #include "descriptor/orb.hpp"
@@ -26,6 +27,8 @@
 #include "outputMethod/socketInterface.hpp"
 
 #include "application/findTheBallPipeLine.hpp"
+
+using namespace EmbeddedMT;
 
 static const char_t* getMethodPname(uint8_t matchAlgorithm);
 static GBL::CmRetCode_t getInputMethod(const char* file, InputMethod::InputMethodInterface** inputMethod);
@@ -148,6 +151,9 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 		case 10:
 			algoName = "Average contour + BRIEF";
 			break;
+		case 11:
+			algoName = "Fast Average contour + BRIEF";
+			break;
 		default:
 			algoName = "unkown";
 			break;
@@ -199,6 +205,11 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorI
 			break;
 		case 10:
 			*detector = new Detector::AverageContourDetector(25.0, 30U);
+			*descriptor = new Descriptor::Brief();
+			*matcher = new Match::BfMatcher();
+			break;
+		case 11:
+			*detector = new Detector::FastAverageContourDetector(25.0);
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;

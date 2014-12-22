@@ -6,13 +6,12 @@
 #include "growRegions.hpp"
 #include "imProc/imageProcBase.hpp"
 
-namespace embeddedMT {
-	namespace imageProc {
+namespace EmbeddedMT {
+	namespace ImageProc {
 		class Contours {
 			public:
 				Contours(const region_t minimumRegionSize = 2, const uint8_t maskWidthOneSide = 1, const ImageProc* const imProc = new ImageProcBase() );
 				std::vector<std::vector<GBL::Point> > find(const GBL::Image_t& image);
-
 
 			private:
 				Contours(void);

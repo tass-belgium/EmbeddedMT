@@ -8,10 +8,10 @@
 #include "findContoursTestSuite.hpp"
 #include "../findContours.hpp"
 
-using embeddedMT::imageProc::region_t;
-using embeddedMT::imageProc::Contours;
+using EmbeddedMT::ImageProc::region_t;
+using EmbeddedMT::ImageProc::Contours;
 
-namespace embeddedMT
+namespace EmbeddedMT
 {
 	namespace test 
 	{
@@ -48,7 +48,7 @@ namespace embeddedMT
 																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 			ck_assert_int_eq(contours.size(), 1);
-			ck_assert_int_eq(::embeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
+			ck_assert_int_eq(::EmbeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
 		}
 		END_TEST
 
@@ -83,7 +83,7 @@ namespace embeddedMT
 																	0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
 																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 			ck_assert_int_eq(contours.size(), 1);
-			ck_assert_int_eq(::embeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
+			ck_assert_int_eq(::EmbeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
 		}
 		END_TEST
 

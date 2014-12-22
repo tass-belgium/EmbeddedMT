@@ -6,10 +6,10 @@
 #include "cm/global.hpp"
 #include "cm/point.hpp"
 
-namespace embeddedMT {
-	namespace imageProc {
-		typedef int8_t region_t;
+#include "regions.hpp"
 
+namespace EmbeddedMT {
+	namespace ImageProc {
 		class GrowRegions {
 			public:
 				GrowRegions(const region_t minimumRegionSize = 1, const region_t granularity = 1, const uint8_t backgroundValue = 0);

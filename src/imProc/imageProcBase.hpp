@@ -1,5 +1,5 @@
 /*
- * cmImageProc.hpp
+ * cmimageProc.hpp
  *
  *  Created on: Apr 8, 2014
  *      Author: cv
@@ -10,8 +10,8 @@
 
 #include "imageProcInterface.hpp"
 
-namespace embeddedMT {
-	namespace imageProc {
+namespace EmbeddedMT {
+	namespace ImageProc {
 		class ImageProcBase : public ImageProc {
 		public:
 			virtual ~ImageProcBase(void){};

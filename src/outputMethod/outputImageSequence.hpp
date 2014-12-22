@@ -10,19 +10,21 @@
 
 #include "outputMethodInterface.hpp"
 
-namespace OutputMethod {
-class OutputImageSequence : public OutputMethodInterface {
-public:
-	virtual GBL::CmRetCode_t open(const char* filename);
-	virtual GBL::CmRetCode_t write(const GBL::Frame_t frame);
-	virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
+namespace EmbeddedMT {
+	namespace OutputMethod {
+		class OutputImageSequence : public OutputMethodInterface {
+		public:
+			virtual GBL::CmRetCode_t open(const char* filename);
+			virtual GBL::CmRetCode_t write(const GBL::Frame_t frame);
+			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
 
-	virtual GBL::CmRetCode_t close();
+			virtual GBL::CmRetCode_t close();
 
-private:
-	uint32_t _imageIndex;
-	char _filename[GBL::maxFilenameLength];
-};
+		private:
+			uint32_t _imageIndex;
+			char _filename[GBL::maxFilenameLength];
+		};
+	}
 }
 
 #endif /* OUTPUTIMAGESEQUENCE_HPP_ */

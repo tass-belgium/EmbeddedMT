@@ -10,18 +10,20 @@
 
 #include "outputMethodInterface.hpp"
 
-namespace OutputMethod {
-class SocketInterface : public OutputMethodInterface {
-public:
-	SocketInterface(uint16_t _portNo);
-	virtual GBL::CmRetCode_t open(const char* filename);
-	virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
-	virtual GBL::CmRetCode_t write(const GBL::Frame_t);
-	virtual GBL::CmRetCode_t close();
-private:
-	int32_t _sockfd;
-	const uint16_t _portNo;
-};
+namespace EmbeddedMT {
+	namespace OutputMethod {
+		class SocketInterface : public OutputMethodInterface {
+		public:
+			SocketInterface(uint16_t _portNo);
+			virtual GBL::CmRetCode_t open(const char* filename);
+			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
+			virtual GBL::CmRetCode_t write(const GBL::Frame_t);
+			virtual GBL::CmRetCode_t close();
+		private:
+			int32_t _sockfd;
+			const uint16_t _portNo;
+		};
+	}
 }
 
 #endif /* SOCKETINTERFACE_HPP_ */

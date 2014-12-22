@@ -10,12 +10,14 @@
 
 #include "cm/global.hpp"
 
-namespace Match {
-class MatcherInterface {
-public:
-	virtual ~MatcherInterface() {};
-	virtual GBL::CmRetCode_t match(const GBL::Descriptor_t& descriptors1, const GBL::Descriptor_t& descriptors2, GBL::MatchCollection_t& good_matches) const = 0;
-};
+namespace EmbeddedMT {
+	namespace Match {
+		class MatcherInterface {
+		public:
+			virtual ~MatcherInterface() {};
+			virtual GBL::CmRetCode_t match(const GBL::Descriptor_t& descriptors1, const GBL::Descriptor_t& descriptors2, GBL::MatchCollection_t& good_matches) const = 0;
+		};
+	}
 }
 
 #endif /* MATCHINTERFACE_HPP_ */

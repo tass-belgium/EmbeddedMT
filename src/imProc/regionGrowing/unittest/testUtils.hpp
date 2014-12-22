@@ -4,7 +4,7 @@
 #include "cm/global.hpp"
 #include "cm/point.hpp"
 
-namespace embeddedMT {
+namespace EmbeddedMT {
 	namespace test {
 		class Utils {
 			public:

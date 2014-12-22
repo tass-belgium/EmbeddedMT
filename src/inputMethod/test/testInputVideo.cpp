@@ -8,6 +8,8 @@
 #include "cm/global.hpp"
 #include "../inputVideo.hpp"
 
+using EmbeddedMT::InputMethod;
+
 int main(int argc, char** argv) {
 	InputMethod::InputVideo inputVideo;
 

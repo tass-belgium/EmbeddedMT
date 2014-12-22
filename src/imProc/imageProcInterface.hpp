@@ -10,8 +10,8 @@
 
 #include "cm/global.hpp"
 
-namespace embeddedMT{
-	namespace imageProc {
+namespace EmbeddedMT{
+	namespace ImageProc {
 		class ImageProc {
 		public:
 			virtual ~ImageProc(void) {};

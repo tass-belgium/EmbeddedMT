@@ -1,0 +1,33 @@
+Import('env')
+
+libs = [
+    'imProc',
+	'outputMethod',
+    # openCV libraries',
+	'opencv_highgui',
+	'opencv_imgcodecs',
+	'opencv_imgproc',
+    'opencv_core',
+	# check
+	'check',
+]
+
+libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
+libs.extend(env['TEST_LIBS'])
+libs.extend(env['STD_LIBS'])
+
+libs_path = [
+    env['LIBS_DIR'],
+	env['THIRD_PARTY_LIBS_DIR']
+]
+
+files = [
+	'testQuantization.cpp',
+	'quantizationTestSuite.cpp',
+]
+
+target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
+bin = env.Alias("testQuantization", installed_bin)
+bin = env.Alias("testImageProc", installed_bin)
+bin = env.Alias("unittest", installed_bin)

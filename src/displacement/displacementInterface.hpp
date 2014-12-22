@@ -10,12 +10,14 @@
 
 #include "cm/global.hpp"
 
-namespace Displacement {
-class DisplacementInterface {
-public:
-	virtual ~DisplacementInterface() {};
-	virtual GBL::CmRetCode_t calculateDisplacement(const GBL::MatchCollection_t matches, const GBL::KeyPointCollection_t& keypoints1, const GBL::KeyPointCollection_t& keypoints2, GBL::Displacement_t& displacement) const = 0;
-};
+namespace EmbeddedMT {
+	namespace Displacement {
+		class DisplacementInterface {
+		public:
+			virtual ~DisplacementInterface() {};
+			virtual GBL::CmRetCode_t calculateDisplacement(const GBL::MatchCollection_t matches, const GBL::KeyPointCollection_t& keypoints1, const GBL::KeyPointCollection_t& keypoints2, GBL::Displacement_t& displacement) const = 0;
+		};
+	}
 }
 
 #endif /* DISPLACEMENTINTERFACE_HPP_ */

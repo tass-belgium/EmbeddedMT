@@ -1,7 +1,7 @@
 #ifndef GROWREGIONSTESTSUITE_H
 #define GROWREGIONSTESTSUITE_H
 
-namespace embeddedMT {
+namespace EmbeddedMT {
 	namespace test {
     	Suite* growRegionsTestSuite(void);
 	}

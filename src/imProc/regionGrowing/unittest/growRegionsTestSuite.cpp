@@ -12,10 +12,10 @@
 
 #include "growRegionsTestSuite.hpp"
 
-using embeddedMT::imageProc::GrowRegions;
-using embeddedMT::test::Utils;
+using EmbeddedMT::ImageProc::GrowRegions;
+using EmbeddedMT::test::Utils;
 
-namespace embeddedMT {
+namespace EmbeddedMT {
 	namespace test {
 		START_TEST(growRegionsSimple)
 		{

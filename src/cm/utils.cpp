@@ -20,11 +20,12 @@
 #include "utils.hpp"
 #include "outputMethod/outputImageSequence.hpp"
 #include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"	
 #include "opencv2/highgui/highgui.hpp"
 
-namespace embeddedMT {
+namespace EmbeddedMT {
 	namespace Utils {
-		GBL::CmRetCode_t Utils::drawResults(InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const imageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const GBL::Image_t& image2) {
+		GBL::CmRetCode_t Utils::drawResults(InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const GBL::Image_t& image2) {
 			LOG_ENTER("void");
 			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 			OutputMethod::OutputImageSequence outputMethod;
@@ -42,11 +43,11 @@ namespace embeddedMT {
 			return result;
 		}
 
-		void Utils::fastSubtractHandler(const imageProc::ImageProc& imProc, const GBL::Image_t& image1, const GBL::Image_t& image2, GBL::Image_t& outputImage) {
+		void Utils::fastSubtractHandler(const ImageProc::ImageProc& imProc, const GBL::Image_t& image1, const GBL::Image_t& image2, GBL::Image_t& outputImage) {
 			imProc.fastSubtract(image1, image2, outputImage);
 		}
 
-		GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const imageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const char* outputFile,DrawResultProc_f procFunction, const GBL::Image_t* const image2) {
+		GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const char* outputFile,DrawResultProc_f procFunction, const GBL::Image_t* const image2) {
 			LOG_ENTER("Drawing %s files", outputFile);
 			if(outputMethod.open(outputFile) != GBL::RESULT_SUCCESS) {
 				LOG_ERROR("Could not open %s", outputFile);

@@ -5,10 +5,12 @@
 
 #include "testUtils.hpp"
 
-namespace embeddedMT {
+using EmbeddedMT::Utils::Unused;
+
+namespace EmbeddedMT {
 	namespace test {
 		uint32_t Utils::pointAt(const GBL::Point& point, const uint32_t sizeX, const uint32_t sizeY) {
-			::embeddedMT::Utils::Unused<const uint32_t>::UnusedVariable(sizeY);
+			Unused::UnusedVariable(sizeY);
 			return (point.getY() * sizeX + point.getX());
 		}
 

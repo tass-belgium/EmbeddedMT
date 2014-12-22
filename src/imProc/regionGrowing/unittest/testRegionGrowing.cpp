@@ -6,8 +6,8 @@
 
 #include "check.h"
 
-using embeddedMT::test::growRegionsTestSuite;
-using embeddedMT::test::findContoursTestSuite;
+using EmbeddedMT::test::growRegionsTestSuite;
+using EmbeddedMT::test::findContoursTestSuite;
 
 int main() {
     int number_failed;

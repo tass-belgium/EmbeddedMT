@@ -2,6 +2,7 @@ Import('env')
 
 folders = [
     'regionGrowing/SConscript',
+	'unittest/SConscript',
 ]
 
 SConscript(folders)

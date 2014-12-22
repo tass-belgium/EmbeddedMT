@@ -3,7 +3,7 @@
 
 #include "check.h"
 
-namespace embeddedMT
+namespace EmbeddedMT
 {
 	namespace test 
 	{

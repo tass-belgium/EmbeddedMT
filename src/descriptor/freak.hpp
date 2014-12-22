@@ -10,12 +10,14 @@
 
 #include "descriptorInterface.hpp"
 
-namespace Descriptor {
-class Freak : public DescriptorInterface {
-public:
-	virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
-private:
-};
+namespace EmbeddedMT {
+	namespace Descriptor {
+		class Freak : public DescriptorInterface {
+		public:
+			virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
+		private:
+		};
+	}
 }
 
 #endif /* FREAK_HPP_ */

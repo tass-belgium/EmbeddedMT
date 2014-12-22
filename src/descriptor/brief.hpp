@@ -10,11 +10,12 @@
 
 #include "descriptorInterface.hpp"
 
-namespace Descriptor {
-class Brief : public DescriptorInterface {
-public:
-	virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
-};
+namespace EmbeddedMT {
+	namespace Descriptor {
+		class Brief : public DescriptorInterface {
+		public:
+			virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
+		};
+	}
 }
-
 #endif /* BRIEF_HPP_ */
