@@ -3,6 +3,7 @@ Import('env')
 folders = [
     'regionGrowing/SConscript',
 	'unittest/SConscript',
+	'performanceMeasurements/SConscript',
 ]
 
 SConscript(folders)

@@ -71,5 +71,17 @@
 #define LOG_ERROR(args...)
 #endif
 
+// Measurement log macro's
+#	define LOG_MEASUREMENT_START(args...) do { \
+		LOG(stdout, "MEASUREMENT_START", args) \
+		} while (false);
+
+#	define LOG_MEASUREMENT_DESCRIPTION(args...) do { \
+		LOG(stdout, "MEASUREMENT_DESCRIPTION", args) \
+		} while (false);
+
+#	define LOG_MEASUREMENT_RESULT(args...) do { \
+		LOG(stdout, "MEASUREMENT_RESULT", args) \
+		} while (false);
 
 #endif /* LOGGING_HPP_ */

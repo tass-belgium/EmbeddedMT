@@ -22,6 +22,7 @@ using std::stringstream;
 using EmbeddedMT::GBL::Frame_t;
 using EmbeddedMT::ImageProc::Quantization;
 using EmbeddedMT::ImageProc::SlowQuantization;
+using EmbeddedMT::ImageProc::MetaQuantization;
 using EmbeddedMT::OutputMethod::OutputImageSequence;
 
 namespace EmbeddedMT
@@ -85,9 +86,12 @@ namespace EmbeddedMT
 			checkValidExpansion<uint8_t>(resultImage, __LINE__);
 			Frame_t slowImage = SlowQuantization<uint8_t>::quantizedBitExpansion(testImage,nbOfClasses);
 			checkValidExpansion<uint8_t>(slowImage, __LINE__);
+			Frame_t metaImage = MetaQuantization<uint8_t, nbOfClasses>::quantizedBitExpansion(testImage);
+			checkValidExpansion<uint8_t>(metaImage, __LINE__);
 			Frame_t correctResult = Frame_t::ones(testSize,1, CV_8UC1);
 			compareFrames<uint8_t>(correctResult, resultImage, __LINE__);
 			compareFrames<uint8_t>(correctResult, slowImage, __LINE__);
+			compareFrames<uint8_t>(correctResult, metaImage, __LINE__);
 			
 			for (uint8_t i = 0; i < testSize; ++i) {
 				testImage.at<uint8_t>(i, 0) = 0x80 + i;
@@ -96,9 +100,12 @@ namespace EmbeddedMT
 			checkValidExpansion<uint8_t>(resultImage, __LINE__);
 			slowImage = SlowQuantization<uint8_t>::quantizedBitExpansion(testImage, nbOfClasses);
 			checkValidExpansion<uint8_t>(slowImage, __LINE__);
+			metaImage = MetaQuantization<uint8_t, nbOfClasses>::quantizedBitExpansion(testImage);
+			checkValidExpansion<uint8_t>(metaImage, __LINE__);
 			correctResult = 2*Frame_t::ones(testSize,1, CV_8UC1);
 			compareFrames<uint8_t>(correctResult, resultImage, __LINE__);
 			compareFrames<uint8_t>(correctResult, slowImage, __LINE__);
+			compareFrames<uint8_t>(correctResult, metaImage, __LINE__);
 		}
 		END_TEST
 
@@ -134,9 +141,12 @@ namespace EmbeddedMT
 			checkValidExpansion<uint8_t>(resultImage, __LINE__);
 			Frame_t slowImage = SlowQuantization<uint8_t>::quantizedBitExpansion(tmpTestImage, nbOfClasses);
 			checkValidExpansion<uint8_t>(slowImage, __LINE__);
+			Frame_t metaImage = MetaQuantization<uint8_t, nbOfClasses>::quantizedBitExpansion(tmpTestImage);
+			checkValidExpansion<uint8_t>(metaImage, __LINE__);
 
 			compareFrames<uint8_t>(tmpCorrectImage, slowImage, __LINE__);
 			compareFrames<uint8_t>(tmpCorrectImage, resultImage, __LINE__);
+			compareFrames<uint8_t>(tmpCorrectImage, metaImage, __LINE__);
 		}
 		END_TEST
 

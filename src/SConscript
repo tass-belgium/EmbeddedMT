@@ -11,7 +11,8 @@ folders = [
     'log/SConscript',
     'inputMethod/SConscript',
     'outputMethod/SConscript',
-	'detector/SConscript'
+	'detector/SConscript',
+	'testUtils/SConscript',
 ]
 
 SConscript(folders)

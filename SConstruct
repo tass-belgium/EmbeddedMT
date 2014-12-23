@@ -43,7 +43,7 @@ opts.Add(EnumVariable('logLevel', 'Set log mode', 'debug',
                     ignorecase=2))
 
 opts.Add(EnumVariable('profile', 'Set profile flag', 'no',
-					allowed_values=('yes', 'no'),
+					allowed_values=('yes', 'no', 'gprof', 'perf'),
 					map = {},
 					ignorecase=2))
 
@@ -117,26 +117,39 @@ if env['mode'] == 'release':
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
 
+##################################### Profiling related stuff ##############################
+# Default when profiling is enabled: perf
 if env['profile'] == 'yes':
+	env['profile'] = 'perf'
+
+# Add debugging symbols to enable more useful information when profiling
+if env['profile'] != 'no':
+	env['CPPFLAGS'].append('-g')
+
+if env['profile'] == 'gprof':
 	env['CFLAGS'].append('-pg')
 	env['CPPFLAGS'].append('-pg')
 	env['LINKFLAGS'].append('-pg')
 
+
 env['CPPFLAGS'].append(['-Wall', '-Wextra', '-Wshadow',  '-Wpointer-arith'])
 #env['CPPFLAGS'].append(['-Wcast-qual'])
 
+################################## Multi-threading related stuff ############################@
 if env['multithreading'] == 'openmp':
     env['CPPFLAGS'].append(['-fopenmp'])
     env['LINKFLAGS'].append(['-fopenmp'])
 
 if env['showstuff'] == 'yes':
     env['CPPDEFINES'].append(['SHOW_STUFF'])
-    
+ 
+################################## Target specific stuff ##################################   
 if(target == 'rpi'):
     env['CPPFLAGS'].append(['-mfpu=vfp', '-mfloat-abi=hard', '-march=armv6zk', '-mtune=arm1176jzf-s'])
     # Suppress mangling va thing
     env['CPPFLAGS'].append('-Wno-psabi')
 
+################################## Other stuff ##############################
 env['STD_LIBS'] = [
 	'rt',
     'm',
@@ -148,6 +161,7 @@ env['TEST_LIBS'] = [
     'check',
 ]
 
+################################## Print stuff ###############################
 print("Target: {target}".format(target=target))
 print("Target architecture: {arch}".format(arch=arch))
 print("Building in {buildDir}".format(buildDir=buildDir))
@@ -158,6 +172,7 @@ else:
 print("Compiler: {compiler}".format(compiler=env['CC']))
 print("C++ Compiler: {compiler}".format(compiler=env['CXX']))
 
+################################# Call Sconscript file tree ##########################
 SConscript_files = [
 	'{thirdpartyBuildDir}/SConscript'.format(thirdpartyBuildDir = thirdpartyBuildDir),
 	'{buildDir}/SConscript'.format(buildDir=buildDir),

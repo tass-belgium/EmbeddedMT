@@ -1,0 +1,31 @@
+Import('env')
+
+libs = [
+    'imProc',
+	'testUtils',
+    'opencv_core',
+]
+
+libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
+libs.extend(env['STD_LIBS'])
+
+libs_path = [
+    env['LIBS_DIR'],
+	env['THIRD_PARTY_LIBS_DIR']
+]
+
+files = [
+	'quantization.cpp',
+]
+
+env_performance = env
+
+# testUtils need c++11 support
+env_performance['CPPFLAGS'].append('-std=c++11')
+
+# Build and alias target
+target = env_performance.Program(files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env_performance.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
+bin = env_performance.Alias("testPerformance-quantization", installed_bin)
+bin = env_performance.Alias("testImageProc", installed_bin)
+bin = env_performance.Alias("testPerformance", installed_bin)
