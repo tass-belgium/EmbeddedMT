@@ -122,9 +122,11 @@ else:
 if env['profile'] == 'yes':
 	env['profile'] = 'perf'
 
-# Add debugging symbols to enable more useful information when profiling
 if env['profile'] != 'no':
+	# Add debugging symbols to enable more useful information when profiling
 	env['CPPFLAGS'].append('-g')
+	# Disable inlining
+	env['CPPFLAGS'].append('-fno-inline')
 
 if env['profile'] == 'gprof':
 	env['CFLAGS'].append('-pg')

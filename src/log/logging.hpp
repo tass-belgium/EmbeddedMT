@@ -9,6 +9,7 @@
 #define LOGGING_HPP_
 
 #include <stdio.h>
+#include <iostream>
 
 #define LEVEL_NONE 0
 #define LEVEL_ERROR 1
@@ -30,6 +31,10 @@
 #		endif
 #	endif
 #endif
+
+#define LOG_HELP(msg) do { \
+	std::cout << "[HELP] " << msg << std::endl; \
+	} while(false);
 
 #define LOG(outputChannel, logSeverity, message...) do { \
 	fprintf(outputChannel, "[%s]\t%s - %s | %s:%d | %s | ", logSeverity, __DATE__, __TIME__, __FILE__, __LINE__, __func__); \
