@@ -3,6 +3,7 @@ Import('env')
 files = [
 	'opencvSettings',
 	'check/check-0.9.12/src/SConscript',
+	'catch/SConscript',
 ]
 
 SConscript(files)

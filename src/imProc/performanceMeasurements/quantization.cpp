@@ -28,6 +28,7 @@ using EmbeddedMT::GBL::Frame_t;
 using EmbeddedMT::ImageProc::Quantization;
 using EmbeddedMT::ImageProc::SlowQuantization;
 using EmbeddedMT::ImageProc::MetaQuantization;
+using EmbeddedMT::ImageProc::VectorQuantization;
 using EmbeddedMT::Test::Measure::ObjectToMeasure;
 using EmbeddedMT::Test::Measure::TimeMeasurement;
 using EmbeddedMT::Test::Measure::getThousandUnit;
@@ -74,6 +75,18 @@ namespace EmbeddedMT {
 					}	
 			};
 
+			class MeasureVectorQuantization : public MeasureQuantization  {
+				public:
+					MeasureVectorQuantization(const Frame_t& frame) :
+						MeasureQuantization(frame, 0U)	{
+						;
+					}	
+					virtual void operator()(void) const {
+						VectorQuantization<uint8_t, uint32_t, 8>::quantizedBitExpansion(_frame);	
+					}	
+			};
+
+
 			class MeasureSlowQuantization : public MeasureQuantization  {
 				public:
 					MeasureSlowQuantization(const Frame_t& frame, const uint8_t nbOfClasses) :
@@ -98,9 +111,11 @@ namespace EmbeddedMT {
 				
 				MeasureMetaQuantization metaQuant(frame);
 				auto metaElapsed = TimeMeasurement<duration>::measure(metaQuant, nbOfMeasurements); 	
-				LOG_MEASUREMENT_RESULT("Slow quantization - elapsed time: %f %s", metaElapsed.count()/1000.0, getThousandUnit(metaElapsed).c_str());
+				LOG_MEASUREMENT_RESULT("Meta quantization - elapsed time: %f %s", metaElapsed.count()/1000.0, getThousandUnit(metaElapsed).c_str());
 
-				LOG_MEASUREMENT_RESULT("Fast quantization is an improvement of %f%%", (1.0 - double(fastElapsed.count()) / double(slowElapsed.count())) * 100.0);
+				MeasureVectorQuantization vectorQuant(frame);
+				auto vectorElapsed = TimeMeasurement<duration>::measure(vectorQuant, nbOfMeasurements); 	
+				LOG_MEASUREMENT_RESULT("Vector quantization - elapsed time: %f %s", vectorElapsed.count()/1000.0, getThousandUnit(vectorElapsed).c_str());
 			}
 
 			template<typename duration>

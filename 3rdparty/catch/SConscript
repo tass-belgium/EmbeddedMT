@@ -1,0 +1,9 @@
+Import('env')
+
+header_files = [
+	'catch.hpp',
+]
+
+# Build and install lib
+# Install header files
+env.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR']), header_files)

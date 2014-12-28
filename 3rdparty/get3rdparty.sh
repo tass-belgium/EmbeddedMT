@@ -18,4 +18,10 @@ cd openCV-sconsbuilder
 ./getOpenCv.sh
 cd ..
 
+# Get Catch
+mkdir catch
+cd catch
+wget https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
+cd ..
+
 cd $currentDir

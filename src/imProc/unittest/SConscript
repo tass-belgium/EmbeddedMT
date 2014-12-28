@@ -9,7 +9,7 @@ libs = [
 	'opencv_imgproc',
     'opencv_core',
 	# check
-	'check',
+#	'check',
 ]
 
 libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
@@ -22,7 +22,7 @@ libs_path = [
 ]
 
 files = [
-	'testQuantization.cpp',
+#	'testQuantization.cpp',
 	'quantizationTestSuite.cpp',
 ]
 
