@@ -14,7 +14,6 @@
 #include "cm/global.hpp"
 #include "outputMethod/outputImageSequence.hpp"
 
-#include "quantizationTestSuite.hpp"
 #include "../quantization.hpp"
 #include "../slowQuantization.hpp"
 

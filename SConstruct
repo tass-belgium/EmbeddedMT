@@ -120,7 +120,7 @@ else:
 ##################################### Profiling related stuff ##############################
 # Default when profiling is enabled: perf
 if env['profile'] == 'yes':
-	env['profile'] = 'perf'
+	env['profile'] = 'gprof'
 
 if env['profile'] != 'no':
 	# Add debugging symbols to enable more useful information when profiling
@@ -157,10 +157,6 @@ env['STD_LIBS'] = [
     'm',
     'dl',
     'stdc++'
-]
-
-env['TEST_LIBS'] = [
-    'check',
 ]
 
 ################################## Print stuff ###############################

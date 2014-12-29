@@ -21,7 +21,6 @@
 #include "cm/plot.hpp"
 #include "outputMethod/outputImageSequence.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "imProc/slowQuantization.hpp"
 
 using EmbeddedMT::ImageProc::Contours;
 using EmbeddedMT::ImageProc::VectorQuantization;
@@ -46,7 +45,7 @@ namespace EmbeddedMT {
 			GBL::Image_t outputImage = inputImage - background;
 
 			// Quantize picture
-			outputImage = VectorQuantization<uint8_t, uint32_t, 8>::quantizedBitExpansion(outputImage); 
+			outputImage = VectorQuantization<uint8_t, uint32_t, 4>::quantizedBitExpansion(outputImage); 
 
 			Contours findContours(_minimumRegionSize, _maskWidthOneSide, &imProc);
 			std::vector<std::vector<GBL::Point> > contours = findContours.find(outputImage);

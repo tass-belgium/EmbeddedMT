@@ -1,219 +1,228 @@
 #include <vector>
 #include <iostream>
 
-#include "check.h"
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
 #include "cm/global.hpp"
 #include "cm/point.hpp"
 #include "cm/utils.hpp"
+#include "testUtils/testUtils.hpp"
+
 #include "../growRegions.hpp"
-
-#include "testUtils.hpp"
-
-#include "growRegionsTestSuite.hpp"
 
 using EmbeddedMT::ImageProc::GrowRegions;
 using EmbeddedMT::test::Utils;
 
 namespace EmbeddedMT {
 	namespace test {
-		START_TEST(growRegionsSimple)
+		SCENARIO("Simple test for growing 1 region", "[growRegions]")
 		{
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
-																		1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
-																		1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
-																		1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
-																		1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
-																		1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+			GIVEN("A test image and its correct result") {
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
+																			1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
+																			1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
+																			1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
+																			1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
+																			1, 1, 8, 8, 8, 8, 8, 8, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-			GrowRegions growRegions(2, 1, 0x01U);
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
-
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-																	0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			ck_assert_int_eq(regions.size(), 1);
-			ck_assert_int_eq(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength), true);
-		}
-		END_TEST
-
-		START_TEST(growRegionsSimple2)
-		{
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
-																		1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
-																		1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
-																		1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
-																		1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
-																		1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-			GrowRegions growRegions(2, 1, 0x01U);
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
-
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
-																	0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-																	0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-																	0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-																	0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-																	0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-																	0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-																	0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			ck_assert_int_eq(regions.size(), 2);
-			ck_assert_int_eq(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength), true);
-		}
-		END_TEST
-
-		START_TEST(growRegionsSimple3)
-		{
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 8, 1, 1, 1, 8, 8, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 8, 8, 1, 1, 1, 8, 1, 1,
-																		1, 1, 8, 8, 1, 1, 1, 8, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-			GrowRegions growRegions(1, 1, 0x01U);
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
-
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
-																	0, 1, 0, 1, 0, 1, 0, 0, 1, 0,
-																	0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
-																	0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
-																	0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
-																	0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			ck_assert_int_eq(regions.size(), 4);
-			ck_assert_int_eq(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength), true);
-		}
-		END_TEST
-
-		START_TEST(growRegionsSimple4)
-		{
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 8, 0, 0, 0, 8, 8, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
-																		0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
+																		0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+																		0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+																		0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+																		0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+																		0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+																		0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+																		0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
 																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNbOfContours = 1U;
 
-			GrowRegions growRegions(1, 1, 0x0U);
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
-
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
-																	0, 1, 0, 1, 0, 1, 0, 0, 1, 0,
-																	0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
-																	0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
-																	0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
-																	0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			ck_assert_int_eq(regions.size(), 4);
-			ck_assert_int_eq(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength), true);
+				WHEN("We grow regions on the test image") {
+					GrowRegions growRegions(2, 1, 0x01U);
+					GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+					std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
+					
+					THEN("We should get the same result as the correct result") {
+						REQUIRE(regions.size() == correctNbOfContours);
+						REQUIRE(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
 		}
-		END_TEST
-		
-		START_TEST(courserRegion1)
+
+		SCENARIO("Simple test for growing 2 regions", "[growRegions]")
 		{
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 8, 0, 0, 0, 8, 8, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																		0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
-																		0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
-																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			GIVEN("A test image and its correct result") {
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
+																			1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
+																			1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
+																			1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
+																			1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
+																			1, 1, 8, 8, 1, 1, 8, 8, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
+
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
+																		0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+																		0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+																		0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+																		0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+																		0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+																		0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
+																		0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
 																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNbOfContours = 2U;
 
-			GrowRegions growRegions(2, 1, 0x0U);
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
+				WHEN("We grow regions on the test image") {
+					GrowRegions growRegions(2, 1, 0x01U);
+					GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+					std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
 
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-																	0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
-																	0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			ck_assert_int_eq(regions.size(), 1);
-			ck_assert_int_eq(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength), true);
+					THEN("We should obtain the same result as the correct result") {
+						REQUIRE(regions.size() == 2);
+						REQUIRE(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
 		}
-		END_TEST
-		Suite * growRegionsTestSuite(void)
-		{
-			Suite *s;
-			TCase *tc_core;
-
-			s = suite_create("Grow regions tests");
-
-			tc_core = tcase_create("Simple test");
-			tcase_add_test(tc_core, growRegionsSimple);
-			suite_add_tcase(s, tc_core);
 		
-			tc_core = tcase_create("Simple test 2");
-			tcase_add_test(tc_core, growRegionsSimple2);
-			suite_add_tcase(s, tc_core);
+		SCENARIO("Simple test for growing 4 regions", "[growRegions]")
+		{
+			GIVEN("A test image and its correct result") {
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 8, 1, 1, 1, 8, 8, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 8, 8, 1, 1, 1, 8, 1, 1,
+																			1, 1, 8, 8, 1, 1, 1, 8, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-			tc_core = tcase_create("Simple test 3");
-			tcase_add_test(tc_core, growRegionsSimple3);
-			suite_add_tcase(s, tc_core);
-			
-			tc_core = tcase_create("Simple test 4");
-			tcase_add_test(tc_core, growRegionsSimple4);
-			suite_add_tcase(s, tc_core);
-			
-			tc_core = tcase_create("Courser region 1");
-			tcase_add_test(tc_core, courserRegion1);
-			suite_add_tcase(s, tc_core);
 
-			return s;
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+																		0, 1, 0, 1, 0, 1, 0, 0, 1, 0,
+																		0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
+																		0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
+																		0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
+																		0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNbOfContours = 4U;
+
+				WHEN("We grow regions on the test image") {
+					GrowRegions growRegions(1, 1, 0x01U);
+					GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+					std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
+
+					THEN("We obtain the same result as described by the correct result") {
+						REQUIRE(regions.size() == correctNbOfContours);
+						REQUIRE(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
+		}
+
+	 	SCENARIO("Simple test for growing 4 other regions", "[growRegions]")
+		{
+			GIVEN("A test image and its correct result") {
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 8, 0, 0, 0, 8, 8, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
+																			0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+																		0, 1, 0, 1, 0, 1, 0, 0, 1, 0,
+																		0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
+																		0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
+																		0, 1, 0, 0, 1, 0, 1, 0, 1, 0,
+																		0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNbOfContours = 4U;
+
+				WHEN("We grow regions on the test image") {
+					GrowRegions growRegions(1, 1, 0x0U);
+					GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+					std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
+					
+					THEN("We should obtain the same result as the correct result") {
+						REQUIRE(regions.size() == correctNbOfContours);
+						REQUIRE(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
+		}
+		
+		SCENARIO("Simple test for growing courser regions", "[growRegions]")
+		{
+			GIVEN("A test image and its correct result") {
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 8, 0, 0, 0, 8, 8, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
+																			0, 0, 8, 8, 0, 0, 0, 8, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+																		0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+																		0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNbOfContours = 1U;
+
+				WHEN("We grow regions on the test image") {
+					GrowRegions growRegions(2, 1, 0x0U);
+					GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
+					std::vector<std::vector<GBL::Point> > regions = growRegions.growUniform(tmpImage);
+
+					THEN("We should obtain the same result as the correct result") {
+						REQUIRE(regions.size() == 1);
+						REQUIRE(Utils::contourPointsMatch(regions, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
 		}
 	}
 }

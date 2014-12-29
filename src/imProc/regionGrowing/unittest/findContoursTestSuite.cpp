@@ -1,11 +1,11 @@
 #include <vector>
 
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
 #include "cm/global.hpp"
-#include "check.h"
+#include "testUtils/testUtils.hpp"
 
-#include "testUtils.hpp"
-
-#include "findContoursTestSuite.hpp"
 #include "../findContours.hpp"
 
 using EmbeddedMT::ImageProc::region_t;
@@ -15,28 +15,27 @@ namespace EmbeddedMT
 {
 	namespace test 
 	{
-		START_TEST(testFindContoursSimple)
+		SCENARIO("Find 1 simple contour", "[findContours]")
 		{
-			region_t minimumRegionSize = 2;
-			uint8_t maskWidthOneSide = 1;
+			GIVEN("A simple test image and its correct result") {
+				region_t minimumRegionSize = 2;
+				uint8_t maskWidthOneSide = 1;
 
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			Contours findContours(minimumRegionSize, maskWidthOneSide);
-			std::vector<std::vector<GBL::Point> > contours = findContours.find(tmpImage);
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 8, 8, 8, 8, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+				GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
 
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 																	0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
 																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
 																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
@@ -46,63 +45,61 @@ namespace EmbeddedMT
 																	0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
 																	0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
 																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNumberOfContours = 1U;
 
-			ck_assert_int_eq(contours.size(), 1);
-			ck_assert_int_eq(::EmbeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
+				WHEN("We apply the findContours() method on the testImage") {
+					Contours findContours(minimumRegionSize, maskWidthOneSide);
+					std::vector<std::vector<GBL::Point> > contours = findContours.find(tmpImage);
+					
+					THEN("We should get the same contours as described in the correct result of the image") {
+						REQUIRE(contours.size() == correctNumberOfContours);
+						REQUIRE(::EmbeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
 		}
-		END_TEST
 
-		START_TEST(testFindContoursSimple2)
+		SCENARIO("Find 2 simple contours", "[findContours]")
 		{
-			region_t minimumRegionSize = 2;
-			uint8_t maskWidthOneSide = 1;
-			const uint32_t imageLength = 10;
-			uint8_t testImage[imageLength*imageLength] = {    	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
-																		1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-																		1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
-																		1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
-																		1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-			GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
-			Contours findContours(minimumRegionSize, maskWidthOneSide);
-			std::vector<std::vector<GBL::Point> > contours = findContours.find(tmpImage);
+			GIVEN("A test image and its correct result") {
+				region_t minimumRegionSize = 2;
+				uint8_t maskWidthOneSide = 1;
+				const uint32_t imageLength = 10;
+				uint8_t testImage[imageLength*imageLength] = {    			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
+																			1, 8, 8, 8, 1, 8, 8, 8, 8, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+																			1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
+																			1, 8, 8, 8, 8, 1, 8, 8, 8, 1,
+																			1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+				GBL::Image_t tmpImage(imageLength, imageLength, CV_8UC1, testImage);
 
-			// Implementation specific: this particular method will remove shifted edges
-			const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-																	0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
-																	0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
-																	0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-																	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			ck_assert_int_eq(contours.size(), 1);
-			ck_assert_int_eq(::EmbeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength), true);
-		}
-		END_TEST
+				// Implementation specific: this particular method will remove shifted edges
+				const uint8_t rightImage[imageLength*imageLength] = {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+																		0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+																		0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+																		0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+																		0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+				const uint8_t correctNbOfContours = 1;
 
-		Suite * findContoursTestSuite(void)
-		{
-			Suite *s;
-			TCase *tc_core;
+				WHEN("We apply the findContours method on the test image") {
+					Contours findContours(minimumRegionSize, maskWidthOneSide);
+					std::vector<std::vector<GBL::Point> > contours = findContours.find(tmpImage);
 
-			s = suite_create("Find contours tests");
-
-			tc_core = tcase_create("Simple test");
-			tcase_add_test(tc_core, testFindContoursSimple);
-			suite_add_tcase(s, tc_core);
-
-			tc_core = tcase_create("Simple test 2");
-			tcase_add_test(tc_core, testFindContoursSimple2);
-			suite_add_tcase(s, tc_core);
-
-			return s;
+					THEN("We must get the same contours as the correct result describes") {
+						REQUIRE(contours.size() == correctNbOfContours);
+						REQUIRE(::EmbeddedMT::test::Utils::contourPointsMatch(contours, rightImage, imageLength, imageLength) == true);
+					}
+				}
+			}
 		}
 	}
 }

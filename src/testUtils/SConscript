@@ -1,6 +1,7 @@
 Import('env')
 
 lib_files = [
+	'testUtils.cpp',
 ]
 
 lib = env.Library('testUtils', lib_files)

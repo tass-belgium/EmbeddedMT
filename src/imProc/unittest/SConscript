@@ -8,12 +8,9 @@ libs = [
 	'opencv_imgcodecs',
 	'opencv_imgproc',
     'opencv_core',
-	# check
-#	'check',
 ]
 
 libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
-libs.extend(env['TEST_LIBS'])
 libs.extend(env['STD_LIBS'])
 
 libs_path = [
@@ -22,7 +19,6 @@ libs_path = [
 ]
 
 files = [
-#	'testQuantization.cpp',
 	'quantizationTestSuite.cpp',
 ]
 

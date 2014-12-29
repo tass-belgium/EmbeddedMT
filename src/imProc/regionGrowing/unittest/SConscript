@@ -1,6 +1,7 @@
 Import('env')
 
 libs = [
+	'testUtils',
     'imProc',
 	'utils',
 	'outputMethod',
@@ -12,7 +13,6 @@ libs = [
 ]
 
 libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
-libs.extend(env['TEST_LIBS'])
 libs.extend(env['STD_LIBS'])
 
 libs_path = [
@@ -21,14 +21,21 @@ libs_path = [
 ]
 
 files = [
-	'testRegionGrowing.cpp',
-	'testUtils.cpp',
-	'findContoursTestSuite.cpp',
 	'growRegionsTestSuite.cpp',
 ]
 
 target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
 installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
 bin = env.Alias("testRegionGrowing", installed_bin)
+bin = env.Alias("testDetectors", installed_bin)
+bin = env.Alias("unittest", installed_bin)
+
+files = [
+	'findContoursTestSuite.cpp',
+]
+
+target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
+bin = env.Alias("testFindContours", installed_bin)
 bin = env.Alias("testDetectors", installed_bin)
 bin = env.Alias("unittest", installed_bin)

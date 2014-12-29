@@ -1,6 +1,7 @@
 #include <vector>
 #include <iostream>
 
+#include "log/logging.hpp"
 #include "cm/utils.hpp"
 
 #include "testUtils.hpp"
