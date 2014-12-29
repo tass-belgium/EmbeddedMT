@@ -86,6 +86,16 @@ namespace EmbeddedMT {
 					}	
 			};
 
+			class MeasureVector8ByteQuantization : public MeasureQuantization  {
+				public:
+					MeasureVector8ByteQuantization(const Frame_t& frame) :
+						MeasureQuantization(frame, 0U)	{
+						;
+					}	
+					virtual void operator()(void) const {
+						VectorQuantization<uint8_t, uint64_t, 8>::quantizedBitExpansion(_frame);	
+					}	
+			};
 
 			class MeasureSlowQuantization : public MeasureQuantization  {
 				public:
@@ -115,7 +125,11 @@ namespace EmbeddedMT {
 
 				MeasureVectorQuantization vectorQuant(frame);
 				auto vectorElapsed = TimeMeasurement<duration>::measure(vectorQuant, nbOfMeasurements); 	
-				LOG_MEASUREMENT_RESULT("Vector quantization - elapsed time: %f %s", vectorElapsed.count()/1000.0, getThousandUnit(vectorElapsed).c_str());
+				LOG_MEASUREMENT_RESULT("Vector 4 byte quantization - elapsed time: %f %s", vectorElapsed.count()/1000.0, getThousandUnit(vectorElapsed).c_str());
+
+				MeasureVector8ByteQuantization vector8ByteQuant(frame);
+				auto vector8ByteElapsed = TimeMeasurement<duration>::measure(vector8ByteQuant, nbOfMeasurements); 	
+				LOG_MEASUREMENT_RESULT("Vector 8 byte quantization - elapsed time: %f %s", vector8ByteElapsed.count()/1000.0, getThousandUnit(vector8ByteElapsed).c_str());
 			}
 
 			template<typename duration>

@@ -55,6 +55,6 @@ namespace EmbeddedMT {
 				i = (i+1) % colors.size();
 			}
 			outputMethod.write(contourImage);
-}
+		}
 	}
 }

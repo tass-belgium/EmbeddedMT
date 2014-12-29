@@ -16,11 +16,15 @@
  */
 #include "fastAverageContourDetector.hpp"
 #include "imProc/regionGrowing/findContours.hpp"
+#include "imProc/quantization.hpp"
 
 #include "cm/plot.hpp"
 #include "outputMethod/outputImageSequence.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "imProc/slowQuantization.hpp"
 
 using EmbeddedMT::ImageProc::Contours;
+using EmbeddedMT::ImageProc::VectorQuantization;
 using EmbeddedMT::OutputMethod::OutputImageSequence;
 
 namespace EmbeddedMT {
@@ -41,15 +45,11 @@ namespace EmbeddedMT {
 			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 			GBL::Image_t outputImage = inputImage - background;
 
+			// Quantize picture
+			outputImage = VectorQuantization<uint8_t, uint32_t, 8>::quantizedBitExpansion(outputImage); 
+
 			Contours findContours(_minimumRegionSize, _maskWidthOneSide, &imProc);
-			std::vector<std::vector<GBL::Point> > contours = findContours.find(inputImage);
-			// Provide some debugging information
-			if(GBL::drawResults_b) {
-				OutputImageSequence* outputMethod = new OutputImageSequence();
-				outputMethod->open("fast-average-contour-plot");
-				Utils::Plot::drawContours(inputImage, contours, *outputMethod);
-				outputMethod->close();
-			}
+			std::vector<std::vector<GBL::Point> > contours = findContours.find(outputImage);
 
 			LOG_INFO("Found %d contours", (uint32_t) contours.size());
 			for(size_t i = 0; i < contours.size(); i++) {
