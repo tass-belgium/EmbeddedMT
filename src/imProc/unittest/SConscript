@@ -27,3 +27,13 @@ installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), tar
 bin = env.Alias("testQuantization", installed_bin)
 bin = env.Alias("testImageProc", installed_bin)
 bin = env.Alias("unittest", installed_bin)
+
+files = [
+	'andTestSuite.cpp',
+]
+
+target = env.Program(files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
+bin = env.Alias("testAnd", installed_bin)
+bin = env.Alias("testImageProc", installed_bin)
+bin = env.Alias("unittest", installed_bin)

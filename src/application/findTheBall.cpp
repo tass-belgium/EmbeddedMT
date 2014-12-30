@@ -22,8 +22,6 @@
 
 using namespace EmbeddedMT;
 
-const bool denoise = false;
-const bool sharpen = false;
 const bool subtractBackground = true;
 
 static GBL::Frame_t background;
@@ -66,12 +64,6 @@ std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const 
 			imProc->fastSubtract(inputFrame, background, frame);
 		} else {
 			frame = inputFrame;
-		}
-		if(denoise) {
-			imProc->denoise(frame, frame);
-		}
-		if(sharpen) {
-			imProc->sharpen(frame, frame, 0.5, -3);
 		}
 		descriptors[i].valid = true;
 		// Describe frame

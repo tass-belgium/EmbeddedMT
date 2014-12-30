@@ -26,6 +26,13 @@ typedef char char_t;
 typedef float float_t;
 typedef bool bool_t;
 
+// Check for C++ 11 or greater support
+#if __cplusplus <= 199711L
+#	include "cpp98.hpp"
+#else
+#	include "cpp11.hpp"
+#endif
+
 namespace EmbeddedMT {
 	namespace GBL {
 		typedef cv::Mat Image_t;

@@ -135,6 +135,11 @@ def executeApplication(target, mode, sequence, alg, output, logLevel, profile, t
         
     # Execute application
     cmd = '{fname} {sequence} {alg} {address} {port}'.format(fname=fname, sequence=sequence, alg=alg, address=serverHost, port=serverPort)
+    if profile != 'no':
+        print("Using perf record...")
+        cmd = "perf record " + cmd
+
+    print(cmd)
 
     # Time execution
     start_time = time.time()

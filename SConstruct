@@ -73,6 +73,11 @@ toolchain=map_arch_to_toolchain[arch]
 
 rootDir = Dir('.').abspath
 rootBuildDir = Dir('build/{target}/{mode}'.format(target=target, mode=env['mode'])).abspath
+
+# Make a separate one when profiling is set, since this often requires one to toggle between builds
+if env['profile'] != 'no':
+	rootBuildDir += '/profile'
+
 buildDir = Dir('{rootBuildDir}/src'.format(rootBuildDir = rootBuildDir)).abspath
 sourceDir = Dir('src').abspath
 thirdpartyDir = Dir('3rdparty').abspath
@@ -106,6 +111,9 @@ env['LINKFLAGS'] = []
 env['CPPPATH'].append('{buildDir}'.format(buildDir=buildDir))
 env['CPPPATH'].append('{thirdpartyBuildDir}'.format(thirdpartyBuildDir=env['THIRD_PARTY_INCLUDE_DIR']))
 
+# Add boost to include path
+env['CPPPATH'].append('{thirdPartyDir}/{boostDir}'.format(thirdPartyDir = env['THIRD_PARTY_DIR'], boostDir = "boost/boost_1_57_0"))
+
 # Fix for 3rd party modules that actually want to be installed in the system dirs
 env['CXXFLAGS'].append(['-isystem{thirdpartyBuildDir}'.format(thirdpartyBuildDir=env['THIRD_PARTY_INCLUDE_DIR'])])
 
@@ -120,7 +128,7 @@ else:
 ##################################### Profiling related stuff ##############################
 # Default when profiling is enabled: perf
 if env['profile'] == 'yes':
-	env['profile'] = 'gprof'
+	env['profile'] = 'perf'
 
 if env['profile'] != 'no':
 	# Add debugging symbols to enable more useful information when profiling

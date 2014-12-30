@@ -15,11 +15,10 @@ namespace EmbeddedMT{
 		class ImageProc {
 		public:
 			virtual ~ImageProc(void) {};
-			virtual GBL::CmRetCode_t denoise(const GBL::InputImage_t inputImage, GBL::OutputImage_t outputImage) const = 0;
 			virtual GBL::CmRetCode_t sharpen(const GBL::InputImage_t inputImage, GBL::OutputImage_t outputImage, double_t sigmaX, double_t beta) const = 0;
 			virtual GBL::CmRetCode_t subtract(const GBL::Image_t firstImage, const GBL::Image_t secondImage, GBL::Image_t outputImage) const = 0;
 			virtual GBL::CmRetCode_t fastSubtract(const GBL::Image_t& firstImage, const GBL::Image_t& secondImage, GBL::Image_t& outputImage) const = 0;
-			virtual GBL::Image_t andWithNeighbouringPixels(const GBL::Image_t& image, const uint8_t maskWidthOneSide) const = 0;
+
 		};
 	}
 }

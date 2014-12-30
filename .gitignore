@@ -1,6 +1,7 @@
 # Project specific
 build/*
 3rdparty/openCV-sconsbuilder
+3rdparty/boost
 testSequences/*/
 toolchains/*/
 *.result

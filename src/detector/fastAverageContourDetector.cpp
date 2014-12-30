@@ -47,7 +47,7 @@ namespace EmbeddedMT {
 			// Quantize picture
 			outputImage = VectorQuantization<uint8_t, uint32_t, 4>::quantizedBitExpansion(outputImage); 
 
-			Contours findContours(_minimumRegionSize, _maskWidthOneSide, &imProc);
+			Contours findContours(_minimumRegionSize, _maskWidthOneSide);
 			std::vector<std::vector<GBL::Point> > contours = findContours.find(outputImage);
 
 			LOG_INFO("Found %d contours", (uint32_t) contours.size());

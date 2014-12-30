@@ -13,6 +13,7 @@
 
 #include "cm/global.hpp"
 #include "outputMethod/outputImageSequence.hpp"
+#include "testUtils/testUtils.hpp"
 
 #include "../quantization.hpp"
 #include "../slowQuantization.hpp"
@@ -31,6 +32,8 @@ using EmbeddedMT::ImageProc::SlowQuantization;
 using EmbeddedMT::ImageProc::MetaQuantization;
 using EmbeddedMT::ImageProc::VectorQuantization;
 using EmbeddedMT::OutputMethod::OutputImageSequence;
+
+using EmbeddedMT::test::Utils;
 
 namespace EmbeddedMT
 {
@@ -81,21 +84,7 @@ namespace EmbeddedMT
 				}
 			}
 		}
-
-		template <typename valueType>
-		static void compareFrames(const Frame_t& frame1, const Frame_t& frame2) {
- 			REQUIRE(frame1.rows == frame2.rows);
-			REQUIRE(frame1.cols == frame2.cols);
-			REQUIRE(frame1.dims == frame2.dims);
-			REQUIRE(frame1.type() == frame2.type());
-
-			// Let's just use the slow method for the tests
-			for (int32_t row = 0; row < frame1.rows; ++row) {
-				for(int32_t col = 0; col < frame1.cols; ++col) {
-					REQUIRE(frame1.at<valueType>(row, col) == frame2.at<valueType>(row, col));
-				}
-			}
-		}
+		
 
  		SCENARIO("Test Quantization with bit expansion for value 0x0 - 0x7F for 8 bit values, two quantization classes", "[Quantization][BitExpansion]")
 		{
@@ -118,7 +107,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -129,7 +118,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -140,7 +129,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -151,7 +140,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -162,7 +151,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -173,7 +162,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -184,7 +173,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 			}
@@ -211,7 +200,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -222,7 +211,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -233,7 +222,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -244,7 +233,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -255,7 +244,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -266,7 +255,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 
@@ -277,7 +266,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The image should match the result") {
-						compareFrames<uint8_t>(correctResult, image);
+						Utils::compareFrames<uint8_t>(correctResult, image);
 					}
 				}
 			}
@@ -318,7 +307,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 				
@@ -328,7 +317,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 
@@ -338,7 +327,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 
@@ -348,7 +337,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 
@@ -358,7 +347,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 
@@ -368,7 +357,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 
@@ -378,7 +367,7 @@ namespace EmbeddedMT
 						checkValidExpansion<uint8_t>(image);
 					}
 					THEN("The resulting image should be the same as the correct result") {
-						compareFrames<uint8_t>(tmpCorrectImage, image);
+						Utils::compareFrames<uint8_t>(tmpCorrectImage, image);
 					}
 				}
 			}
@@ -416,7 +405,7 @@ namespace EmbeddedMT
 							checkValidExpansion<uint8_t>(image);
 						}
 						THEN("We should get the same result") {
-							compareFrames<uint8_t>(correctImages[nbOfClasses], image);
+							Utils::compareFrames<uint8_t>(correctImages[nbOfClasses], image);
 						}
 					}
 				}
@@ -434,7 +423,7 @@ namespace EmbeddedMT
 							checkValidExpansion<uint8_t>(map32QuantizationResults[nbOfClasses]);
 						}
 						THEN("We should get the same result") {
-							compareFrames<uint8_t>(correctImages[nbOfClasses], map32QuantizationResults[nbOfClasses]);
+							Utils::compareFrames<uint8_t>(correctImages[nbOfClasses], map32QuantizationResults[nbOfClasses]);
 						}
 					}
 				}
@@ -473,7 +462,7 @@ namespace EmbeddedMT
 							checkValidExpansion<uint8_t>(image);
 						}
 						THEN("We should get the same result") {
-							compareFrames<uint8_t>(correctImages[nbOfClasses], image);
+							Utils::compareFrames<uint8_t>(correctImages[nbOfClasses], image);
 						}
 					}
 				}
@@ -491,7 +480,7 @@ namespace EmbeddedMT
 							checkValidExpansion<uint8_t>(map32QuantizationResults[nbOfClasses]);
 						}
 						THEN("We should get the same result") {
-							compareFrames<uint8_t>(correctImages[nbOfClasses], map32QuantizationResults[nbOfClasses]);
+							Utils::compareFrames<uint8_t>(correctImages[nbOfClasses], map32QuantizationResults[nbOfClasses]);
 						}
 					}
 				}

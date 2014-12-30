@@ -10,7 +10,7 @@ namespace EmbeddedMT {
 	namespace ImageProc {
 		class Contours {
 			public:
-				Contours(const region_t minimumRegionSize = 2, const uint8_t maskWidthOneSide = 1, const ImageProc* const imProc = new ImageProcBase() );
+				Contours(const region_t minimumRegionSize = 2, const uint8_t maskWidthOneSide = 1);
 				std::vector<std::vector<GBL::Point> > find(const GBL::Image_t& image);
 
 			private:
@@ -18,9 +18,8 @@ namespace EmbeddedMT {
 
 				GBL::Image_t andWithNeighbouringPixels(const GBL::Image_t);
 
-				const region_t _minimumRegionSize;
 				const uint8_t _maskWidthOneSide;
-				const ImageProc* const _imProc;
+				GrowRegions _region; 
 		};
 	}
 }

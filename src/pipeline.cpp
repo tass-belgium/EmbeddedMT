@@ -10,11 +10,6 @@
 #include "detector/simpleBlobDetector.hpp"
 #include "detector/averageContourDetector.hpp"
 #include "detector/fastAverageContourDetector.hpp"
-#include "descriptor/sift.hpp"
-#include "descriptor/surf.hpp"
-#include "descriptor/orb.hpp"
-#include "descriptor/brisk.hpp"
-#include "descriptor/freak.hpp"
 #include "descriptor/brief.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
@@ -163,7 +158,7 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 
 GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorInterface** detector, const Descriptor::DescriptorInterface** descriptor, const Match::MatcherInterface** matcher) {
 	switch (matchAlgorithm) {
-		case 0:
+/* 		case 0:
 			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Surf();
 			*matcher = new Match::BfMatcher();
@@ -202,14 +197,14 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorI
 			*detector = new Detector::SimpleBlobDetector();
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
-			break;
+			break;*/
 		case 10:
 			*detector = new Detector::AverageContourDetector(25.0, 30U);
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;
 		case 11:
-			*detector = new Detector::FastAverageContourDetector(25.0);
+			*detector = new Detector::FastAverageContourDetector(25U, 1U);
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;
