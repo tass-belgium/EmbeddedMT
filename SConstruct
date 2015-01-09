@@ -121,7 +121,7 @@ env['CPPDEFINES'] = []
 env['CPPDEFINES'].append(map_logLevel_to_define[env['logLevel']])
 
 if env['mode'] == 'release':
-    env['CPPFLAGS'].append('-Ofast')
+    env['CPPFLAGS'].append(['-Ofast', '-g'])
 else:
     env['CPPFLAGS'].append(['-g', '-O0'])
 

@@ -55,6 +55,23 @@ namespace EmbeddedMT {
 			struct AllOnesUntil<0> {
 				enum { value = 0 };
 			};
+
+			template <typename ValueType, unsigned valueSize, unsigned size, bool ok>
+			struct FitsInXHelper {
+				enum { value = FitsInXHelper<ValueType, valueSize + sizeof(ValueType), size, valueSize >= size>::value };
+			};
+
+			template <typename ValueType, unsigned valueSize, unsigned size>
+			struct FitsInXHelper<ValueType, valueSize, size, true> {
+				enum { value = 1 };
+			};
+
+			template <typename ValueType, unsigned size>
+			struct FitsInX {
+				enum { value = FitsInXHelper<ValueType, sizeof(ValueType), size, sizeof(ValueType) >= size>::value };
+			};
+
+
 		}
 	}
 }

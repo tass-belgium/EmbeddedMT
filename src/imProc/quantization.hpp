@@ -15,7 +15,7 @@ namespace EmbeddedMT {
 			static GBL::Frame_t quantizedBitExpansion(const GBL::Frame_t& frame, const uint8_t nbOfClasses);
 		};
 		
-		template <typename ValueType, int nbOfClasses>
+		template <typename ValueType, unsigned nbOfClasses>
 		class MetaQuantization {
 		  public:
 			// Seems like we are counting on copy elision on this one
@@ -24,12 +24,12 @@ namespace EmbeddedMT {
 
 		// MetaQuantization partial specializations for corner cases
 		template <typename ValueType>
-		class MetaQuantization<ValueType, 1> {
+		class MetaQuantization<ValueType, 1U> {
 			public:
 				static GBL::Frame_t quantizedBitExpansion(const GBL::Frame_t& frame);
 		};
 
-		template <typename ValueType, typename VectorType, int nbOfClasses>
+		template <typename ValueType, typename VectorType, unsigned nbOfClasses>
 		class VectorQuantization {
 		  private:
 			union VectorConversion {
@@ -43,7 +43,7 @@ namespace EmbeddedMT {
 
 		// Vector quantization partial specialization
 		template <typename ValueType, typename VectorType>
-		class VectorQuantization<ValueType, VectorType, 1> {
+		class VectorQuantization<ValueType, VectorType, 1U> {
 			public:
 				static GBL::Frame_t quantizedBitExpansion(const GBL::Frame_t& frame);
 		};
@@ -81,7 +81,7 @@ namespace EmbeddedMT {
 			return quantized;
 		}
 
-		template <typename ValueType, int nbOfClasses>
+		template <typename ValueType, unsigned nbOfClasses>
 		GBL::Frame_t MetaQuantization<ValueType, nbOfClasses>::quantizedBitExpansion(const GBL::Frame_t& frame) {
 			STATIC_ASSERT(nbOfClasses > 0, "Nb of classes should be bigger than 0.");
 			STATIC_ASSERT(nbOfClasses <= GBL::NB_BITS_IN_A_BYTE * sizeof(ValueType), "Nb of classes should be equal to or smaller than the number of bits in the given ValueType");
@@ -110,13 +110,13 @@ namespace EmbeddedMT {
 		}
 
 		template <typename ValueType>
-		GBL::Frame_t MetaQuantization<ValueType, 1>::quantizedBitExpansion(const GBL::Frame_t& frame) {
+		GBL::Frame_t MetaQuantization<ValueType, 1U>::quantizedBitExpansion(const GBL::Frame_t& frame) {
 			// Return image with the same dimensions and type, containing all ones
 			return GBL::Frame_t::ones(frame.rows, frame.cols, frame.type());
 		}
 
 		// Seems like we are counting on copy elision for this one
-		template <typename ValueType, typename VectorType, int nbOfClasses>
+		template <typename ValueType, typename VectorType, unsigned nbOfClasses>
 		GBL::Frame_t VectorQuantization<ValueType, VectorType, nbOfClasses>::quantizedBitExpansion(const GBL::Frame_t& frame) {
 			STATIC_ASSERT(nbOfClasses > 0, "nbOfClasses should be bigger than 0");
 			STATIC_ASSERT(nbOfClasses <= GBL::NB_BITS_IN_A_BYTE * sizeof(ValueType), "nbOfClasses should be smaller than the number of bits of in the ValueType");
@@ -177,7 +177,7 @@ namespace EmbeddedMT {
 		}
 
 		template <typename ValueType, typename VectorType>
-		GBL::Frame_t VectorQuantization<ValueType, VectorType, 1>::quantizedBitExpansion(const GBL::Frame_t& frame) {
+		GBL::Frame_t VectorQuantization<ValueType, VectorType, 1U>::quantizedBitExpansion(const GBL::Frame_t& frame) {
 			return GBL::Frame_t::ones(frame.rows, frame.cols, frame.type());
 		}
 	}

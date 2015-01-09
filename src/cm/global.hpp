@@ -79,6 +79,10 @@ namespace EmbeddedMT {
 		const bool showStuff_b = false;
 #endif
 		const uint8_t NB_BITS_IN_A_BYTE = 8U;
+	
+		// Typedef register size for target architecture: keep on a steady 32 bits for now
+		typedef int32_t S_REGISTER_SIZE;
+		typedef uint32_t U_REGISTER_SIZE;
 
 		typedef struct DescriptorContainer {
 			uint32_t sequenceNo;
