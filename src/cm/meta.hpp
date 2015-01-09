@@ -70,8 +70,6 @@ namespace EmbeddedMT {
 			struct FitsInX {
 				enum { value = FitsInXHelper<ValueType, sizeof(ValueType), size, sizeof(ValueType) >= size>::value };
 			};
-
-
 		}
 	}
 }

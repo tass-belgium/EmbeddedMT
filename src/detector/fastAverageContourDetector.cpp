@@ -28,8 +28,9 @@ using EmbeddedMT::OutputMethod::OutputImageSequence;
 
 namespace EmbeddedMT {
 	namespace Detector {
-		FastAverageContourDetector::FastAverageContourDetector(const region_t minimumRegionSize, const uint8_t maskWidthOneSide) 
-			: _minimumRegionSize(minimumRegionSize), _maskWidthOneSide(maskWidthOneSide) {
+		FastAverageContourDetector::FastAverageContourDetector(const region_t minimumRegionSize) 
+			: _minimumRegionSize(minimumRegionSize)
+	   	{
 			;
 		}
 
@@ -47,8 +48,8 @@ namespace EmbeddedMT {
 			// Quantize picture
 			outputImage = VectorQuantization<uint8_t, uint32_t, 4>::quantizedBitExpansion(outputImage); 
 
-			Contours findContours(_minimumRegionSize, _maskWidthOneSide);
-			std::vector<std::vector<GBL::Point> > contours = findContours.find(outputImage);
+			Contours findContours(_minimumRegionSize);
+			std::vector<std::vector<GBL::Point> > contours = findContours.find<1U>(outputImage);
 
 			LOG_INFO("Found %d contours", (uint32_t) contours.size());
 			for(size_t i = 0; i < contours.size(); i++) {

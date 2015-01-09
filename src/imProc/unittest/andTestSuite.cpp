@@ -32,7 +32,7 @@ typedef EmbeddedMT::ImageProc::And ReferenceAnd;
 
 namespace EmbeddedMT {
 	namespace test {
-		SCENARIO("Test the simple and the optimized versions of the andNeighbouringPixels function with a 1 pixel one side mask width", "[ImageProc][andNeighbouringPixels]") {
+		SCENARIO("Test the simple and the optimized versions of the and four neighbourhood function with a 1 pixel one side mask width", "[ImageProc][and four neighbourhood]") {
 			GIVEN("A random test image and its correct result") {
 				srand(0);
 				const uint32_t imageSize = 1601U;
@@ -71,7 +71,7 @@ namespace EmbeddedMT {
 			}
 		}
 		
-		SCENARIO("Test the simple and the optimized versions of the andNeighbouringPixels function with a 10 pixel maskWidthOneSide", "[ImageProc][andNeighbouringPixels]") {
+		SCENARIO("Test the simple and the optimized versions of the and four neighbourhood function with a 10 pixel maskWidthOneSide", "[ImageProc][and four neighbourhood]") {
 			GIVEN("A random test image and its correct result") {
 				srand(0);
 				const uint32_t imageSize = 1601U;
@@ -110,7 +110,7 @@ namespace EmbeddedMT {
 			}
 		}
 
-		SCENARIO("Test the simple and the optimized versions of the andNeighbouringPixels function with a 0 pixel one mask side size", "[ImageProc][andNeighbouringPixels]") {
+		SCENARIO("Test the simple and the optimized versions of the and four neighbourhood function with a 0 pixel one mask side size", "[ImageProc][and four neighbourhood]") {
 			GIVEN("A random test image and its correct result") {
 				srand(0);
 				const uint32_t imageSize = 1601U;
@@ -149,7 +149,7 @@ namespace EmbeddedMT {
 			}
 		}
 
-		SCENARIO("Test the simple and the optimized versions of the andNeighbouringPixels function using a huge image", "[ImageProc][andNeighbouringPixels][longTest]") {
+		SCENARIO("Test the simple and the optimized versions of the and four neighbourhood function using a huge image", "[ImageProc][and four neighbourhood][longTest]") {
 			GIVEN("A random test image and its correct result") {
 				srand(0);
 				const uint32_t imageSize = 5001U;

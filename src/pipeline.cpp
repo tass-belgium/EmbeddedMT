@@ -204,7 +204,7 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorI
 			*matcher = new Match::BfMatcher();
 			break;
 		case 11:
-			*detector = new Detector::FastAverageContourDetector(25U, 1U);
+			*detector = new Detector::FastAverageContourDetector(25U);
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;
