@@ -1,0 +1,20 @@
+Import('env')
+
+libs = [
+]
+libs.extend(env['STD_LIBS'])
+
+libs_path = [
+    env['LIBS_DIR'],
+	env['THIRD_PARTY_LIBS_DIR']
+]
+
+files = [
+	'shiftTestSuite.cpp',
+]
+
+target = env.Program(target='shiftUnittest', source=files, LIBS=libs, LIBPATH=libs_path)
+installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
+bin = env.Alias("testShift", installed_bin)
+bin = env.Alias("testVector", installed_bin)
+bin = env.Alias("unittest", installed_bin)

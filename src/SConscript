@@ -13,6 +13,7 @@ folders = [
     'outputMethod/SConscript',
 	'detector/SConscript',
 	'testUtils/SConscript',
+	'vector/SConscript',
 ]
 
 SConscript(folders)
