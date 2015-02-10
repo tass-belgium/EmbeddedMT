@@ -10,7 +10,7 @@ namespace EmbeddedMT {
 	namespace ImageProc {
 		class And {
 			public:
-				static inline GBL::Frame_t fourNeighbourhood(const GBL::Frame_t& image, const uint8_t maskWidthOneSide);
+				static GBL::Frame_t fourNeighbourhood(const GBL::Frame_t& image, const uint8_t maskWidthOneSide);
 		};
 
 		namespace Meta {
@@ -18,6 +18,11 @@ namespace EmbeddedMT {
 			class AndSimd {
 				public:
 					static GBL::Frame_t fourNeighbourhood(const GBL::Frame_t& image);
+					static GBL::Frame_t verticalTwoNeighbourhood(const GBL::Frame_t& image);
+					static GBL::Frame_t horizontalTwoNeighbourhood(const GBL::Frame_t& image);
+				private:
+					static void verticalTwoNeighbourhood(const GBL::Frame_t& image, GBL::Frame_t& resultImage);
+					static void horizontalTwoNeighbourhood(const GBL::Frame_t& image, GBL::Frame_t& resultImage);
 			};
 		}
 
@@ -54,14 +59,32 @@ namespace EmbeddedMT {
 			template<typename ValueType, typename VectorType, unsigned maskWidthOneSide>
 			GBL::Frame_t AndSimd<ValueType, VectorType, maskWidthOneSide>::fourNeighbourhood(const GBL::Frame_t& image) {
 				GBL::Frame_t resultImage(image.rows, image.cols, image.type());
-				resultImage.at<uint8_t>(0,0) = 0;
 
-				// Make sure that the ValueType fits an integer number of times in the VectorType
-				STATIC_ASSERT(sizeof(VectorType) % sizeof(ValueType) == 0, "The SIMD type should be an integer multiple of the actual type");
-				const ValueType valueTypesPerVector = sizeof(VectorType)/sizeof(ValueType);
-				const uint32_t startValueIteration = Utils::Meta::FitsInX<VectorType, maskWidthOneSide*sizeof(ValueType)>::value;
-				const uint32_t startVectorIteration = startValueIteration/valueTypesPerVector;
+				// Hard to vectorize both masks into one. The vertical two neighbourhood is easier tough. So for now we split them out and loop over them separately	
+				horizontalTwoNeighbourhood(image, resultImage);	
 
+				// Apply vertical two neighbourhood
+				verticalTwoNeighbourhood(image, resultImage);	
+				return resultImage;
+			}
+
+			template<typename ValueType, typename VectorType, unsigned maskWidthOneSide>
+			GBL::Frame_t AndSimd<ValueType, VectorType, maskWidthOneSide>::verticalTwoNeighbourhood(const GBL::Frame_t& image) {
+				GBL::Frame_t resultImage(image.rows, image.cols, image.type());
+				verticalTwoNeighbourhood(image, resultImage);
+				return resultImage;
+			}
+
+			template<typename ValueType, typename VectorType, unsigned maskWidthOneSide>
+			GBL::Frame_t AndSimd<ValueType, VectorType, maskWidthOneSide>::horizontalTwoNeighbourhood(const GBL::Frame_t& image) {
+				GBL::Frame_t resultImage(image.rows, image.cols, image.type());
+				horizontalTwoNeighbourhood(image, resultImage);
+				return resultImage;
+			}
+
+			template<typename ValueType, typename VectorType, unsigned maskWidthOneSide>
+			void AndSimd<ValueType, VectorType, maskWidthOneSide>::horizontalTwoNeighbourhood(const GBL::Frame_t& image, GBL::Frame_t& resultImage) {
+				// We can not vectorize the horizontal two neighbourhood, so divide into two for now
 				for(uint32_t i = maskWidthOneSide; i < image.rows - maskWidthOneSide; ++i) {
 					uint8_t* const resultRowPtr = resultImage.ptr<uint8_t>(i);
 					const uint8_t* const imageRowPtr = image.ptr<uint8_t>(i);
@@ -75,11 +98,33 @@ namespace EmbeddedMT {
 					   resultRowPtr[j] = andedValue;
 				   }
 				}
-				
-				// Do vertical displacement in a vectorized way
+			}
+
+			template<typename ValueType, typename VectorType, unsigned maskWidthOneSide>
+			void AndSimd<ValueType, VectorType, maskWidthOneSide>::verticalTwoNeighbourhood(const GBL::Frame_t& image, GBL::Frame_t& resultImage) {
+				// ------------------------------ Assert input -----------------------------------
+				// Make sure that the ValueType fits an integer number of times in the VectorType
+				STATIC_ASSERT(sizeof(VectorType) % sizeof(ValueType) == 0, "The SIMD type should be an integer multiple of the actual type");
+				// ------------------------------ Compilation time calculations ---------------------------
+				const ValueType valueTypesPerVector = sizeof(VectorType)/sizeof(ValueType);
+				const uint32_t startValueIteration = Utils::Meta::FitsInX<VectorType, maskWidthOneSide*sizeof(ValueType)>::value;
+				const uint32_t startVectorIteration = startValueIteration/valueTypesPerVector;
+
+				// ------------------------------ Run time -------------------------
 				const uint32_t endVectorIteration = (image.rows - startValueIteration) / valueTypesPerVector;
 				const uint32_t endValueIteration = (image.rows - startValueIteration) % valueTypesPerVector;
+
 				for(uint32_t row = maskWidthOneSide; row < image.rows - maskWidthOneSide; ++row) {
+					// Vertical displacement for beginning
+					ValueType* const resultPtrBegin = resultImage.ptr<ValueType>(row);
+					for(uint8_t k = 1; k <= maskWidthOneSide; ++k) {
+						const ValueType* const imagePreviousRowPtr = image.ptr<ValueType>(row-k);
+						const ValueType* const imageNextRowPtr = image.ptr<ValueType>(row+k);
+						for(uint32_t col = maskWidthOneSide; col < startValueIteration; col++) {
+							resultPtrBegin[col] &= imagePreviousRowPtr[col] & imageNextRowPtr[col];
+						}
+					}
+
 					VectorType* const resultPtr = resultImage.ptr<VectorType>(row);
 					for(uint32_t col = startVectorIteration; col <	endVectorIteration; ++col) {
 						for(uint8_t k = 1; k <= maskWidthOneSide; ++k) {
@@ -87,16 +132,6 @@ namespace EmbeddedMT {
 							const VectorType* const imageNextRowPtr = image.ptr<VectorType>(row+k);
 							// Vertical displacement
 							resultPtr[col] &= imagePreviousRowPtr[col] & imageNextRowPtr[col];
-						}
-					}
-
-					// Vertical displacement vor beginning
-					ValueType* const resultPtrBegin = resultImage.ptr<ValueType>(row);
-					for(uint8_t k = 1; k <= maskWidthOneSide; ++k) {
-						const ValueType* const imagePreviousRowPtr = image.ptr<ValueType>(row-k);
-						const ValueType* const imageNextRowPtr = image.ptr<ValueType>(row+k);
-						for(uint32_t col = maskWidthOneSide; col < startValueIteration; col++) {
-							resultPtrBegin[col] &= imagePreviousRowPtr[col] & imageNextRowPtr[col];
 						}
 					}
 
@@ -110,7 +145,6 @@ namespace EmbeddedMT {
 						}
 					}
 				}
-				return resultImage;
 			}
 		}
 	}

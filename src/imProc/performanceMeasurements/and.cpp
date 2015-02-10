@@ -111,6 +111,7 @@ namespace EmbeddedMT {
 			static void measureAnd(void) {
 				srand(0);
 				measureAnd<nseconds>(100, 100);
+				measureAnd<useconds>(640, 480);
 				measureAnd<useconds>(800, 1600);
 				measureAnd<mseconds>(10000, 10000);
 			}

@@ -26,7 +26,7 @@ def usage():
     print("\t-l <logLevel>  Define log level: <debug>, warning or error")
     print("\t-r             Clean and rebuild")
     print("\t-i             Try to interpolate result")
-    print("\t-a             Enable profiling")
+    print("\t-a <method>    Enable profiling: perf, gprof, callgrind")
     print("\t-d <mechanism> Multi-threading mechanism: <none>, openmp")
     print("\t-b             Show stuff")
     
@@ -34,7 +34,7 @@ def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:riad:b", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ria:d:b", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -75,7 +75,7 @@ def main():
         elif o == "-i":
             interpolate = True
         elif o == "-a":
-            profile = 'yes'
+            profile = a
         elif o == "-b":
             showstuff = 'yes'
         elif o == "-d":
@@ -118,7 +118,11 @@ def main():
 def executeApplication(target, mode, sequence, alg, output, logLevel, profile, threadmode, showstuff, serverHost, serverPort, threadSyncer):
     """ Build and execute application """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
-    fname = '{scriptDir}/../build/{target}/{mode}/bin/pipeline'.format(scriptDir=scriptDir,target=target, mode=mode)
+    if profile == 'no':
+        binaryPath = '{scriptDir}/../build/{target}/{mode}/bin'.format(scriptDir = scriptDir, target=target, mode=mode)
+    else:
+        binaryPath = '{scriptDir}/../build/{target}/{mode}/profile/bin'.format(scriptDir = scriptDir, target=target, mode=mode)
+    fname = '{path}/{binary}'.format(path = binaryPath, binary = 'pipeline')
 
     # build application
     cmd = 'scons --directory {scriptDir}/.. --jobs 10 target={target} mode={mode} logLevel={logLevel} profile={profile} multithreading={threadmode} showstuff={showstuff} {buildTarget}'.format(scriptDir=scriptDir, target=target, mode=mode, logLevel=logLevel,profile=profile, threadmode=threadmode, showstuff = showstuff, buildTarget='pipeline')
@@ -135,9 +139,13 @@ def executeApplication(target, mode, sequence, alg, output, logLevel, profile, t
         
     # Execute application
     cmd = '{fname} {sequence} {alg} {address} {port}'.format(fname=fname, sequence=sequence, alg=alg, address=serverHost, port=serverPort)
-    if profile != 'no':
+    if profile == 'perf':
         print("Using perf record...")
-        cmd = "perf record " + cmd
+        cmd = "perf record -c 1000 " + cmd
+
+    if profile == 'callgrind':
+        print("Using callgrind...")
+        cmd = "valgrind --tool=callgrind " + cmd
 
     print(cmd)
 
@@ -150,6 +158,18 @@ def executeApplication(target, mode, sequence, alg, output, logLevel, profile, t
     else:
         end_time = time.time()
         print("Elapsed time measured by Python was %g seconds" % (end_time - start_time))
+
+    if profile == 'perf':
+        cmd = 'perf report'
+        print(cmd)
+        ret = os.system(cmd)
+
+    if profile == 'gprof':
+        readableOutputFile = 'profileAnalysis.txt'
+        cmd = 'gprof {binary} {profileOutput} > {readableOutput}'.format(binary = fname, profileOutput = 'gmon.out', readableOutput = readableOutputFile)
+        print(cmd)
+        ret = os.system(cmd)
+        print('You can find the result of the gprof profiling in {readableOutput}'.format(readableOutput = readableOutputFile))
 
     return gbl.RetCodes.RESULT_OK
 

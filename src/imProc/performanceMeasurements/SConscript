@@ -27,6 +27,7 @@ env_performance['CPPFLAGS'].append('-std=c++11')
 target = env_performance.Program(target='quantizationTestPerformance', source=files, LIBS=libs, LIBPATH=libs_path)
 installed_bin = env_performance.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
 bin = env_performance.Alias("testPerformance-quantization", installed_bin)
+bin = env_performance.Alias("testPerformance", installed_bin)
 bin = env_performance.Alias("testImageProc", installed_bin)
 bin = env_performance.Alias("testPerformance", installed_bin)
 
@@ -38,6 +39,7 @@ files = [
 target = env_performance.Program(target='andTestPerformance', source=files, LIBS=libs, LIBPATH=libs_path)
 installed_bin = env_performance.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
 bin = env_performance.Alias("testPerformance-and", installed_bin)
+bin = env_performance.Alias("testPerformance", installed_bin)
 bin = env_performance.Alias("testImageProc", installed_bin)
 bin = env_performance.Alias("testPerformance", installed_bin)
 
@@ -49,6 +51,7 @@ files = [
 target = env.Program(target='quantizationProfile', source=files, LIBS=libs, LIBPATH=libs_path)
 installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
 bin = env.Alias("profile-quantization", installed_bin)
+bin = env.Alias("profile", installed_bin)
 bin = env.Alias("testImageProc", installed_bin)
 bin = env.Alias("testPerformance", installed_bin)
 
@@ -60,5 +63,6 @@ files = [
 target = env.Program(target='andProfile', source=files, LIBS=libs, LIBPATH=libs_path)
 installed_bin = env.Install("{bin_dir}".format(bin_dir=env['TEST_BIN_DIR']), target)
 bin = env.Alias("profile-and", installed_bin)
+bin = env.Alias("profile", installed_bin)
 bin = env.Alias("testImageProc", installed_bin)
 bin = env.Alias("testPerformance", installed_bin)
