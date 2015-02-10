@@ -1,5 +1,11 @@
 Import('env')
 
+folders = [
+    'unittest/SConscript',
+]
+
+SConscript(folders)
+
 lib_files = [
 	'testUtils.cpp',
 ]

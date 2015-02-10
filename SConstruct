@@ -43,7 +43,7 @@ opts.Add(EnumVariable('logLevel', 'Set log mode', 'debug',
                     ignorecase=2))
 
 opts.Add(EnumVariable('profile', 'Set profile flag', 'no',
-					allowed_values=('yes', 'no', 'gprof', 'perf'),
+					allowed_values=('yes', 'no', 'gprof', 'perf', 'callgrind'),
 					map = {},
 					ignorecase=2))
 
