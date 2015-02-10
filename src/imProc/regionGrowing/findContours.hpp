@@ -13,7 +13,7 @@ namespace EmbeddedMT {
 			public:
 				Contours(const region_t minimumRegionSize = 2, const uint8_t maskWidthOneSide = 1);
 				
-				std::vector<std::vector<GBL::Point> > find(const GBL::Image_t& image, const uint8_t maskWidthOneSide);
+//				std::vector<std::vector<GBL::Point> > find(const GBL::Image_t& image, const uint8_t maskWidthOneSide);
 
 				template<unsigned maskWidthOneSide>
 				std::vector<std::vector<GBL::Point> > find(const GBL::Image_t& image);
