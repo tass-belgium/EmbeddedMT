@@ -10,7 +10,33 @@ namespace EmbeddedMT {
 	namespace ImageProc {
 		class And {
 			public:
-				static GBL::Frame_t fourNeighbourhood(const GBL::Frame_t& image, const uint8_t maskWidthOneSide);
+				static GBL::Frame_t fourNeighbourhood(const GBL::Frame_t& image, const uint8_t maskWidthOneSide) {
+					GBL::Frame_t resultImage(image.rows, image.cols, image.type());
+					// Mask:
+					// 0 1 0
+					// 1 1 1
+					// 0 1 0
+				   
+				   // This can be vectorized	
+					for(int32_t i = maskWidthOneSide; i < image.rows - maskWidthOneSide; ++i) {
+						uint8_t* const resultRowPtr = resultImage.ptr<uint8_t>(i);
+						const uint8_t* const imageRowPtr = image.ptr<uint8_t>(i);
+						for(int32_t j = maskWidthOneSide; j < image.cols - maskWidthOneSide; ++j) {
+						   uint8_t andedValue = imageRowPtr[j];
+						   // Apply the mask
+						   for(uint8_t k = 1; k <= maskWidthOneSide; ++k) {
+							   // Horizontal displacement
+								andedValue &= imageRowPtr[j-k] & imageRowPtr[j+k];
+								// Vertical displacement
+								const uint8_t* const imagePreviousRowPtr = image.ptr<uint8_t>(i-k);
+								const uint8_t* const imageNextRowPtr = image.ptr<uint8_t>(i+k);
+								andedValue &= imagePreviousRowPtr[j] & imageNextRowPtr[j];
+						   }
+						   resultRowPtr[j] = andedValue;
+					   }
+					}
+					return resultImage;
+				}
 		};
 
 		namespace Meta {
@@ -24,34 +50,6 @@ namespace EmbeddedMT {
 					static void verticalTwoNeighbourhood(const GBL::Frame_t& image, GBL::Frame_t& resultImage);
 					static void horizontalTwoNeighbourhood(const GBL::Frame_t& image, GBL::Frame_t& resultImage);
 			};
-		}
-
-		GBL::Frame_t And::fourNeighbourhood(const GBL::Frame_t& image, const uint8_t maskWidthOneSide) {
-			GBL::Frame_t resultImage(image.rows, image.cols, image.type());
-			// Mask:
-			// 0 1 0
-			// 1 1 1
-			// 0 1 0
-		   
-		   // This can be vectorized	
-			for(int32_t i = maskWidthOneSide; i < image.rows - maskWidthOneSide; ++i) {
-				uint8_t* const resultRowPtr = resultImage.ptr<uint8_t>(i);
-				const uint8_t* const imageRowPtr = image.ptr<uint8_t>(i);
-				for(int32_t j = maskWidthOneSide; j < image.cols - maskWidthOneSide; ++j) {
-				   uint8_t andedValue = imageRowPtr[j];
-				   // Apply the mask
-				   for(uint8_t k = 1; k <= maskWidthOneSide; ++k) {
-					   // Horizontal displacement
-						andedValue &= imageRowPtr[j-k] & imageRowPtr[j+k];
-						// Vertical displacement
-						const uint8_t* const imagePreviousRowPtr = image.ptr<uint8_t>(i-k);
-						const uint8_t* const imageNextRowPtr = image.ptr<uint8_t>(i+k);
-						andedValue &= imagePreviousRowPtr[j] & imageNextRowPtr[j];
-				   }
-				   resultRowPtr[j] = andedValue;
-			   }
-			}
-			return resultImage;
 		}
 
 		// Template function definitions
