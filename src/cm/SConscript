@@ -2,7 +2,6 @@ Import('env')
 
 lib_files = [
 	'utils.cpp',
-	'point.cpp',
 	'plot.cpp'
 ]
 

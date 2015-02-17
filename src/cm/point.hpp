@@ -3,52 +3,59 @@
 
 #include <stdint.h>
 #include <iostream>
+#include "cm/global.hpp"
 
 namespace EmbeddedMT {
 	namespace GBL {
 		class Point
 		{
+			// Use implicit inlines
 			public:
-				Point();
-				Point(const uint32_t x, const uint32_t y);
+				Point() : _x(0), _y(0) {
+					;
+				}
 
-				inline uint32_t getX() const {
+				Point(const uint32_t x, const uint32_t y) : _x(x), _y(y) {
+					;
+				}
+
+				uint32_t getX() const NOEXCEPT {
 					return _x;
 				}
 
-				inline uint32_t getY() const {
+				uint32_t getY() const NOEXCEPT {
 					return _y;
 				}
 				
-				inline uint32_t getRow() const {
+				uint32_t getRow() const NOEXCEPT_EXPR(getY()) {
 					return getY();
 				}
 
-				inline uint32_t getCol() const {
+				uint32_t getCol() const NOEXCEPT_EXPR(getX()) {
 					return getX();
 				}
 
-				inline void setX(const uint32_t x) {
+				void setX(const uint32_t x) NOEXCEPT {
 					_x = x;   
 				}
 
-				inline void setY(const uint32_t y) {
+				void setY(const uint32_t y) NOEXCEPT {
 					_y = y;
 				}
 
-				inline void setRow(const uint32_t row) {
+				void setRow(const uint32_t row) NOEXCEPT_EXPR(setY()) {
 					setY(row);
 				}
 
-				inline void setCol(const uint32_t col) {
+				void setCol(const uint32_t col) NOEXCEPT_EXPR(setX()) {
 					setX(col);
 				}
 
-				inline void incrementX(const uint32_t xIncrement) {
+				void incrementX(const uint32_t xIncrement) NOEXCEPT {
 					_x += xIncrement;   
 				}
 
-				inline void incrementY(const uint32_t yIncrement) {
+				void incrementY(const uint32_t yIncrement) NOEXCEPT {
 					_y += yIncrement;   
 				}
 

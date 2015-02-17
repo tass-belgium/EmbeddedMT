@@ -12,6 +12,9 @@
 #include <stdint.h>
 #include <vector>
 
+#include "boost/config.hpp"
+#include "boost/static_assert.hpp"
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/photo/photo.hpp"
@@ -26,12 +29,24 @@ typedef char char_t;
 typedef float float_t;
 typedef bool bool_t;
 
+// ---------------------------- Config stuff -------------------------------------------
+
+// Define noexcept
+#define NOEXCEPT BOOST_NOEXCEPT
+// TODO replace this with BOOST_NOEXCEPT_EXPR once GCC fully supports noexcept(member expr)
+#define NOEXCEPT_EXPR(...)
+
+// Create static assert macro
+#define STATIC_ASSERT(bool_constexpr, message) BOOST_STATIC_ASSERT_MSG(bool_constexpr, message)
+
 // Check for C++ 11 or greater support
 #if __cplusplus <= 199711L
 #	include "cpp98.hpp"
 #else
 #	include "cpp11.hpp"
 #endif
+
+// -------------------------- end stuff ----------------------------------------
 
 namespace EmbeddedMT {
 	namespace GBL {
