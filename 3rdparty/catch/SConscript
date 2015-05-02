@@ -3,7 +3,15 @@ Import('env')
 header_files = [
 	'catch.hpp',
 ]
+source_files = [
+	'catch.cpp'
+]
 
-# Build and install lib
 # Install header files
 env.Install('{includeDir}'.format(includeDir=env['THIRD_PARTY_INCLUDE_DIR']), header_files)
+
+# Build catch lib
+lib = env.Library('catch', source_files)
+installed_lib = env.Install("{libs_dir}".format(libs_dir=env['LIBS_DIR']), lib)
+env.Alias('buildCatch', installed_lib)
+env.Alias('build3rdparty', installed_lib)

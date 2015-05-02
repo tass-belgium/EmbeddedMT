@@ -94,6 +94,8 @@ env['BIN_DIR'] = '{buildDir}/../bin'.format(buildDir = buildDir)
 env['openCV_DIR'] = Dir('3rdparty/openCV-sconsbuilder').abspath
 env['TEST_BIN_DIR'] = '{bindir}/test'.format(bindir = env['BIN_DIR'])
 
+env['UNITTEST_LIBS'] = { 'catch' }
+
 env['AR'] = '{toolchainpath}/{toolchain}ar'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['AS'] = '{toolchainpath}/{toolchain}as'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)
 env['CC'] = '{toolchainpath}/{toolchain}gcc'.format(toolchainpath=map_arch_to_toolchain_path[arch], toolchain=toolchain)

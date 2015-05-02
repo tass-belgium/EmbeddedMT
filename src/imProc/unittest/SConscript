@@ -11,6 +11,7 @@ libs = [
 ]
 
 libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])
+libs.extend(env['UNITTEST_LIBS'])
 libs.extend(env['STD_LIBS'])
 
 libs_path = [

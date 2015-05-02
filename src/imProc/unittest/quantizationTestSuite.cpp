@@ -4,7 +4,6 @@
 #include <string>
 #include <map>
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 #include "opencv2/core/core.hpp"

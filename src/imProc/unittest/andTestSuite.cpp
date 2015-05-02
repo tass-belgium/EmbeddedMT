@@ -18,7 +18,6 @@
 #include <random>
 #include <limits>
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 #include "cm/global.hpp"
