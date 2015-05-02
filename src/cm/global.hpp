@@ -66,7 +66,8 @@ namespace EmbeddedMT {
 
 		typedef enum cmRetCodes {
 			RESULT_SUCCESS,
-			RESULT_FAILURE
+			RESULT_FAILURE,
+			RESULT_NOTSUPPORTED
 		} CmRetCode_t;
 
 		/* 

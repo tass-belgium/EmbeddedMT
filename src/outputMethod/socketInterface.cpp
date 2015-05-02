@@ -17,10 +17,11 @@
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <netinet/in.h>
 #include <unistd.h>
 
 #include "socketInterface.hpp"
+
+using std::string;
 
 namespace EmbeddedMT {
 	namespace OutputMethod {
@@ -61,8 +62,35 @@ namespace EmbeddedMT {
 			} else {
 				result = GBL::RESULT_SUCCESS;
 			}
+			
 			LOG_EXIT("result = %d", result);
 			return result;
+		}
+
+		GBL::CmRetCode_t SocketInterface::write(const string& msg) {
+			LOG_ENTER("Sending message '%s'", msg.c_str());
+			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
+ 			if (send(_sockfd, msg.c_str(), msg.size(), 0) != uint32_t(msg.size())) {
+				LOG_ERROR("Could not send message");
+			} else {
+				result = GBL::RESULT_SUCCESS;
+			}
+			LOG_EXIT("result = %d", result);
+			return result;
+		}
+
+		std::string SocketInterface::recv(uint32_t bytes) {
+			std::string output;
+			output.resize(bytes);
+
+			int bytes_received = read(_sockfd, &output[0], bytes-1);
+			if (bytes_received<0) {
+				std::cerr << "Failed to read data from socket.\n";
+				return "";
+			}
+
+			output[bytes_received] = 0;
+			return output;
 		}
 
 		GBL::CmRetCode_t SocketInterface::write(const GBL::Frame_t frame) {

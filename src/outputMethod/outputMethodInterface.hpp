@@ -19,8 +19,13 @@ namespace EmbeddedMT {
 			virtual ~OutputMethodInterface() {};
 			virtual GBL::CmRetCode_t open(const char* filename) = 0;
 			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement) = 0;
-			virtual GBL::CmRetCode_t write(const GBL::Frame_t) = 0;
+			virtual GBL::CmRetCode_t write(const GBL::Frame_t frame) = 0;
 			virtual GBL::CmRetCode_t close() = 0;
+		};
+
+		class OutputMethodStringInterface : public OutputMethodInterface {
+			public:
+				virtual GBL::CmRetCode_t write(const std::string& message) = 0;
 		};
 	}
 }
