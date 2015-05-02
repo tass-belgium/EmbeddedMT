@@ -25,9 +25,9 @@ namespace cv
 			virtual int descriptorType() const;
 			virtual int defaultNorm() const;
 			/// @todo read and write for brief
-			AlgorithmInfo* info() const;
+//			AlgorithmInfo* info() const;
 		protected:
-//			void computeImplHelper(const Mat& image, vector<KeyPoint>& keypoints, Mat& descriptors) const;
+			void computeImplHelper(InputArray image, vector<KeyPoint>& keypoints, Mat& descriptors) const;
 			virtual void computeImpl( InputArray image, std::vector<KeyPoint>& keypoints, OutputArray descriptors) const;
 
 			typedef void(*PixelTestFn)(const Mat&, const vector<KeyPoint>&, Mat&);

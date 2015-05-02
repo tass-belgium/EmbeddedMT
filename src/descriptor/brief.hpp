@@ -8,6 +8,7 @@
 #ifndef BRIEF_HPP_
 #define BRIEF_HPP_
 
+#include "cm/global.hpp"
 #include "descriptorInterface.hpp"
 
 namespace EmbeddedMT {

@@ -6,7 +6,8 @@ lib_files = [
 #	'orb.cpp',
 #	'brisk.cpp',
 #	'freak.cpp',
-	'brief.cpp'
+	'brief.cpp',
+	'brief_opencv/brief.cpp'
 ]
 
 lib = env.Library('descriptor', lib_files)

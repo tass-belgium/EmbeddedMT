@@ -158,15 +158,16 @@ void BriefDescriptorExtractor::write( FileStorage& fs) const
 
 void BriefDescriptorExtractor::computeImpl( InputArray image, std::vector<KeyPoint>& keypoints, OutputArray descriptors) const
 {
-//	computeImplHelper((const Mat) image, keypoints, (Mat) descriptors);
-//}
+	Mat tmp = descriptors.getMat();
+	computeImplHelper(image, keypoints, tmp);
+}
 
-//void BriefDescriptorExtractor::computeImplHelper(const Mat& image, std::vector<KeyPoint>& keypoints, Mat& descriptors) const
-//{
+void BriefDescriptorExtractor::computeImplHelper(InputArray image, std::vector<KeyPoint>& keypoints, Mat& descriptors) const
+{
     // Construct integral image for fast smoothing (box filter)
     Mat sum;
 
-    InputArray grayImage = image;
+    Mat grayImage(image.size(), CV_8UC1);
     if( image.type() != CV_8U ) cvtColor( image, grayImage, COLOR_BGR2GRAY );
 
     ///TODO allow the user to pass in a precomputed integral image

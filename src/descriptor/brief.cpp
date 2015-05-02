@@ -5,11 +5,13 @@
  *      Author: Bart Verhagen
  */
 #include <vector>
-#include "brief.hpp"
+#include "brief_opencv/brief.hpp"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
+
+#include "brief.hpp"
 
 namespace EmbeddedMT {
 	namespace Descriptor {

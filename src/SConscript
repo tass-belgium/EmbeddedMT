@@ -33,7 +33,6 @@ libs = [
 
     # openCV libraries
     'opencv_photo',
-    'opencv_nonfree',
     'opencv_highgui',
 	'opencv_videoio',
     'opencv_features2d',
