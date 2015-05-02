@@ -14,18 +14,28 @@
 
 namespace EmbeddedMT {
 	namespace OutputMethod {
-		class OutputMethodInterface {
-		public:
-			virtual ~OutputMethodInterface() {};
-			virtual GBL::CmRetCode_t open(const char* filename) = 0;
-			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement) = 0;
-			virtual GBL::CmRetCode_t write(const GBL::Frame_t frame) = 0;
-			virtual GBL::CmRetCode_t close() = 0;
+		class OutputMethodStringInterface {
+			public:
+				virtual ~OutputMethodStringInterface() {};
+				virtual GBL::CmRetCode_t write(const std::string& message) = 0;
+				virtual GBL::CmRetCode_t open(const char* filename) = 0;
+				virtual GBL::CmRetCode_t close() = 0;
 		};
 
-		class OutputMethodStringInterface : public OutputMethodInterface {
+		class OutputMethodFrameInterface {
 			public:
-				virtual GBL::CmRetCode_t write(const std::string& message) = 0;
+				virtual ~OutputMethodFrameInterface() {};
+				virtual GBL::CmRetCode_t write(const GBL::Frame_t& frame) = 0;
+				virtual GBL::CmRetCode_t open(const char* filename) = 0;
+				virtual GBL::CmRetCode_t close() = 0;
+		};
+
+		class OutputMethodDisplacementInterface {
+			public:
+				virtual ~OutputMethodDisplacementInterface() {};
+				virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement) = 0;
+				virtual GBL::CmRetCode_t open(const char* filename) = 0;
+				virtual GBL::CmRetCode_t close() = 0;
 		};
 	}
 }

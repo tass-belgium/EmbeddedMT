@@ -28,7 +28,7 @@ static GBL::Frame_t background;
 
 std::vector<GBL::Displacement_t> findTheBall(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer,
 		const Descriptor::DescriptorInterface& descriptor, const Match::MatcherInterface& matcher, const Displacement::DisplacementInterface& displacement,
-		InputMethod::InputMethodInterface& inputMethod, OutputMethod::OutputMethodInterface& outputMethod) {
+		InputMethod::InputMethodInterface& inputMethod, OutputMethod::OutputMethodDisplacementInterface& outputMethod) {
 	LOG_ENTER("videoFile = %s", videoFile);
 
 	if (inputMethod.start(videoFile) != GBL::RESULT_SUCCESS) {

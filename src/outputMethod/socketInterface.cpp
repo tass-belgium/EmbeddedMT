@@ -93,10 +93,6 @@ namespace EmbeddedMT {
 			return output;
 		}
 
-		GBL::CmRetCode_t SocketInterface::write(const GBL::Frame_t frame) {
-			return GBL::RESULT_FAILURE;
-		}
-
 		GBL::CmRetCode_t SocketInterface::close() {
 			LOG_ENTER("void");
 			::close(_sockfd);

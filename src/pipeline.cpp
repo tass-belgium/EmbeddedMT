@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 	Draw::DrawInterface* drawer = new Draw::Draw();
 	const Displacement::DisplacementInterface* displacement = new Displacement::DisplacementBase();
 	InputMethod::InputMethodInterface* inputMethod = nullptr;
-	OutputMethod::OutputMethodInterface* outputMethod = nullptr;
+	OutputMethod::OutputMethodDisplacementInterface* outputMethod = nullptr;
 
 	const Detector::DetectorInterface* detector = nullptr;
 	const Descriptor::DescriptorInterface* descriptor = nullptr;

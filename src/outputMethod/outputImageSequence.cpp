@@ -44,7 +44,7 @@ namespace EmbeddedMT {
 			return result;
 		}
 
-		GBL::CmRetCode_t OutputImageSequence::write(const GBL::Frame_t frame) {
+		GBL::CmRetCode_t OutputImageSequence::write(const GBL::Frame_t& frame) {
 			LOG_ENTER("Frame = %p", &frame);
 			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 
@@ -56,10 +56,6 @@ namespace EmbeddedMT {
 			}
 			LOG_EXIT("result = %d", result);
 			return result;
-		}
-
-		GBL::CmRetCode_t OutputImageSequence::write(const GBL::Displacement_t& displacement) {
-			return GBL::RESULT_FAILURE;
 		}
 
 		GBL::CmRetCode_t OutputImageSequence::close() {

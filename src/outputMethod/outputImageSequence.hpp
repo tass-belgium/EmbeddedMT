@@ -12,11 +12,10 @@
 
 namespace EmbeddedMT {
 	namespace OutputMethod {
-		class OutputImageSequence : public OutputMethodInterface {
+		class OutputImageSequence : public OutputMethodFrameInterface {
 		public:
 			virtual GBL::CmRetCode_t open(const char* filename);
-			virtual GBL::CmRetCode_t write(const GBL::Frame_t frame);
-			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
+			virtual GBL::CmRetCode_t write(const GBL::Frame_t& frame);
 
 			virtual GBL::CmRetCode_t close();
 

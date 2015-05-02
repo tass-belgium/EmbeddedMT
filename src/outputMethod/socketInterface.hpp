@@ -15,12 +15,11 @@
 
 namespace EmbeddedMT {
 	namespace OutputMethod {
-		class SocketInterface : public OutputMethodStringInterface {
+		class SocketInterface : public OutputMethodStringInterface, public OutputMethodDisplacementInterface {
 		public:
 			SocketInterface(uint16_t _portNo);
 			virtual GBL::CmRetCode_t open(const char* filename);
 			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
-			virtual GBL::CmRetCode_t write(const GBL::Frame_t);
 			virtual GBL::CmRetCode_t write(const std::string& msg);
 			std::string recv(uint32_t bytes);
 			std::string listen(void);

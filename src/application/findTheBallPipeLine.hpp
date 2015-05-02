@@ -19,6 +19,6 @@
 #include "outputMethod/outputMethodInterface.hpp"
 
 std::vector<EmbeddedMT::GBL::Displacement_t> findTheBallPipeline(const char* const videoFile, const EmbeddedMT::ImageProc::ImageProc* imProc, EmbeddedMT::Draw::DrawInterface& drawer,
-		const EmbeddedMT::Detector::DetectorInterface& detectorInterface, const EmbeddedMT::Descriptor::DescriptorInterface& descriptorInterface, const EmbeddedMT::Match::MatcherInterface& matcherInterface, const EmbeddedMT::Displacement::DisplacementInterface& displacementInterface, EmbeddedMT::InputMethod::InputMethodInterface& inputMethodInterface, EmbeddedMT::OutputMethod::OutputMethodInterface& outputMethodInterface);
+		const EmbeddedMT::Detector::DetectorInterface& detectorInterface, const EmbeddedMT::Descriptor::DescriptorInterface& descriptorInterface, const EmbeddedMT::Match::MatcherInterface& matcherInterface, const EmbeddedMT::Displacement::DisplacementInterface& displacementInterface, EmbeddedMT::InputMethod::InputMethodInterface& inputMethodInterface, EmbeddedMT::OutputMethod::OutputMethodDisplacementInterface& outputMethodInterface);
 
 #endif

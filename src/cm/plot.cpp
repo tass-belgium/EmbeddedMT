@@ -24,7 +24,7 @@ using std::vector;
 using cv::Vec3b;
 using EmbeddedMT::GBL::Point;
 using EmbeddedMT::GBL::Frame_t;
-using EmbeddedMT::OutputMethod::OutputMethodInterface;
+using EmbeddedMT::OutputMethod::OutputMethodFrameInterface;
 
 namespace EmbeddedMT {
 	namespace Utils {
@@ -37,7 +37,7 @@ namespace EmbeddedMT {
 		}
 		const std::vector<Vec3b> Plot::colors = makeColorVector();
 
-		void Plot::drawContours(const Frame_t& image, const vector<vector<Point> >& contours, OutputMethodInterface& outputMethod) {
+		void Plot::drawContours(const Frame_t& image, const vector<vector<Point> >& contours, OutputMethodFrameInterface& outputMethod) {
 			GBL::Frame_t contourImage;
 			// Make sure there are 3 channels present
 			cv::cvtColor(image, contourImage, cv::COLOR_GRAY2BGR);

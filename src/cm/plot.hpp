@@ -12,7 +12,7 @@ namespace EmbeddedMT {
 	namespace Utils {
 		class Plot {
 			public:
-				static void drawContours(const GBL::Frame_t& image, const std::vector<std::vector<GBL::Point> >& contours, OutputMethod::OutputMethodInterface& outputMethod);
+				static void drawContours(const GBL::Frame_t& image, const std::vector<std::vector<GBL::Point> >& contours, OutputMethod::OutputMethodFrameInterface& outputMethod);
 			private:
 				static const std::vector<cv::Vec3b> colors;
 		};

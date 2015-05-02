@@ -30,11 +30,11 @@ using namespace EmbeddedMT;
 
 void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const GBL::Image_t& background, const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const ImageProc::ImageProc& imProc);
 void matcherHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, GBL::MatchesContainer_t& matches, const Match::MatcherInterface& matcherInterface); 
-void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, const GBL::MatchesContainer_t& matches, GBL::Displacement_t& displacement, const Displacement::DisplacementInterface& displacementInterface, OutputMethod::OutputMethodInterface& outputMethodInterface); 
+void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, const GBL::MatchesContainer_t& matches, GBL::Displacement_t& displacement, const Displacement::DisplacementInterface& displacementInterface, OutputMethod::OutputMethodDisplacementInterface& OutputMethodInterface); 
 
 std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile, const ImageProc::ImageProc* imProc, Draw::DrawInterface& drawer,
 		const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const Match::MatcherInterface& matcherInterface, const Displacement::DisplacementInterface& displacementInterface,
-		InputMethod::InputMethodInterface& inputMethodInterface, OutputMethod::OutputMethodInterface& outputMethodInterface) {
+		InputMethod::InputMethodInterface& inputMethodInterface, OutputMethod::OutputMethodDisplacementInterface& outputMethodInterface) {
 	
 	// Single threaded initialization phase
 	if (inputMethodInterface.start(videoFile) != GBL::RESULT_SUCCESS) {
@@ -171,7 +171,7 @@ void matcherHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::Des
 	LOG_EXIT("void");
 }
 
-void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, const GBL::MatchesContainer_t& matches, GBL::Displacement_t& displacement, const Displacement::DisplacementInterface& displacementInterface, OutputMethod::OutputMethodInterface& outputMethodInterface) {
+void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, const GBL::MatchesContainer_t& matches, GBL::Displacement_t& displacement, const Displacement::DisplacementInterface& displacementInterface, OutputMethod::OutputMethodDisplacementInterface& outputMethodInterface) {
 	LOG_ENTER("Descriptor 1 = %p, descriptor2 = %p, matches = %p, displacement = %p, displacementInterface = %p", &descriptor1, &descriptor2, &matches, &displacement, &displacementInterface);
 	if(matches.valid) {
 		if(displacementInterface.calculateDisplacement(matches.matches, descriptor1.keypoints, descriptor2.keypoints, displacement) != GBL::RESULT_SUCCESS) {

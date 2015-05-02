@@ -47,7 +47,7 @@ namespace EmbeddedMT {
 			imProc.fastSubtract(image1, image2, outputImage);
 		}
 
-		GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const char* outputFile,DrawResultProc_f procFunction, const GBL::Image_t* const image2) {
+		GBL::CmRetCode_t Utils::drawHelper(OutputMethod::OutputMethodFrameInterface& outputMethod, InputMethod::InputMethodInterface& inputMethod, Draw::DrawInterface& drawer, const ImageProc::ImageProc& imProc, std::vector<GBL::DescriptorContainer_t> descriptors, std::vector<GBL::MatchesContainer_t> allMatches, uint32_t nbFrames, const char* outputFile,DrawResultProc_f procFunction, const GBL::Image_t* const image2) {
 			LOG_ENTER("Drawing %s files", outputFile);
 			if(outputMethod.open(outputFile) != GBL::RESULT_SUCCESS) {
 				LOG_ERROR("Could not open %s", outputFile);
@@ -93,7 +93,7 @@ namespace EmbeddedMT {
 			return GBL::RESULT_SUCCESS;
 		}
 
-		GBL::CmRetCode_t Utils::drawResult(const GBL::Frame_t image1, const GBL::Frame_t image2, const Draw::DrawInterface& drawer, GBL::DescriptorContainer_t descriptor1, GBL::DescriptorContainer_t descriptor2, GBL::MatchesContainer_t matches, OutputMethod::OutputMethodInterface* outputMethod) {
+		GBL::CmRetCode_t Utils::drawResult(const GBL::Frame_t image1, const GBL::Frame_t image2, const Draw::DrawInterface& drawer, GBL::DescriptorContainer_t descriptor1, GBL::DescriptorContainer_t descriptor2, GBL::MatchesContainer_t matches, OutputMethod::OutputMethodFrameInterface* outputMethod) {
 			LOG_ENTER("Drawing results");
 			GBL::Image_t outputFrame;
 			if(matches.valid == true) {

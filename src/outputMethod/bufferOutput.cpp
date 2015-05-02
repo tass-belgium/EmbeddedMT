@@ -20,21 +20,13 @@ namespace EmbeddedMT {
 			return GBL::RESULT_SUCCESS;
 		}
 
-		GBL::CmRetCode_t BufferOutput::write(const GBL::Displacement_t& displacement) {
-			return GBL::RESULT_NOTSUPPORTED;
-		}
-
-		GBL::CmRetCode_t BufferOutput::write(const GBL::Frame_t frame) {
-			return GBL::RESULT_NOTSUPPORTED;
-		}
-
 		GBL::CmRetCode_t BufferOutput::write(const std::string& message) {
 			_buffer.push_back(message);
 			return GBL::RESULT_SUCCESS;
 		}
 
 		GBL::CmRetCode_t BufferOutput::close() {
-			;
+			return GBL::RESULT_SUCCESS;
 		}
 			
 		size_t BufferOutput::size(void) {
