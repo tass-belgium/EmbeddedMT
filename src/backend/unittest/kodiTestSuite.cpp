@@ -23,11 +23,10 @@
 
 #include "cm/global.hpp"
 
-#include "outputMethod/kodi.hpp"
-#include "outputMethod/socketInterface.hpp"
+#include "backend/kodi.hpp"
 #include "outputMethod/bufferOutput.hpp"
 
-using EmbeddedMT::OutputMethod::Kodi;
+using EmbeddedMT::Backend::Kodi;
 using EmbeddedMT::OutputMethod::BufferOutput;
 using std::string;
 using std::stringstream;
@@ -46,7 +45,7 @@ namespace EmbeddedMT {
 				Kodi kodi(outputStub);
 
 				WHEN("We move the cursor to the right") {
-					kodi.inputRight();
+					kodi.moveRight();
 					THEN("We should receive the right command") {
 						REQUIRE(outputStub.size() == 1U);
 						REQUIRE(outputStub.getLatest() == getJsonRpcCall("Input.Right"));
@@ -54,7 +53,7 @@ namespace EmbeddedMT {
 					}
 				}
 				WHEN("We move the cursor to the left") {
-					kodi.inputLeft();
+					kodi.moveLeft();
 					THEN("We should get the command") {
 						REQUIRE(outputStub.size() == 1U);
 						REQUIRE(outputStub.getLatest() == getJsonRpcCall("Input.Left"));
@@ -62,7 +61,7 @@ namespace EmbeddedMT {
 					}
 				}
 				WHEN("We move the cursor up") {
-					kodi.inputUp();
+					kodi.moveUp();
 					THEN("We should get the command") {
 						REQUIRE(outputStub.size() == 1U);
 						REQUIRE(outputStub.getLatest() == getJsonRpcCall("Input.Up"));
@@ -70,7 +69,7 @@ namespace EmbeddedMT {
 					}
 				}
 				WHEN("We move the cursor down") {
-					kodi.inputDown();
+					kodi.moveDown();
 					THEN("We should get the command") {
 						REQUIRE(outputStub.size() == 1U);
 						REQUIRE(outputStub.getLatest() == getJsonRpcCall("Input.Down"));

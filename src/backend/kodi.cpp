@@ -22,19 +22,20 @@
 
 using std::string;
 using std::stringstream;
+using EmbeddedMT::OutputMethod::OutputMethodStringInterface;
 
 namespace EmbeddedMT {
-	namespace OutputMethod {
+	namespace Backend {
 		Kodi::Kodi(OutputMethodStringInterface& outputMethod) : _outputMethod(outputMethod) {
 			;
 		}
 
-		void Kodi::write(const std::string& method, const std::string& id) {
+		void Kodi::write(const std::string& method, const std::string& id) const {
 			KodiParameterList emptyList;
 			write(method, emptyList, id);
 		}
 
-		void Kodi::write(const std::string& method, const KodiParameterList& parameters, const std::string& id) {
+		void Kodi::write(const std::string& method, const KodiParameterList& parameters, const std::string& id) const {
 			LOG_ENTER("Writing method = %s", method.c_str());
 			stringstream msg;
 			msg << "{\"jsonrpc\":\"2.0\",\"method\":\"" << method <<"\",\"id\":" << id << "}";
@@ -49,31 +50,31 @@ namespace EmbeddedMT {
 			LOG_EXIT("Done");
 		}
 
-		void Kodi::inputRight() {
+		void Kodi::moveRight() const {
 			LOG_ENTER("Sending input right signal");
 			write("Input.Right");
 			LOG_EXIT("Done");
 		}
 
-		void Kodi::inputLeft() {
+		void Kodi::moveLeft() const {
 			LOG_ENTER("Sending input left signal");
 			write("Input.Left");
 			LOG_EXIT("Done");
 		}
 
-		void Kodi::inputUp() {
+		void Kodi::moveUp() const {
 			LOG_ENTER("Sending input up signal");
 			write("Input.Up");
 			LOG_EXIT("Done");
 		}
 
-		void Kodi::inputDown() {
+		void Kodi::moveDown() const {
 			LOG_ENTER("Sending input down signal");
 			write("Input.Down");
 			LOG_EXIT("Done");
 		}
 
-		void Kodi::writeMessage(const string& msg) {
+		void Kodi::writeMessage(const string& msg) const {
 			LOG_ENTER("Writing '%s'", msg.c_str());
 			GBL::CmRetCode_t result = _outputMethod.write(msg); 
 			if(result != GBL::RESULT_SUCCESS) {

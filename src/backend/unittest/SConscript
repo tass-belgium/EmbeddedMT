@@ -2,6 +2,7 @@ Import('env')
 
 libs = [
 	'outputMethod',
+	'backend'
 ]
 libs.extend(env['UNITTEST_LIBS'])
 libs.extend(env['STD_LIBS'])
