@@ -14,14 +14,15 @@ namespace EmbeddedMT {
 	namespace OutputMethod {
 		class OutputImageSequence : public OutputMethodFrameInterface {
 		public:
-			virtual GBL::CmRetCode_t open(const char* filename);
+			OutputImageSequence(const std::string& filename);
 			virtual GBL::CmRetCode_t write(const GBL::Frame_t& frame);
 
-			virtual GBL::CmRetCode_t close();
-
 		private:
+			// Disable default constructor
+			OutputImageSequence(void);
+
 			uint32_t _imageIndex;
-			char _filename[GBL::maxFilenameLength];
+			std::string _filename;
 		};
 	}
 }

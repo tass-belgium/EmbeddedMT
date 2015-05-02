@@ -45,8 +45,7 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 	// Open our own output interface in case we want to draw
 	OutputMethod::OutputImageSequence* outImSeq = nullptr;
 	if(GBL::drawResults_b) {
-		outImSeq = new OutputMethod::OutputImageSequence();
-		outImSeq->open("correspondence_frame");
+		outImSeq = new OutputMethod::OutputImageSequence("correspondence_frame");
 	}
 
 	// Get background image
@@ -133,9 +132,6 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 		frame = new GBL::Frame_t;
 	}
 }
-	if(GBL::drawResults_b) {
-		outImSeq->close();
-	}
 	inputMethodInterface.stop();
 	delete frame;
 	return displacements;

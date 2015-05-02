@@ -17,16 +17,20 @@ namespace EmbeddedMT {
 	namespace OutputMethod {
 		class SocketInterface : public OutputMethodStringInterface, public OutputMethodDisplacementInterface {
 		public:
-			SocketInterface(uint16_t _portNo);
-			virtual GBL::CmRetCode_t open(const char* filename);
+			SocketInterface(const std::string& host, uint16_t portNo);
+			~SocketInterface(void);
+
 			virtual GBL::CmRetCode_t write(const GBL::Displacement_t& displacement);
 			virtual GBL::CmRetCode_t write(const std::string& msg);
+
 			std::string recv(uint32_t bytes);
 			std::string listen(void);
-			virtual GBL::CmRetCode_t close();
 		private:
+			// Disable default constructor
+			SocketInterface(void);
+			void open(const std::string& host, uint16_t portNo);
+
 			int32_t _sockfd;
-			const uint16_t _portNo;
 		};
 	}
 }

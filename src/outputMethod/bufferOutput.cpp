@@ -16,19 +16,11 @@ namespace EmbeddedMT {
 			;
 		}
 
-		GBL::CmRetCode_t BufferOutput::open(const char* filename) {
-			return GBL::RESULT_SUCCESS;
-		}
-
 		GBL::CmRetCode_t BufferOutput::write(const std::string& message) {
 			_buffer.push_back(message);
 			return GBL::RESULT_SUCCESS;
 		}
 
-		GBL::CmRetCode_t BufferOutput::close() {
-			return GBL::RESULT_SUCCESS;
-		}
-			
 		size_t BufferOutput::size(void) {
 			return _buffer.size();
 		}

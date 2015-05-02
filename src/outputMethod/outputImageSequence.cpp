@@ -4,9 +4,10 @@
  *  Created on: Apr 18, 2014
  *      Author: cv
  */
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sstream>
+#include <iomanip>
 
 #include "log/logging.hpp"
 
@@ -16,50 +17,47 @@
 
 #include "outputImageSequence.hpp"
 
+using std::setfill;
+using std::setw;
+using std::stringstream;
+
 namespace EmbeddedMT {
 	namespace OutputMethod {
-		GBL::CmRetCode_t OutputImageSequence::open(const char* filename) {
-			LOG_ENTER("Filename = %s", filename);
-			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
+		OutputImageSequence::OutputImageSequence(const std::string& filename) {
+			LOG_ENTER("Filename = %s", filename.c_str());
 			_imageIndex = 0;
-			const char* outputFolderName = "output";
-			snprintf(_filename, GBL::maxFilenameLength, "%s/%s", outputFolderName, filename);
+
+			std::string outputFolderName("output");
+			stringstream stream;
+			stream << outputFolderName << filename;
+			_filename = stream.str();
 			struct stat sb;
 
-			if (stat(outputFolderName, &sb) != 0) {
+			if (stat(outputFolderName.c_str(), &sb) != 0) {
 				// Try creating it
-				if(mkdir(outputFolderName, S_IRWXU) == 0) {
-					result = GBL::RESULT_SUCCESS;
-				} else {
-					LOG_ERROR("Could not create directory %s", outputFolderName);
+				if(mkdir(outputFolderName.c_str(), S_IRWXU) != 0) {
+					LOG_ERROR("Could not create directory %s", outputFolderName.c_str());
 				}		
 			} else {
-				if(S_ISDIR(sb.st_mode)) {
-					result = GBL::RESULT_SUCCESS;
-				} else {
-					LOG_ERROR("%s is not a directory", outputFolderName);
+				if(! S_ISDIR(sb.st_mode)) {
+					LOG_ERROR("%s is not a directory", outputFolderName.c_str());
 				}
 			}
-			LOG_EXIT("result = %d", result);
-			return result;
 		}
 
 		GBL::CmRetCode_t OutputImageSequence::write(const GBL::Frame_t& frame) {
 			LOG_ENTER("Frame = %p", &frame);
 			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 
-			char tmpFilename[GBL::maxFilenameLength];
-			snprintf(tmpFilename, GBL::maxFilenameLength, "%s-%03d.jpg", _filename, _imageIndex);
+			stringstream stream;
+			stream << _filename << "-" << setfill('0') << setw(3) << _imageIndex << ".jpg";
+			std::string tmpFilename = stream.str();
 			if(cv::imwrite(tmpFilename, frame) == true) {
 				_imageIndex++;
 				result = GBL::RESULT_SUCCESS;
 			}
 			LOG_EXIT("result = %d", result);
 			return result;
-		}
-
-		GBL::CmRetCode_t OutputImageSequence::close() {
-			return GBL::RESULT_SUCCESS;
 		}
 	}
 }

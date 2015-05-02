@@ -25,31 +25,26 @@ using std::string;
 
 namespace EmbeddedMT {
 	namespace OutputMethod {
-		SocketInterface::SocketInterface(uint16_t portNo) : _portNo(portNo) {
-			;
+		SocketInterface::SocketInterface(const std::string& host, uint16_t portNo) {
+			open(host, portNo);
 		}
 
-		GBL::CmRetCode_t SocketInterface::open(const char* filename) {
-			LOG_ENTER("ip address = %s, port = %d", filename, _portNo);
-			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
+		void SocketInterface::open(const std::string& host, uint16_t portNo) {
+			LOG_ENTER("ip address = %s, port = %d", host.c_str(), portNo);
 			_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 			if(_sockfd >= 0) {
 				struct sockaddr_in servAddress;
 				servAddress.sin_family = AF_INET;
-				servAddress.sin_addr.s_addr = inet_addr(filename);
-				servAddress.sin_port = htons(_portNo);
+				servAddress.sin_addr.s_addr = inet_addr(host.c_str());
+				servAddress.sin_port = htons(portNo);
 
 				/*  Establish connection */
 				if (connect(_sockfd, (struct sockaddr *) &servAddress, sizeof(servAddress)) < 0) {
 					LOG_ERROR("Could not connect to socket");
-				} else {
-					result = GBL::RESULT_SUCCESS;
 				}
 			} else {
 				LOG_ERROR("Error opening socket");
 			}
-			LOG_EXIT("result = %d", result);
-			return result;
 		}
 
 		GBL::CmRetCode_t SocketInterface::write(const GBL::Displacement_t& displacement) {
@@ -93,11 +88,10 @@ namespace EmbeddedMT {
 			return output;
 		}
 
-		GBL::CmRetCode_t SocketInterface::close() {
-			LOG_ENTER("void");
+		SocketInterface::~SocketInterface(void) {
+			LOG_ENTER("Destroying socket interface");
 			::close(_sockfd);
-			LOG_EXIT("GBL::RESULT_SUCCESS");
-			return GBL::RESULT_SUCCESS;
+			LOG_EXIT("Done");
 		}
 	}
 }

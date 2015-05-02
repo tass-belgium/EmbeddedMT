@@ -24,16 +24,18 @@
 #include "application/findTheBallPipeLine.hpp"
 
 using namespace EmbeddedMT;
+using std::string;
 
 static const char_t* getMethodPname(uint8_t matchAlgorithm);
 static GBL::CmRetCode_t getInputMethod(const char* file, InputMethod::InputMethodInterface** inputMethod);
 static GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorInterface** detector, const Descriptor::DescriptorInterface** descriptor, const Match::MatcherInterface** matcher); 
-static GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data);
+static GBL::CmRetCode_t writeResults(const string& outputFile, std::vector<GBL::Displacement_t> data);
 static int64_t GetTimeMs64();
+
 
 int main(int argc, char** argv) {
 	uint32_t matchAlgorithm = 0;
-	const char* outputFile = "displacements.result";
+	string outputFile("displacements.result");
 	const char* imageSequenceFolder = nullptr;
 
 	const ImageProc::ImageProc* imProc = new ImageProc::ImageProcBase();
@@ -58,8 +60,8 @@ int main(int argc, char** argv) {
 	if(argc > 4) {
 		// Means we must stream
 		uint16_t portNo = (uint16_t) strtol(argv[4], NULL, 10);
-		outputMethod = new OutputMethod::SocketInterface(portNo);
-		outputMethod->open(argv[3]);
+		string host(argv[3]);
+		outputMethod = new OutputMethod::SocketInterface(host, portNo);
 	} else {
 		if(argc > 3) {
 			outputFile = argv[3];
@@ -86,10 +88,7 @@ int main(int argc, char** argv) {
 	LOG(stdout, "TIME", "Execution time of processing stage: %f s", (float_t ) (endTime - startTime) / 1000.0f);
 
 	if (writeResults(outputFile, displacements) != GBL::RESULT_SUCCESS) {
-		LOG_WARNING("Could not write results to file %s", outputFile);
-	}
-	if(outputMethod != nullptr) {
-		outputMethod->close();
+		LOG_WARNING("Could not write results to file %s", outputFile.c_str());
 	}
 
 	delete imProc;
@@ -103,16 +102,14 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-GBL::CmRetCode_t writeResults(const char* outputFile, std::vector<GBL::Displacement_t> data) {
-	std::ofstream file;
-	file.open(outputFile);
+GBL::CmRetCode_t writeResults(const string& outputFile, std::vector<GBL::Displacement_t> data) {
+	std::ofstream file(outputFile);
 	if (!file.is_open()) {
 		return GBL::RESULT_FAILURE;
 	}
 	for (uint32_t i = 0; i < data.size(); i++) {
 		file << "{\"sequenceNo\":" << data[i].sequenceNo << ",\"displacementX\":" << data[i].x << ",\"displacementY:\":" << data[i].y << "}" << std::endl;
 	}
-	file.close();
 	return GBL::RESULT_SUCCESS;
 }
 
