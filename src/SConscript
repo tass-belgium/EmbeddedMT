@@ -44,7 +44,6 @@ libs = [
     'opencv_core',
 
 	# Other 3rd party
-	'freak',
 ]
 
 libs.extend(env['OPENCVBUILDER_ADDITIONAL_LIBRARIES'])

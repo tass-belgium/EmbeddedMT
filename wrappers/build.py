@@ -36,7 +36,7 @@ def build(scriptDir, buildJobs, application, target, mode, profile, multiThreadi
     buildCommand.append('mode=' + mode)
     buildCommand.append('profile=' + profile)
     buildCommand.append('multiThreading=' + multiThreading)
-    buildCommand.append('showStuff=' + showStuff)
+    buildCommand.append('showstuff=' + showStuff)
     buildCommand.append(application)
     execute(buildCommand)
     return 0
