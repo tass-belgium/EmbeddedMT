@@ -8,7 +8,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
-#include "opencv2/nonfree/nonfree.hpp"
+#include "freak.h"
 
 #include "log/logging.hpp"
 
@@ -17,7 +17,7 @@ namespace EmbeddedMT {
 		GBL::CmRetCode_t Freak::describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const {
 			LOG_ENTER("image = %p", &image);
 
-			cv::SimpleBlobDetector::Params params;
+/*			cv::SimpleBlobDetector::Params params;
 			params.filterByColor = false;
 			params.filterByArea = true;
 			params.filterByCircularity = false;
@@ -26,7 +26,7 @@ namespace EmbeddedMT {
 			
 			cv::SimpleBlobDetector detector(params);
 			detector.detect(image, keypoints);
-
+*/
 			LOG_INFO("Number of keypoints found: %d", (uint32_t)  keypoints.size());
 
 			// computing descriptors

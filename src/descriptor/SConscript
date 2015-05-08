@@ -3,7 +3,7 @@ Import('env')
 lib_files = [
 #    'sift.cpp',
 #    'surf.cpp',
-#	'orb.cpp',
+	'orb.cpp',
 #	'brisk.cpp',
 #	'freak.cpp',
 	'brief.cpp',

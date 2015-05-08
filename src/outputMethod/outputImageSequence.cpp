@@ -29,7 +29,7 @@ namespace EmbeddedMT {
 
 			std::string outputFolderName("output");
 			stringstream stream;
-			stream << outputFolderName << filename;
+			stream << outputFolderName << "/" << filename;
 			_filename = stream.str();
 			struct stat sb;
 

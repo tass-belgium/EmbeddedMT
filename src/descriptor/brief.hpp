@@ -16,6 +16,8 @@ namespace EmbeddedMT {
 		class Brief : public DescriptorInterface {
 		public:
 			virtual GBL::CmRetCode_t describe(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptor) const;
+		private:
+			void compute(const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptors) const;
 		};
 	}
 }

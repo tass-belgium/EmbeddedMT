@@ -3,7 +3,8 @@ Import('env')
 lib_files = [
     'outputImageSequence.cpp',
 	'socketInterface.cpp',
-	'bufferOutput.cpp'
+	'bufferOutput.cpp',
+	'recognizeGestures.cpp',
 ]
 
 lib = env.Library('outputMethod', lib_files)

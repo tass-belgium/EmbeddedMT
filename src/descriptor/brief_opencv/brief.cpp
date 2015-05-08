@@ -156,13 +156,7 @@ void BriefDescriptorExtractor::write( FileStorage& fs) const
     fs << "descriptorSize" << bytes_;
 }
 
-void BriefDescriptorExtractor::computeImpl( InputArray image, std::vector<KeyPoint>& keypoints, OutputArray descriptors) const
-{
-	Mat tmp = descriptors.getMat();
-	computeImplHelper(image, keypoints, tmp);
-}
-
-void BriefDescriptorExtractor::computeImplHelper(InputArray image, std::vector<KeyPoint>& keypoints, Mat& descriptors) const
+void BriefDescriptorExtractor::computeImpl(const Mat& image, std::vector<KeyPoint>& keypoints, Mat& descriptors) const
 {
     // Construct integral image for fast smoothing (box filter)
     Mat sum;

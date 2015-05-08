@@ -19,12 +19,27 @@ namespace EmbeddedMT {
 			LOG_ENTER("image = %p", &image);
 			GBL::CmRetCode_t result = GBL::RESULT_FAILURE;
 
-			cv::BriefDescriptorExtractor extractor(16);
-			extractor.compute(image, keypoints, descriptor);
+			compute(image, keypoints, descriptor);
 			result = GBL::RESULT_SUCCESS;
 
 			LOG_EXIT("result = %d", result);
 			return result;
+		}
+
+		void Brief::compute( const GBL::Image_t& image, GBL::KeyPointCollection_t& keypoints, GBL::Descriptor_t& descriptors ) const
+		{
+			if( image.empty() || keypoints.empty() )
+			{
+				descriptors.release();
+				return;
+			}
+			
+			cv::BriefDescriptorExtractor extractor(16);
+
+			cv::KeyPointsFilter::runByImageBorder( keypoints, image.size(), 0 );
+			cv::KeyPointsFilter::runByKeypointSize( keypoints, std::numeric_limits<float>::epsilon() );
+
+			extractor.computeImpl( image, keypoints, descriptors );
 		}
 	}
 }

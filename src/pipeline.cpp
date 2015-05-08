@@ -10,6 +10,7 @@
 #include "detector/simpleBlobDetector.hpp"
 #include "detector/averageContourDetector.hpp"
 #include "detector/fastAverageContourDetector.hpp"
+#include "descriptor/orb.hpp"
 #include "descriptor/brief.hpp"
 #include "match/bfMatcher.hpp"
 #include "match/flannBasedMatcher.hpp"
@@ -20,6 +21,8 @@
 #include "inputMethod/captureVideo.hpp"
 #include "outputMethod/outputImageSequence.hpp"
 #include "outputMethod/socketInterface.hpp"
+#include "outputMethod/recognizeGestures.hpp"
+#include "backend/kodi.hpp"
 
 #include "application/findTheBallPipeLine.hpp"
 
@@ -57,11 +60,15 @@ int main(int argc, char** argv) {
 	if (argc > 2) {
 		matchAlgorithm = (uint32_t) std::strtoul(argv[2], NULL, 10);
 	}
+    OutputMethod::SocketInterface* kodiSocket = nullptr;
+    Backend::Kodi* kodi = nullptr;
 	if(argc > 4) {
 		// Means we must stream
 		uint16_t portNo = (uint16_t) strtol(argv[4], NULL, 10);
 		string host(argv[3]);
-		outputMethod = new OutputMethod::SocketInterface(host, portNo);
+		kodiSocket = new OutputMethod::SocketInterface("127.0.0.1", 9090U);
+		kodi = new Backend::Kodi(*kodiSocket);
+		outputMethod = new OutputMethod::RecognizeGestures(kodi);
 	} else {
 		if(argc > 3) {
 			outputFile = argv[3];
@@ -144,7 +151,7 @@ const char_t* getMethodPname(uint8_t matchAlgorithm) {
 			algoName = "Average contour + BRIEF";
 			break;
 		case 11:
-			algoName = "Fast Average contour + BRIEF";
+			algoName = "Fast Average contour + FAST";
 			break;
 		default:
 			algoName = "unkown";
@@ -200,7 +207,7 @@ GBL::CmRetCode_t getExecutors(uint32_t matchAlgorithm, const Detector::DetectorI
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();
 			break;
-		case 11:
+ 		case 11:
 			*detector = new Detector::FastAverageContourDetector(25U);
 			*descriptor = new Descriptor::Brief();
 			*matcher = new Match::BfMatcher();

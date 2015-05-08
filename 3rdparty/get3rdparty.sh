@@ -58,6 +58,11 @@ cd ..
 #	echo 'Already up-to-date'
 #fi
 
+# Get Freak
+echo 'Getting Freak...'
+getLatestGit 'freak' https://github.com/kikohs/freak.git
+
+
 # Get Boost
 boostVersion='1.57.0'
 boostDir='boost'

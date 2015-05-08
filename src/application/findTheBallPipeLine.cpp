@@ -15,6 +15,7 @@
  * =====================================================================================
  */
 #include <unistd.h>
+#include <cassert>
 #include "cm/global.hpp"
 #include "cm/utils.hpp"
 #include "log/logging.hpp"
@@ -28,6 +29,7 @@
 
 using namespace EmbeddedMT;
 
+void updateBackground(GBL::Image_t& background, const GBL::Image_t& frame, double ratio);
 void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const GBL::Image_t& background, const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const ImageProc::ImageProc& imProc);
 void matcherHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, GBL::MatchesContainer_t& matches, const Match::MatcherInterface& matcherInterface); 
 void displacementHelper(const GBL::DescriptorContainer_t& descriptor1, const GBL::DescriptorContainer_t& descriptor2, const GBL::MatchesContainer_t& matches, GBL::Displacement_t& displacement, const Displacement::DisplacementInterface& displacementInterface, OutputMethod::OutputMethodDisplacementInterface& OutputMethodInterface); 
@@ -121,6 +123,7 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 			} else {
 				LOG_WARNING("Next neighbour was someone else");
 			}
+			updateBackground(background, *frame, 0.96);
 			delete frame;
 		}
 		sequenceNo++;
@@ -130,11 +133,29 @@ std::vector<GBL::Displacement_t> findTheBallPipeline(const char* const videoFile
 		descriptors[i].ready = false;
 		descriptors[i].keypoints.clear();
 		frame = new GBL::Frame_t;
+		
 	}
 }
 	inputMethodInterface.stop();
 	delete frame;
 	return displacements;
+}
+
+void updateBackground(GBL::Image_t& background, const GBL::Image_t& frame, double ratio)
+{
+	LOG_INFO("Background = %d x %d", background.rows, background.cols);
+	LOG_INFO("Frame = %d x %d", frame.rows, frame.cols);
+	assert(background.rows == frame.rows);
+	assert(background.cols == frame.cols);
+
+	for(int32_t row = 0; row < background.rows; ++row) {
+		uint8_t* const backgroundRowPtr = background.ptr<uint8_t>(row);
+		const uint8_t* const frameRowPtr = frame.ptr<uint8_t>(row);
+
+		for(int32_t col = 0; col < frame.cols; ++col) {
+			backgroundRowPtr[col] = ratio * backgroundRowPtr[col] + (1-ratio) * frameRowPtr[col];
+		}
+	}
 }
 
 void descriptionHelper(const GBL::Image_t& frameToDescribe, GBL::DescriptorContainer_t& descriptor, const GBL::Image_t& background, const Detector::DetectorInterface& detectorInterface, const Descriptor::DescriptorInterface& descriptorInterface, const ImageProc::ImageProc& imProc) {
