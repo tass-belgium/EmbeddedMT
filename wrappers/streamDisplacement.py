@@ -29,12 +29,13 @@ def usage():
     print("\t-a <method>    Enable profiling: perf, gprof, callgrind")
     print("\t-d <mechanism> Multi-threading mechanism: <none>, openmp")
     print("\t-b             Show stuff")
+    print("\t-k             Use local kodi at port 9090 as your backend")
     
 def main():
     """ Entry function """
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ria:d:b", ["help", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "t:m:pho:s:c:l:ria:d:bk", ["help", "output="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err))
@@ -52,6 +53,7 @@ def main():
     profile = 'no'
     threadmode = 'none'
     showstuff = 'no'
+    kodi = False
     for o, a in opts:
         if o == "-t":
             target = a
@@ -80,6 +82,8 @@ def main():
             showstuff = 'yes'
         elif o == "-d":
             threadmode = a
+        elif o == "-k":
+            kodi = True;
         else:
             assert False, "unhandled option"
             usage()
@@ -91,7 +95,11 @@ def main():
            cmd = 'rm -rf {scriptDir}/../build/{target}/{mode}'.format(scriptDir=scriptDir,target=target,mode=mode)
            os.system(cmd)
     
-    serverHost,serverPort,serversocket = socketHelper.getSocket()
+    if kodi is True:
+        serverHost = '127.0.0.1'
+        serverPort = 'k'
+    else:
+        serverHost,serverPort,serversocket = socketHelper.getSocket()
     displacements = disp.DisplacementCollection()
     color = 'b'
     threadSyncer = gbl.threadSyncVariables()

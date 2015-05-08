@@ -63,12 +63,17 @@ int main(int argc, char** argv) {
     OutputMethod::SocketInterface* kodiSocket = nullptr;
     Backend::Kodi* kodi = nullptr;
 	if(argc > 4) {
-		// Means we must stream
-		uint16_t portNo = (uint16_t) strtol(argv[4], NULL, 10);
 		string host(argv[3]);
-		kodiSocket = new OutputMethod::SocketInterface("127.0.0.1", 9090U);
-		kodi = new Backend::Kodi(*kodiSocket);
-		outputMethod = new OutputMethod::RecognizeGestures(kodi);
+		if(argv[4][0] == 'k') {
+			// Means we take kodi as our backend
+			kodiSocket = new OutputMethod::SocketInterface(host, 9090U);
+			kodi = new Backend::Kodi(*kodiSocket);
+			outputMethod = new OutputMethod::RecognizeGestures(kodi);
+		} else {
+			// Means we must stream
+			uint16_t portNo = (uint16_t) strtol(argv[4], NULL, 10);
+			outputMethod = new OutputMethod::SocketInterface(host, portNo);
+		}
 	} else {
 		if(argc > 3) {
 			outputFile = argv[3];
