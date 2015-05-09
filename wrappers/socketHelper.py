@@ -39,3 +39,6 @@ def runSocketServer(serversocket, displacements, threadSyncer):
         jsonString = bytes.decode(chunk[:-1])
         message = json.loads(jsonString)
         displacements.push_back_and_order(message['sequenceNo'], message['displacementX'], message['displacementY'])
+
+    print('Closing socket')
+    serversocket.close()

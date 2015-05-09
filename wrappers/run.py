@@ -58,7 +58,9 @@ def processProfilingInformation(profile):
         gbl.execute(command)
         print('You can find the result of the gprof profiling in {readableOutput}'.format(readableOutput = readableOutputFile))
 
-def executeApplication(fname, target, mode, sequence, alg, output, profile, serverHost, serverPort, threadSyncer):
+def executeApplication(fname, target, mode, sequence, alg, output, profile, serverHost, serverPort, threadSyncer, backend):
+    if backend == 'kodi':
+        serverPort = 'k'
     threadSyncer.doneBuilding = True
     while(threadSyncer.startExecuting):
         # Do nothing
@@ -66,9 +68,9 @@ def executeApplication(fname, target, mode, sequence, alg, output, profile, serv
         
     # Execute application
     executeApplicationHelper(fname, sequence, alg, serverHost, serverPort, profile)
-    return gbl.RetCodes.RESULT_OK
+#    return gbl.RetCodes.RESULT_OK
 
-def run(fname, target, mode, sequence, alg, output, profile):
+def run(fname, target, mode, sequence, alg, output, profile, backend):
     serverHost,serverPort,serversocket = socketHelper.getSocket()
     displacements = disp.DisplacementCollection()
     color = 'b'
@@ -79,19 +81,25 @@ def run(fname, target, mode, sequence, alg, output, profile):
         print("Error: {binary} does not exist. Can not run using the specified options.".format(binary = fname))
         exit(1)
 
-    t = threading.Thread(target=executeApplication, args=(fname, target, mode, sequence, alg, output, profile, serverHost, serverPort, threadSyncer))
+    t = threading.Thread(target=executeApplication, args=(fname, target, mode, sequence, alg, output, profile, serverHost, serverPort, threadSyncer, backend))
     t.start()
 
-    t2 = threading.Thread(target=socketHelper.runSocketServer, args=(serversocket, displacements, threadSyncer))
-    t2.start()
+    if backend == 'displacementSocket':
+        t2 = threading.Thread(target=socketHelper.runSocketServer, args=(serversocket, displacements, threadSyncer))
+        t2.start()
 
-    threadSyncer.startExecuting = True
+        threadSyncer.startExecuting = True
 
-    pltHelper.plotReceivedPoints(displacements, 'b', threadSyncer)
-    plt.close()
-    plt.figure()
-    pltHelper.processResults(displacements, color)
+        pltHelper.plotReceivedPoints(displacements, 'b', threadSyncer)
+        plt.close()
+        plt.figure()
+        pltHelper.processResults(displacements, color)
 
+        threadSyncer.continuePlotting = False
+        t2.join()
+    
+    t.join()
+        
     processProfilingInformation(profile)
 
     return 0
@@ -113,6 +121,8 @@ def main():
             help='Build with profiling support (if required): <no>, perf, gprof, callgrind')
     parser.add_argument('--application', dest='application', default='pipeline',
                             help='EmbeddedMT application to build')
+    parser.add_argument('-b', '--backend', dest='backend', default='displacementSocket',
+            help='The backend of the application: <displacementSocket>, kodi')
 
     args = parser.parse_args()
 
@@ -124,7 +134,7 @@ def main():
     targetBinDir = scriptDir + '/../build/' + args.target + '/' + args.mode + profileDir + '/bin/'
     application = targetBinDir + args.application
 
-    return run(application, args.target, args.mode, args.sequence, args.algorithm, args.outputFile, args.profile)
+    return run(application, args.target, args.mode, args.sequence, args.algorithm, args.outputFile, args.profile, args.backend)
 
 if __name__ == "__main__":
     main()
