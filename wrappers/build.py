@@ -1,20 +1,11 @@
 #!/usr/bin/python3
 import os
 import argparse
-import subprocess
 
-def execute(command):    
-        print(command)
-        popen = subprocess.Popen(command, stdout=subprocess.PIPE)
-        lines_iterator = iter(popen.stdout.readline, b"")
-        for line in lines_iterator:
-            print(line.decode(), end="") # yield line
-        popen.wait()
-        if popen.returncode is not 0:
-            print("Command unsuccessful. Exiting.")
-            exit(1)
+# Own modules
+import gbl
 
-def build(scriptDir, buildJobs, application, target, mode, profile, multiThreading, showStuff, rebuild):
+def build(scriptDir, buildJobs, application, target, mode, logLevel, profile, multiThreading, showStuff, rebuild):
     if(rebuild):
         targetBuildDir = scriptDir + '/build/' + target + '/' + mode
         if os.path.exists(targetBuildDir):
@@ -22,7 +13,7 @@ def build(scriptDir, buildJobs, application, target, mode, profile, multiThreadi
             rebuildCommand.append('rm')
             rebuildCommand.append('-rf')
             rebuildCommand.append(targetBuildDir)
-            execute(rebuildCommand)
+            gbl.execute(rebuildCommand)
         else:
             print(targetBuildDir + ' does not exists. Continuing happily.')
 
@@ -34,11 +25,12 @@ def build(scriptDir, buildJobs, application, target, mode, profile, multiThreadi
     buildCommand.append(buildJobs)
     buildCommand.append('target=' + target)
     buildCommand.append('mode=' + mode)
+    buildCommand.append('logLevel=' + logLevel)
     buildCommand.append('profile=' + profile)
     buildCommand.append('multiThreading=' + multiThreading)
     buildCommand.append('showstuff=' + showStuff)
     buildCommand.append(application)
-    execute(buildCommand)
+    gbl.execute(buildCommand)
     return 0
 
 def main():
@@ -73,7 +65,7 @@ def main():
     else:
         showStuff = 'no'
 
-    return build(args.path, args.buildJobs, args.application, args.target, args.mode, args.profile, args.multiThreading, showStuff, args.rebuild)
+    return build(args.path, args.buildJobs, args.application, args.target, args.mode, args.logLevel, args.profile, args.multiThreading, showStuff, args.rebuild)
 
 if __name__ == "__main__":
     main()

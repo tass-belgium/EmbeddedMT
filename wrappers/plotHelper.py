@@ -8,7 +8,7 @@ from scipy.interpolate import interp1d
 # Extra includes
 import gbl
 
-def processResults(displacements, color, interpolate):
+def processResults(displacements, color, interpolate = False):
     x, y, x_pos, y_pos = displacements.calculateXY()
     try:
         if(interpolate):
